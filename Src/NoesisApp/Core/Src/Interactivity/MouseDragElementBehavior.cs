@@ -157,7 +157,7 @@ namespace NoesisApp
 
         private void Drag(Point relativePosition)
         {
-            Vector delta = relativePosition - _relativePosition;
+            var delta = relativePosition - _relativePosition;
             UpdateTransform(delta.X, delta.Y);
 
             _settingPosition = true;
@@ -211,26 +211,26 @@ namespace NoesisApp
 
                     if (v1.X > maxXY.X)
                     {
-                        float dif = v1.X - maxXY.X;
+                        var dif = v1.X - maxXY.X;
                         x -= dif;
                         v0.X -= dif;
                         v1.X -= dif;
                     }
                     if (v0.X < minXY.X)
                     {
-                        float dif = minXY.X - v0.X;
+                        var dif = minXY.X - v0.X;
                         x += dif;
                     }
                     if (v1.Y > maxXY.Y)
                     {
-                        float dif = v1.Y - maxXY.Y;
+                        var dif = v1.Y - maxXY.Y;
                         y -= dif;
                         v0.Y -= dif;
                         v1.Y -= dif;
                     }
                     if (v0.Y < minXY.Y)
                     {
-                        float dif = minXY.Y - v0.Y;
+                        var dif = minXY.Y - v0.Y;
                         y += dif;
                     }
                 }

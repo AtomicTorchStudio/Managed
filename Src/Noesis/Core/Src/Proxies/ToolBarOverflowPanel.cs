@@ -31,7 +31,7 @@ public class ToolBarOverflowPanel : Panel {
   }
 
   protected override IntPtr CreateCPtr(Type type, out bool registerExtend) {
-    if ((object)type.TypeHandle == typeof(ToolBarOverflowPanel).TypeHandle) {
+    if ((object)type == typeof(ToolBarOverflowPanel)) {
       registerExtend = false;
       return NoesisGUI_PINVOKE.new_ToolBarOverflowPanel();
     }
@@ -47,9 +47,9 @@ public class ToolBarOverflowPanel : Panel {
     }
   }
 
-  public float WrapWidth {
+  public double WrapWidth {
     set {
-      NoesisGUI_PINVOKE.ToolBarOverflowPanel_WrapWidth_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.ToolBarOverflowPanel_WrapWidth_set(swigCPtr, (float)value);
     } 
     get {
       float ret = NoesisGUI_PINVOKE.ToolBarOverflowPanel_WrapWidth_get(swigCPtr);

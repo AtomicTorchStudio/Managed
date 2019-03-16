@@ -98,9 +98,9 @@ public class CompositeTransform : Transform {
     }
   }
 
-  public float CenterX {
+  public double CenterX {
     set {
-      NoesisGUI_PINVOKE.CompositeTransform_CenterX_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.CompositeTransform_CenterX_set(swigCPtr, (float)value);
     } 
     get {
       float ret = NoesisGUI_PINVOKE.CompositeTransform_CenterX_get(swigCPtr);
@@ -108,9 +108,9 @@ public class CompositeTransform : Transform {
     } 
   }
 
-  public float CenterY {
+  public double CenterY {
     set {
-      NoesisGUI_PINVOKE.CompositeTransform_CenterY_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.CompositeTransform_CenterY_set(swigCPtr, (float)value);
     } 
     get {
       float ret = NoesisGUI_PINVOKE.CompositeTransform_CenterY_get(swigCPtr);
@@ -118,19 +118,19 @@ public class CompositeTransform : Transform {
     } 
   }
 
-  public float Rotation {
+  public double Rotation {
     set {
-      NoesisGUI_PINVOKE.CompositeTransform_Rotation_set(swigCPtr, value);
-    } 
+      NoesisGUI_PINVOKE.CompositeTransform_Rotation_set(swigCPtr, (float)value);
+     } 
     get {
       float ret = NoesisGUI_PINVOKE.CompositeTransform_Rotation_get(swigCPtr);
       return ret;
     } 
   }
 
-  public float ScaleX {
+  public double ScaleX {
     set {
-      NoesisGUI_PINVOKE.CompositeTransform_ScaleX_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.CompositeTransform_ScaleX_set(swigCPtr, (float)value);
     } 
     get {
       float ret = NoesisGUI_PINVOKE.CompositeTransform_ScaleX_get(swigCPtr);
@@ -138,9 +138,9 @@ public class CompositeTransform : Transform {
     } 
   }
 
-  public float ScaleY {
+  public double ScaleY {
     set {
-      NoesisGUI_PINVOKE.CompositeTransform_ScaleY_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.CompositeTransform_ScaleY_set(swigCPtr, (float)value);
     } 
     get {
       float ret = NoesisGUI_PINVOKE.CompositeTransform_ScaleY_get(swigCPtr);
@@ -148,9 +148,9 @@ public class CompositeTransform : Transform {
     } 
   }
 
-  public float SkewX {
+  public double SkewX {
     set {
-      NoesisGUI_PINVOKE.CompositeTransform_SkewX_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.CompositeTransform_SkewX_set(swigCPtr, (float)value);
     } 
     get {
       float ret = NoesisGUI_PINVOKE.CompositeTransform_SkewX_get(swigCPtr);
@@ -158,9 +158,9 @@ public class CompositeTransform : Transform {
     } 
   }
 
-  public float SkewY {
+  public double SkewY {
     set {
-      NoesisGUI_PINVOKE.CompositeTransform_SkewY_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.CompositeTransform_SkewY_set(swigCPtr, (float)value);
     } 
     get {
       float ret = NoesisGUI_PINVOKE.CompositeTransform_SkewY_get(swigCPtr);
@@ -168,9 +168,9 @@ public class CompositeTransform : Transform {
     } 
   }
 
-  public float TranslateX {
+  public double TranslateX {
     set {
-      NoesisGUI_PINVOKE.CompositeTransform_TranslateX_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.CompositeTransform_TranslateX_set(swigCPtr, (float)value);
     } 
     get {
       float ret = NoesisGUI_PINVOKE.CompositeTransform_TranslateX_get(swigCPtr);
@@ -178,9 +178,9 @@ public class CompositeTransform : Transform {
     } 
   }
 
-  public float TranslateY {
+  public double TranslateY {
     set {
-      NoesisGUI_PINVOKE.CompositeTransform_TranslateY_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.CompositeTransform_TranslateY_set(swigCPtr, (float)value);
     } 
     get {
       float ret = NoesisGUI_PINVOKE.CompositeTransform_TranslateY_get(swigCPtr);

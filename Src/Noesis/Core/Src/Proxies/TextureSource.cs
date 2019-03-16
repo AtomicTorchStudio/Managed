@@ -63,7 +63,9 @@ public partial class TextureSource : ImageSource {
     } 
   }
 
-  new internal static IntPtr GetStaticType() {
+	public object Tag { get; set; }
+
+	new internal static IntPtr GetStaticType() {
     IntPtr ret = NoesisGUI_PINVOKE.TextureSource_GetStaticType();
     return ret;
   }

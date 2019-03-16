@@ -52,7 +52,7 @@ public class Control : FrameworkElement {
   }
 
   protected override IntPtr CreateCPtr(Type type, out bool registerExtend) {
-    if ((object)type.TypeHandle == typeof(Control).TypeHandle) {
+    if ((object)type == typeof(Control)) {
       registerExtend = false;
       return NoesisGUI_PINVOKE.new_Control();
     }
@@ -254,9 +254,9 @@ public class Control : FrameworkElement {
     }
   }
 
-  public float FontSize {
+  public double FontSize {
     set {
-      NoesisGUI_PINVOKE.Control_FontSize_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.Control_FontSize_set(swigCPtr, (float)value);
     } 
     get {
       float ret = NoesisGUI_PINVOKE.Control_FontSize_get(swigCPtr);

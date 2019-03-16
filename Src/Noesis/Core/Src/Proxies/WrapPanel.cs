@@ -31,7 +31,7 @@ public class WrapPanel : Panel {
   }
 
   protected override IntPtr CreateCPtr(Type type, out bool registerExtend) {
-    if ((object)type.TypeHandle == typeof(WrapPanel).TypeHandle) {
+    if ((object)type == typeof(WrapPanel)) {
       registerExtend = false;
       return NoesisGUI_PINVOKE.new_WrapPanel();
     }
@@ -61,9 +61,9 @@ public class WrapPanel : Panel {
     }
   }
 
-  public float ItemWidth {
+  public double ItemWidth {
     set {
-      NoesisGUI_PINVOKE.WrapPanel_ItemWidth_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.WrapPanel_ItemWidth_set(swigCPtr, (float)value);
     } 
     get {
       float ret = NoesisGUI_PINVOKE.WrapPanel_ItemWidth_get(swigCPtr);
@@ -71,9 +71,9 @@ public class WrapPanel : Panel {
     } 
   }
 
-  public float ItemHeight {
+  public double ItemHeight {
     set {
-      NoesisGUI_PINVOKE.WrapPanel_ItemHeight_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.WrapPanel_ItemHeight_set(swigCPtr, (float)value);
     } 
     get {
       float ret = NoesisGUI_PINVOKE.WrapPanel_ItemHeight_get(swigCPtr);

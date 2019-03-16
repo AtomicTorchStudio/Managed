@@ -97,22 +97,22 @@ public class ScrollViewer : ContentControl {
     NoesisGUI_PINVOKE.ScrollViewer_SetPanningMode(DependencyObject.getCPtr(element), (int)panningMode);
   }
 
-  public static float GetPanningDeceleration(DependencyObject element) {
-    float ret = NoesisGUI_PINVOKE.ScrollViewer_GetPanningDeceleration(DependencyObject.getCPtr(element));
+  public static double GetPanningDeceleration(DependencyObject element) {
+    double ret = NoesisGUI_PINVOKE.ScrollViewer_GetPanningDeceleration(DependencyObject.getCPtr(element));
     return ret;
   }
 
-  public static void SetPanningDeceleration(DependencyObject element, float deceleration) {
-    NoesisGUI_PINVOKE.ScrollViewer_SetPanningDeceleration(DependencyObject.getCPtr(element), deceleration);
+  public static void SetPanningDeceleration(DependencyObject element, double deceleration) {
+    NoesisGUI_PINVOKE.ScrollViewer_SetPanningDeceleration(DependencyObject.getCPtr(element), (float)deceleration);
   }
 
-  public static float GetPanningRatio(DependencyObject element) {
-    float ret = NoesisGUI_PINVOKE.ScrollViewer_GetPanningRatio(DependencyObject.getCPtr(element));
+  public static double GetPanningRatio(DependencyObject element) {
+    double ret = NoesisGUI_PINVOKE.ScrollViewer_GetPanningRatio(DependencyObject.getCPtr(element));
     return ret;
   }
 
-  public static void SetPanningRatio(DependencyObject element, float panningRatio) {
-    NoesisGUI_PINVOKE.ScrollViewer_SetPanningRatio(DependencyObject.getCPtr(element), panningRatio);
+  public static void SetPanningRatio(DependencyObject element, double panningRatio) {
+    NoesisGUI_PINVOKE.ScrollViewer_SetPanningRatio(DependencyObject.getCPtr(element), (float)panningRatio);
   }
 
   public void LineLeft() {
@@ -171,12 +171,12 @@ public class ScrollViewer : ContentControl {
     NoesisGUI_PINVOKE.ScrollViewer_ScrollToEnd(swigCPtr);
   }
 
-  public void ScrollToHorizontalOffset(float offset) {
-    NoesisGUI_PINVOKE.ScrollViewer_ScrollToHorizontalOffset(swigCPtr, offset);
+  public void ScrollToHorizontalOffset(double offset) {
+    NoesisGUI_PINVOKE.ScrollViewer_ScrollToHorizontalOffset(swigCPtr, (float)offset);
   }
 
-  public void ScrollToVerticalOffset(float offset) {
-    NoesisGUI_PINVOKE.ScrollViewer_ScrollToVerticalOffset(swigCPtr, offset);
+  public void ScrollToVerticalOffset(double offset) {
+    NoesisGUI_PINVOKE.ScrollViewer_ScrollToVerticalOffset(swigCPtr, (float)offset);
   }
 
   public void InvalidateScrollInfo() {
@@ -362,22 +362,22 @@ public class ScrollViewer : ContentControl {
     } 
   }
 
-  public float PanningDeceleration {
+  public double PanningDeceleration {
     set {
-      NoesisGUI_PINVOKE.ScrollViewer_PanningDeceleration_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.ScrollViewer_PanningDeceleration_set(swigCPtr, (float)value);
     } 
     get {
-      float ret = NoesisGUI_PINVOKE.ScrollViewer_PanningDeceleration_get(swigCPtr);
+      double ret = NoesisGUI_PINVOKE.ScrollViewer_PanningDeceleration_get(swigCPtr);
       return ret;
     } 
   }
 
-  public float PanningRatio {
+  public double PanningRatio {
     set {
-      NoesisGUI_PINVOKE.ScrollViewer_PanningRatio_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.ScrollViewer_PanningRatio_set(swigCPtr, (float)value);
     } 
     get {
-      float ret = NoesisGUI_PINVOKE.ScrollViewer_PanningRatio_get(swigCPtr);
+      double ret = NoesisGUI_PINVOKE.ScrollViewer_PanningRatio_get(swigCPtr);
       return ret;
     } 
   }
@@ -396,58 +396,58 @@ public class ScrollViewer : ContentControl {
     } 
   }
 
-  public float ExtentWidth {
+  public double ExtentWidth {
     get {
-      float ret = NoesisGUI_PINVOKE.ScrollViewer_ExtentWidth_get(swigCPtr);
+      double ret = NoesisGUI_PINVOKE.ScrollViewer_ExtentWidth_get(swigCPtr);
       return ret;
     } 
   }
 
-  public float ExtentHeight {
+  public double ExtentHeight {
     get {
-      float ret = NoesisGUI_PINVOKE.ScrollViewer_ExtentHeight_get(swigCPtr);
+      double ret = NoesisGUI_PINVOKE.ScrollViewer_ExtentHeight_get(swigCPtr);
       return ret;
     } 
   }
 
-  public float HorizontalOffset {
+  public double HorizontalOffset {
     get {
-      float ret = NoesisGUI_PINVOKE.ScrollViewer_HorizontalOffset_get(swigCPtr);
+      double ret = NoesisGUI_PINVOKE.ScrollViewer_HorizontalOffset_get(swigCPtr);
       return ret;
     } 
   }
 
-  public float VerticalOffset {
+  public double VerticalOffset {
     get {
-      float ret = NoesisGUI_PINVOKE.ScrollViewer_VerticalOffset_get(swigCPtr);
+      double ret = NoesisGUI_PINVOKE.ScrollViewer_VerticalOffset_get(swigCPtr);
       return ret;
     } 
   }
 
-  public float ScrollableWidth {
+  public double ScrollableWidth {
     get {
-      float ret = NoesisGUI_PINVOKE.ScrollViewer_ScrollableWidth_get(swigCPtr);
+      double ret = NoesisGUI_PINVOKE.ScrollViewer_ScrollableWidth_get(swigCPtr);
       return ret;
     } 
   }
 
-  public float ScrollableHeight {
+  public double ScrollableHeight {
     get {
-      float ret = NoesisGUI_PINVOKE.ScrollViewer_ScrollableHeight_get(swigCPtr);
+      double ret = NoesisGUI_PINVOKE.ScrollViewer_ScrollableHeight_get(swigCPtr);
       return ret;
     } 
   }
 
-  public float ViewportWidth {
+  public double ViewportWidth {
     get {
-      float ret = NoesisGUI_PINVOKE.ScrollViewer_ViewportWidth_get(swigCPtr);
+      double ret = NoesisGUI_PINVOKE.ScrollViewer_ViewportWidth_get(swigCPtr);
       return ret;
     } 
   }
 
-  public float ViewportHeight {
+  public double ViewportHeight {
     get {
-      float ret = NoesisGUI_PINVOKE.ScrollViewer_ViewportHeight_get(swigCPtr);
+      double ret = NoesisGUI_PINVOKE.ScrollViewer_ViewportHeight_get(swigCPtr);
       return ret;
     } 
   }

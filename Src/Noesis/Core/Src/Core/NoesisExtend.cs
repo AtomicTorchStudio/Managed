@@ -807,6 +807,7 @@ namespace Noesis
             AddNativeType(Noesis.GroupBox.GetStaticType(), new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(Noesis.GroupBox), Noesis.GroupBox.CreateProxy));
             AddNativeType(Noesis.HeaderedContentControl.GetStaticType(), new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(Noesis.HeaderedContentControl), Noesis.HeaderedContentControl.CreateProxy));
             AddNativeType(Noesis.HeaderedItemsControl.GetStaticType(), new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(Noesis.HeaderedItemsControl), Noesis.HeaderedItemsControl.CreateProxy));
+            AddNativeType(Noesis.Span.GetStaticType(), new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(Noesis.Span), Noesis.Span.CreateProxy));
             AddNativeType(Noesis.Hyperlink.GetStaticType(), new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(Noesis.Hyperlink), Noesis.Hyperlink.CreateProxy));
             AddNativeType(Noesis.Image.GetStaticType(), new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(Noesis.Image), Noesis.Image.CreateProxy));
             AddNativeType(Noesis.ImageBrush.GetStaticType(), new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(Noesis.ImageBrush), Noesis.ImageBrush.CreateProxy));
@@ -2734,7 +2735,7 @@ namespace Noesis
             if (type.Equals(typeof(double)) ||
                 type.Equals(typeof(decimal)))
             {
-                return (int)NativePropertyType.Double;
+                return (int)NativePropertyType.Float;
             }
 
             if (type.Equals(typeof(int)) ||
@@ -2820,7 +2821,7 @@ namespace Noesis
             if (type.Equals(typeof(double?)) ||
                 type.Equals(typeof(decimal?)))
             {
-                return (int)NativePropertyType.NullableDouble;
+                return (int)NativePropertyType.NullableFloat;
             }
 
             if (type.Equals(typeof(int?)) ||

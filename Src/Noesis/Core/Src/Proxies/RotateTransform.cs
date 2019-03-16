@@ -35,7 +35,7 @@ public class RotateTransform : Transform {
     return NoesisGUI_PINVOKE.new_RotateTransform__SWIG_0();
   }
 
-  public RotateTransform(float angle) : this(NoesisGUI_PINVOKE.new_RotateTransform__SWIG_1(angle), true) {
+  public RotateTransform(double angle) : this(NoesisGUI_PINVOKE.new_RotateTransform__SWIG_1((float)angle), true) {
   }
 
   public static DependencyProperty AngleProperty {
@@ -59,32 +59,32 @@ public class RotateTransform : Transform {
     }
   }
 
-  public float Angle {
+  public double Angle {
     set {
-      NoesisGUI_PINVOKE.RotateTransform_Angle_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.RotateTransform_Angle_set(swigCPtr, (float)value);
     } 
     get {
-      float ret = NoesisGUI_PINVOKE.RotateTransform_Angle_get(swigCPtr);
+      double ret = NoesisGUI_PINVOKE.RotateTransform_Angle_get(swigCPtr);
       return ret;
     } 
   }
 
-  public float CenterX {
+  public double CenterX {
     set {
-      NoesisGUI_PINVOKE.RotateTransform_CenterX_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.RotateTransform_CenterX_set(swigCPtr, (float)value);
     } 
     get {
-      float ret = NoesisGUI_PINVOKE.RotateTransform_CenterX_get(swigCPtr);
+      double ret = NoesisGUI_PINVOKE.RotateTransform_CenterX_get(swigCPtr);
       return ret;
     } 
   }
 
-  public float CenterY {
+  public double CenterY {
     set {
-      NoesisGUI_PINVOKE.RotateTransform_CenterY_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.RotateTransform_CenterY_set(swigCPtr, (float)value);
     } 
     get {
-      float ret = NoesisGUI_PINVOKE.RotateTransform_CenterY_get(swigCPtr);
+      double ret = NoesisGUI_PINVOKE.RotateTransform_CenterY_get(swigCPtr);
       return ret;
     } 
   }

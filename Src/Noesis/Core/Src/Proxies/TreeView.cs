@@ -43,7 +43,7 @@ public class TreeView : ItemsControl {
   }
 
   protected override IntPtr CreateCPtr(Type type, out bool registerExtend) {
-    if ((object)type.TypeHandle == typeof(TreeView).TypeHandle) {
+    if ((object)type == typeof(TreeView)) {
       registerExtend = false;
       return NoesisGUI_PINVOKE.new_TreeView();
     }

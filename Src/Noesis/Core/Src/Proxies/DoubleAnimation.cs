@@ -56,9 +56,9 @@ public class DoubleAnimation : BaseAnimation {
     }
   }
 
-  public Nullable<float> From {
+  public Nullable<double> From {
     set {
-      NullableFloat tempvalue = value;
+      NullableFloat tempvalue = (float?)value;
       NoesisGUI_PINVOKE.DoubleAnimation_From_set(swigCPtr, ref tempvalue);
     }
 
@@ -74,9 +74,9 @@ public class DoubleAnimation : BaseAnimation {
 
   }
 
-  public Nullable<float> To {
+  public Nullable<double> To {
     set {
-      NullableFloat tempvalue = value;
+      NullableFloat tempvalue = (float?)value;
       NoesisGUI_PINVOKE.DoubleAnimation_To_set(swigCPtr, ref tempvalue);
     }
 
@@ -92,9 +92,9 @@ public class DoubleAnimation : BaseAnimation {
 
   }
 
-  public Nullable<float> By {
+  public Nullable<double> By {
     set {
-      NullableFloat tempvalue = value;
+      NullableFloat tempvalue = (float?)value;
       NoesisGUI_PINVOKE.DoubleAnimation_By_set(swigCPtr, ref tempvalue);
     }
 

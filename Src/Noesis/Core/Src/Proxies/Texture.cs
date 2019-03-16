@@ -35,7 +35,6 @@ public partial class Texture : BaseComponent {
     IntPtr ret = NoesisGUI_PINVOKE.Texture_GetStaticType();
     return ret;
   }
-
 }
 
 }

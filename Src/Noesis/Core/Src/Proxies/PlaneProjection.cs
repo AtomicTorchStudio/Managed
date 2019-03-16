@@ -35,8 +35,8 @@ public class PlaneProjection : Projection {
     return NoesisGUI_PINVOKE.new_PlaneProjection();
   }
 
-  public static Matrix4 ConstructProjectionMatrix(Size surface, Size size, float centerX, float centerY, float centerZ, float globalOffX, float globalOffY, float globalOffZ, float localOffX, float localOffY, float localOffZ, float rotX, float rotY, float rotZ) {
-    IntPtr ret = NoesisGUI_PINVOKE.PlaneProjection_ConstructProjectionMatrix(ref surface, ref size, centerX, centerY, centerZ, globalOffX, globalOffY, globalOffZ, localOffX, localOffY, localOffZ, rotX, rotY, rotZ);
+  public static Matrix4 ConstructProjectionMatrix(Size surface, Size size, double centerX, double centerY, double centerZ, double globalOffX, double globalOffY, double globalOffZ, double localOffX, double localOffY, double localOffZ, double rotX, double rotY, double rotZ) {
+    IntPtr ret = NoesisGUI_PINVOKE.PlaneProjection_ConstructProjectionMatrix(ref surface, ref size, (float)centerX, (float)centerY, (float)centerZ, (float)globalOffX, (float)globalOffY, (float)globalOffZ, (float)localOffX, (float)localOffY, (float)localOffZ, (float)rotX, (float)rotY, (float)rotZ);
     if (ret != IntPtr.Zero) {
       return Marshal.PtrToStructure<Matrix4>(ret);
     }
@@ -151,92 +151,92 @@ public class PlaneProjection : Projection {
     }
   }
 
-  public float CenterOfRotationX {
+  public double CenterOfRotationX {
     set {
-      NoesisGUI_PINVOKE.PlaneProjection_CenterOfRotationX_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.PlaneProjection_CenterOfRotationX_set(swigCPtr, (float)value);
     } 
     get {
-      float ret = NoesisGUI_PINVOKE.PlaneProjection_CenterOfRotationX_get(swigCPtr);
+      double ret = NoesisGUI_PINVOKE.PlaneProjection_CenterOfRotationX_get(swigCPtr);
       return ret;
     } 
   }
 
-  public float CenterOfRotationY {
+  public double CenterOfRotationY {
     set {
-      NoesisGUI_PINVOKE.PlaneProjection_CenterOfRotationY_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.PlaneProjection_CenterOfRotationY_set(swigCPtr, (float)value);
     } 
     get {
-      float ret = NoesisGUI_PINVOKE.PlaneProjection_CenterOfRotationY_get(swigCPtr);
+      double ret = NoesisGUI_PINVOKE.PlaneProjection_CenterOfRotationY_get(swigCPtr);
       return ret;
     } 
   }
 
-  public float CenterOfRotationZ {
+  public double CenterOfRotationZ {
     set {
-      NoesisGUI_PINVOKE.PlaneProjection_CenterOfRotationZ_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.PlaneProjection_CenterOfRotationZ_set(swigCPtr, (float)value);
     } 
     get {
-      float ret = NoesisGUI_PINVOKE.PlaneProjection_CenterOfRotationZ_get(swigCPtr);
+      double ret = NoesisGUI_PINVOKE.PlaneProjection_CenterOfRotationZ_get(swigCPtr);
       return ret;
     } 
   }
 
-  public float GlobalOffsetX {
+  public double GlobalOffsetX {
     set {
-      NoesisGUI_PINVOKE.PlaneProjection_GlobalOffsetX_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.PlaneProjection_GlobalOffsetX_set(swigCPtr, (float)value);
     } 
     get {
-      float ret = NoesisGUI_PINVOKE.PlaneProjection_GlobalOffsetX_get(swigCPtr);
+      double ret = NoesisGUI_PINVOKE.PlaneProjection_GlobalOffsetX_get(swigCPtr);
       return ret;
     } 
   }
 
-  public float GlobalOffsetY {
+  public double GlobalOffsetY {
     set {
-      NoesisGUI_PINVOKE.PlaneProjection_GlobalOffsetY_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.PlaneProjection_GlobalOffsetY_set(swigCPtr, (float)value);
     } 
     get {
-      float ret = NoesisGUI_PINVOKE.PlaneProjection_GlobalOffsetY_get(swigCPtr);
+      double ret = NoesisGUI_PINVOKE.PlaneProjection_GlobalOffsetY_get(swigCPtr);
       return ret;
     } 
   }
 
-  public float GlobalOffsetZ {
+  public double GlobalOffsetZ {
     set {
-      NoesisGUI_PINVOKE.PlaneProjection_GlobalOffsetZ_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.PlaneProjection_GlobalOffsetZ_set(swigCPtr, (float)value);
     } 
     get {
-      float ret = NoesisGUI_PINVOKE.PlaneProjection_GlobalOffsetZ_get(swigCPtr);
+      double ret = NoesisGUI_PINVOKE.PlaneProjection_GlobalOffsetZ_get(swigCPtr);
       return ret;
     } 
   }
 
-  public float LocalOffsetX {
+  public double LocalOffsetX {
     set {
-      NoesisGUI_PINVOKE.PlaneProjection_LocalOffsetX_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.PlaneProjection_LocalOffsetX_set(swigCPtr, (float)value);
     } 
     get {
-      float ret = NoesisGUI_PINVOKE.PlaneProjection_LocalOffsetX_get(swigCPtr);
+      double ret = NoesisGUI_PINVOKE.PlaneProjection_LocalOffsetX_get(swigCPtr);
       return ret;
     } 
   }
 
-  public float LocalOffsetY {
+  public double LocalOffsetY {
     set {
-      NoesisGUI_PINVOKE.PlaneProjection_LocalOffsetY_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.PlaneProjection_LocalOffsetY_set(swigCPtr, (float)value);
     } 
     get {
-      float ret = NoesisGUI_PINVOKE.PlaneProjection_LocalOffsetY_get(swigCPtr);
+      double ret = NoesisGUI_PINVOKE.PlaneProjection_LocalOffsetY_get(swigCPtr);
       return ret;
     } 
   }
 
-  public float LocalOffsetZ {
+  public double LocalOffsetZ {
     set {
-      NoesisGUI_PINVOKE.PlaneProjection_LocalOffsetZ_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.PlaneProjection_LocalOffsetZ_set(swigCPtr, (float)value);
     } 
     get {
-      float ret = NoesisGUI_PINVOKE.PlaneProjection_LocalOffsetZ_get(swigCPtr);
+      double ret = NoesisGUI_PINVOKE.PlaneProjection_LocalOffsetZ_get(swigCPtr);
       return ret;
     } 
   }
@@ -254,32 +254,32 @@ public class PlaneProjection : Projection {
 
   }
 
-  public float RotationX {
+  public double RotationX {
     set {
-      NoesisGUI_PINVOKE.PlaneProjection_RotationX_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.PlaneProjection_RotationX_set(swigCPtr, (float)value);
     } 
     get {
-      float ret = NoesisGUI_PINVOKE.PlaneProjection_RotationX_get(swigCPtr);
+      double ret = NoesisGUI_PINVOKE.PlaneProjection_RotationX_get(swigCPtr);
       return ret;
     } 
   }
 
-  public float RotationY {
+  public double RotationY {
     set {
-      NoesisGUI_PINVOKE.PlaneProjection_RotationY_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.PlaneProjection_RotationY_set(swigCPtr, (float)value);
     } 
     get {
-      float ret = NoesisGUI_PINVOKE.PlaneProjection_RotationY_get(swigCPtr);
+      double ret = NoesisGUI_PINVOKE.PlaneProjection_RotationY_get(swigCPtr);
       return ret;
     } 
   }
 
-  public float RotationZ {
+  public double RotationZ {
     set {
-      NoesisGUI_PINVOKE.PlaneProjection_RotationZ_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.PlaneProjection_RotationZ_set(swigCPtr, (float)value);
     } 
     get {
-      float ret = NoesisGUI_PINVOKE.PlaneProjection_RotationZ_get(swigCPtr);
+      double ret = NoesisGUI_PINVOKE.PlaneProjection_RotationZ_get(swigCPtr);
       return ret;
     } 
   }

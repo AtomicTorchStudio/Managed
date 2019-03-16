@@ -193,7 +193,7 @@ namespace NoesisApp
             }
         }
 
-        private void OnEventImpl(object sender, Noesis.EventArgs eventArgs)
+        private void OnEventImpl(object sender, Noesis.NoesisEventArgs eventArgs)
         {
             OnEvent(eventArgs);
         }
@@ -207,7 +207,7 @@ namespace NoesisApp
                 ParameterInfo[] parameters = method.GetParameters();
                 return parameters.Length == 2
                     && typeof(object).IsAssignableFrom(parameters[0].ParameterType)
-                    && typeof(Noesis.EventArgs).IsAssignableFrom(parameters[1].ParameterType);
+                    && typeof(Noesis.NoesisEventArgs).IsAssignableFrom(parameters[1].ParameterType);
             }
             return false;
         }

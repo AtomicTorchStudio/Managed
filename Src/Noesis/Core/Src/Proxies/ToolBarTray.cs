@@ -31,7 +31,7 @@ public class ToolBarTray : FrameworkElement {
   }
 
   protected override IntPtr CreateCPtr(Type type, out bool registerExtend) {
-    if ((object)type.TypeHandle == typeof(ToolBarTray).TypeHandle) {
+    if ((object)type == typeof(ToolBarTray)) {
       registerExtend = false;
       return NoesisGUI_PINVOKE.new_ToolBarTray();
     }

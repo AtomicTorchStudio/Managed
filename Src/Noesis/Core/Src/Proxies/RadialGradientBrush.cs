@@ -97,9 +97,9 @@ public class RadialGradientBrush : GradientBrush {
 
   }
 
-  public float RadiusX {
+  public double RadiusX {
     set {
-      NoesisGUI_PINVOKE.RadialGradientBrush_RadiusX_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.RadialGradientBrush_RadiusX_set(swigCPtr, (float)value);
     } 
     get {
       float ret = NoesisGUI_PINVOKE.RadialGradientBrush_RadiusX_get(swigCPtr);
@@ -107,9 +107,9 @@ public class RadialGradientBrush : GradientBrush {
     } 
   }
 
-  public float RadiusY {
+  public double RadiusY {
     set {
-      NoesisGUI_PINVOKE.RadialGradientBrush_RadiusY_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.RadialGradientBrush_RadiusY_set(swigCPtr, (float)value);
     } 
     get {
       float ret = NoesisGUI_PINVOKE.RadialGradientBrush_RadiusY_get(swigCPtr);

@@ -31,7 +31,7 @@ public class Canvas : Panel {
   }
 
   protected override IntPtr CreateCPtr(Type type, out bool registerExtend) {
-    if ((object)type.TypeHandle == typeof(Canvas).TypeHandle) {
+    if ((object)type == typeof(Canvas)) {
       registerExtend = false;
       return NoesisGUI_PINVOKE.new_Canvas();
     }
@@ -40,40 +40,40 @@ public class Canvas : Panel {
     }
   }
 
-  public static float GetLeft(UIElement element) {
+  public static double GetLeft(UIElement element) {
     float ret = NoesisGUI_PINVOKE.Canvas_GetLeft(UIElement.getCPtr(element));
     return ret;
   }
 
-  public static void SetLeft(UIElement element, float left) {
-    NoesisGUI_PINVOKE.Canvas_SetLeft(UIElement.getCPtr(element), left);
+  public static void SetLeft(UIElement element, double left) {
+    NoesisGUI_PINVOKE.Canvas_SetLeft(UIElement.getCPtr(element), (float)left);
   }
 
-  public static float GetTop(UIElement element) {
+  public static double GetTop(UIElement element) {
     float ret = NoesisGUI_PINVOKE.Canvas_GetTop(UIElement.getCPtr(element));
     return ret;
   }
 
-  public static void SetTop(UIElement element, float top) {
-    NoesisGUI_PINVOKE.Canvas_SetTop(UIElement.getCPtr(element), top);
+  public static void SetTop(UIElement element, double top) {
+    NoesisGUI_PINVOKE.Canvas_SetTop(UIElement.getCPtr(element), (float)top);
   }
 
-  public static float GetRight(UIElement element) {
+  public static double GetRight(UIElement element) {
     float ret = NoesisGUI_PINVOKE.Canvas_GetRight(UIElement.getCPtr(element));
     return ret;
   }
 
-  public static void SetRight(UIElement element, float right) {
-    NoesisGUI_PINVOKE.Canvas_SetRight(UIElement.getCPtr(element), right);
+  public static void SetRight(UIElement element, double right) {
+    NoesisGUI_PINVOKE.Canvas_SetRight(UIElement.getCPtr(element), (float)right);
   }
 
-  public static float GetBottom(UIElement element) {
+  public static double GetBottom(UIElement element) {
     float ret = NoesisGUI_PINVOKE.Canvas_GetBottom(UIElement.getCPtr(element));
     return ret;
   }
 
-  public static void SetBottom(UIElement element, float bottom) {
-    NoesisGUI_PINVOKE.Canvas_SetBottom(UIElement.getCPtr(element), bottom);
+  public static void SetBottom(UIElement element, double bottom) {
+    NoesisGUI_PINVOKE.Canvas_SetBottom(UIElement.getCPtr(element), (float)bottom);
   }
 
   public static DependencyProperty BottomProperty {

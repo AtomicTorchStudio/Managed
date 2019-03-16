@@ -151,9 +151,9 @@ namespace NoesisApp
             }
 
             // Set display Size
-            float width = Width;
-            float height = Height;
-            if (!float.IsNaN(width) && !float.IsNaN(height))
+            var width = Width;
+            var height = Height;
+            if (!double.IsNaN(width) && !double.IsNaN(height))
             {
                 _display.SetSize((int)width, (int)height);
             }

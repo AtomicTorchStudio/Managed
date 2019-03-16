@@ -15,7 +15,7 @@ using System.Runtime.InteropServices;
 namespace Noesis
 {
 
-public class Menu : MenuBase {
+internal class Menu : MenuBase {
   internal new static Menu CreateProxy(IntPtr cPtr, bool cMemoryOwn) {
     return new Menu(cPtr, cMemoryOwn);
   }
@@ -31,7 +31,7 @@ public class Menu : MenuBase {
   }
 
   protected override IntPtr CreateCPtr(Type type, out bool registerExtend) {
-    if ((object)type.TypeHandle == typeof(Menu).TypeHandle) {
+    if ((object)type == typeof(Menu)) {
       registerExtend = false;
       return NoesisGUI_PINVOKE.new_Menu();
     }

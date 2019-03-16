@@ -33,7 +33,7 @@ public class Timeline : Animatable {
 
   #region Events
   #region Completed
-  public delegate void CompletedHandler(object sender, EventArgs e);
+  public delegate void CompletedHandler(object sender, System.EventArgs e);
   public event CompletedHandler Completed {
     add {
       if (!_Completed.ContainsKey(swigCPtr.Handle)) {
@@ -61,27 +61,65 @@ public class Timeline : Animatable {
   internal delegate void RaiseCompletedCallback(IntPtr cPtr, IntPtr sender, IntPtr e);
   private static RaiseCompletedCallback _raiseCompleted = RaiseCompleted;
 
-  [MonoPInvokeCallback(typeof(RaiseCompletedCallback))]
-  private static void RaiseCompleted(IntPtr cPtr, IntPtr sender, IntPtr e) {
-    try {
-      if (!_Completed.ContainsKey(cPtr)) {
-        throw new InvalidOperationException("Delegate not registered for Completed event");
-      }
-      if (sender == IntPtr.Zero && e == IntPtr.Zero) {
-        _Completed.Remove(cPtr);
-        return;
-      }
-      if (Noesis.Extend.Initialized) {
-        CompletedHandler handler = _Completed[cPtr];
-        if (handler != null) {
-          handler(Noesis.Extend.GetProxy(sender, false), new EventArgs(e, false));
+    [StructLayoutAttribute(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+    public struct TimelineEventArgs {
+        IntPtr target;
+
+        public DependencyObject Target {
+            get {
+                return (DependencyObject)Noesis.Extend.GetProxy(target, false);
+            }
         }
-      }
     }
-    catch (Exception exception) {
-      Noesis.Error.UnhandledException(exception);
+
+    [MonoPInvokeCallback(typeof(RaiseCompletedCallback))]
+    private static void RaiseCompleted(IntPtr cPtr, IntPtr sender, IntPtr e) {
+        try {
+            if (!_Completed.ContainsKey(cPtr)) {
+                throw new InvalidOperationException("Delegate not registered for Completed event");
+            }
+            if (sender == IntPtr.Zero && e == IntPtr.Zero) {
+                _Completed.Remove(cPtr);
+                return;
+            }
+            if (Noesis.Extend.Initialized) {
+                CompletedHandler handler = _Completed[cPtr];
+                if (handler == null)
+                {
+                    return;
+                }
+
+                var args = Marshal.PtrToStructure<TimelineEventArgs>(e);
+	      
+                foreach (var @delegate in handler.GetInvocationList())
+                {
+                    var storyboardTarget = args.Target as FrameworkElement;
+                    if (storyboardTarget.Tag is FrameworkElement)
+                    {
+                        // special hack found!
+                        @delegate.DynamicInvoke(Noesis.Extend.GetProxy(sender, false), new System.EventArgs());
+                        return;
+                    }
+
+                    var delegateTarget = @delegate.Target;
+
+                    while (storyboardTarget != null)
+                    {
+                        if (ReferenceEquals(storyboardTarget, delegateTarget))
+                        {
+                            @delegate.DynamicInvoke(Noesis.Extend.GetProxy(sender, false), new System.EventArgs());
+                            break;
+                        }
+                        storyboardTarget = VisualTreeHelper.GetParent(storyboardTarget) as FrameworkElement;
+                    }
+                }
+            }
+        }
+        catch (Exception exception) {
+            Noesis.Error.UnhandledException(exception);
+        }
     }
-  }
+
 
   static Dictionary<IntPtr, CompletedHandler> _Completed =
       new Dictionary<IntPtr, CompletedHandler>();
@@ -168,9 +206,9 @@ public class Timeline : Animatable {
     }
   }
 
-  public float AccelerationRatio {
+  public double AccelerationRatio {
     set {
-      NoesisGUI_PINVOKE.Timeline_AccelerationRatio_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.Timeline_AccelerationRatio_set(swigCPtr, (float)value);
     } 
     get {
       float ret = NoesisGUI_PINVOKE.Timeline_AccelerationRatio_get(swigCPtr);
@@ -206,9 +244,9 @@ public class Timeline : Animatable {
 
   }
 
-  public float DecelerationRatio {
+  public double DecelerationRatio {
     set {
-      NoesisGUI_PINVOKE.Timeline_DecelerationRatio_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.Timeline_DecelerationRatio_set(swigCPtr, (float)value);
     } 
     get {
       float ret = NoesisGUI_PINVOKE.Timeline_DecelerationRatio_get(swigCPtr);
@@ -271,9 +309,9 @@ public class Timeline : Animatable {
 
   }
 
-  public float SpeedRatio {
+  public double SpeedRatio {
     set {
-      NoesisGUI_PINVOKE.Timeline_SpeedRatio_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.Timeline_SpeedRatio_set(swigCPtr, (float)value);
     } 
     get {
       float ret = NoesisGUI_PINVOKE.Timeline_SpeedRatio_get(swigCPtr);

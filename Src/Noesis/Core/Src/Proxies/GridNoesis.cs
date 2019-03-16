@@ -31,7 +31,7 @@ public class Grid : Panel {
   }
 
   protected override IntPtr CreateCPtr(Type type, out bool registerExtend) {
-    if ((object)type.TypeHandle == typeof(Grid).TypeHandle) {
+    if ((object)type == typeof(Grid)) {
       registerExtend = false;
       return NoesisGUI_PINVOKE.new_Grid();
     }

@@ -157,7 +157,7 @@ namespace NoesisApp
             ManipulationDelta delta = e.DeltaManipulation;
 
             // Update Scale transform
-            float scale = delta.Scale * _scale.ScaleX;
+            var scale = delta.Scale * _scale.ScaleX;
             scale = Math.Max(Math.Max(0.00001f, MinimumScale), Math.Min(scale, MaximumScale));
             _scale.ScaleX = scale;
             _scale.ScaleY = scale;
@@ -190,10 +190,10 @@ namespace NoesisApp
             e.Handled = true;
         }
 
-        private float Deceleration(float friction, float velocity)
+        private double Deceleration(double friction, double velocity)
         {
-            float k = friction == 1.0f ? 1.0f : (float)Math.Log(1 - friction) * 2.0f / 300.0f;
-            return Math.Max(0.0f, velocity * k);
+            var k = friction == 1.0 ? 1.0 : Math.Log(1 - friction) * 2.0 / 300.0;
+            return Math.Max(0.0, velocity * k);
         }
 
         private void OnManipulationInertia(object sender, ManipulationInertiaStartingEventArgs e)
@@ -234,7 +234,7 @@ namespace NoesisApp
                 _settingPosition = true;
 
                 FrameworkElement associatedObject = AssociatedObject;
-                Vector delta = e.GetPosition(associatedObject) - _relativePosition;
+                var delta = e.GetPosition(associatedObject) - _relativePosition;
 
                 ManipulationModes supportedGestures = SupportedGestures;
                 if ((supportedGestures & ManipulationModes.TranslateX) == 0)

@@ -91,9 +91,9 @@ public class GridViewColumn : DependencyObject {
     }
   }
 
-  public float ActualWidth {
+  public double ActualWidth {
     set {
-      NoesisGUI_PINVOKE.GridViewColumn_ActualWidth_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.GridViewColumn_ActualWidth_set(swigCPtr, (float)value);
     } 
     get {
       float ret = NoesisGUI_PINVOKE.GridViewColumn_ActualWidth_get(swigCPtr);
@@ -183,9 +183,9 @@ public class GridViewColumn : DependencyObject {
     }
   }
 
-  public float Width {
+  public double Width {
     set {
-      NoesisGUI_PINVOKE.GridViewColumn_Width_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.GridViewColumn_Width_set(swigCPtr, (float)value);
     } 
     get {
       float ret = NoesisGUI_PINVOKE.GridViewColumn_Width_get(swigCPtr);

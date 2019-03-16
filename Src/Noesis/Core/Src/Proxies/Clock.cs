@@ -33,7 +33,7 @@ public class Clock : BaseComponent {
 
   #region Events
   #region Completed
-  public delegate void CompletedHandler(object sender, EventArgs e);
+  public delegate void CompletedHandler(object sender, NoesisEventArgs e);
   public event CompletedHandler Completed {
     add {
       if (!_Completed.ContainsKey(swigCPtr.Handle)) {
@@ -74,7 +74,7 @@ public class Clock : BaseComponent {
       if (Noesis.Extend.Initialized) {
         CompletedHandler handler = _Completed[cPtr];
         if (handler != null) {
-          handler(Noesis.Extend.GetProxy(sender, false), new EventArgs(e, false));
+          handler(Noesis.Extend.GetProxy(sender, false), new NoesisEventArgs(e, false));
         }
       }
     }
