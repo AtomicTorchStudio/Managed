@@ -108,7 +108,6 @@ namespace Noesis
 
             public void Dispose()
             {
-                throw new NotImplementedException();
             }
 
             public Enumerator(UICollection<T> c)
