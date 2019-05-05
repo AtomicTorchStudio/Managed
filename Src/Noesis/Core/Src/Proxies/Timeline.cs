@@ -75,14 +75,14 @@ public class Timeline : Animatable {
     [MonoPInvokeCallback(typeof(RaiseCompletedCallback))]
     private static void RaiseCompleted(IntPtr cPtr, IntPtr sender, IntPtr e) {
         try {
-            if (!_Completed.ContainsKey(cPtr)) {
-                throw new InvalidOperationException("Delegate not registered for Completed event");
-            }
-            if (sender == IntPtr.Zero && e == IntPtr.Zero) {
-                _Completed.Remove(cPtr);
-                return;
-            }
             if (Noesis.Extend.Initialized) {
+                if (!_Completed.ContainsKey(cPtr)) {
+                    throw new InvalidOperationException("Delegate not registered for Completed event");
+                }
+                if (sender == IntPtr.Zero && e == IntPtr.Zero) {
+                    _Completed.Remove(cPtr);
+                    return;
+                }
                 CompletedHandler handler = _Completed[cPtr];
                 if (handler == null)
                 {
@@ -120,8 +120,7 @@ public class Timeline : Animatable {
         }
     }
 
-
-  static Dictionary<IntPtr, CompletedHandler> _Completed =
+  internal static Dictionary<IntPtr, CompletedHandler> _Completed =
       new Dictionary<IntPtr, CompletedHandler>();
   #endregion
 

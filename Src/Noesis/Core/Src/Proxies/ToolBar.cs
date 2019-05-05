@@ -41,17 +41,26 @@ public class ToolBar : HeaderedItemsControl {
   }
 
   public static OverflowMode GetOverflowMode(DependencyObject element) {
-    OverflowMode ret = (OverflowMode)NoesisGUI_PINVOKE.ToolBar_GetOverflowMode(DependencyObject.getCPtr(element));
-    return ret;
+    if (element == null) throw new ArgumentNullException("element");
+    {
+      OverflowMode ret = (OverflowMode)NoesisGUI_PINVOKE.ToolBar_GetOverflowMode(DependencyObject.getCPtr(element));
+      return ret;
+    }
   }
 
   public static void SetOverflowMode(DependencyObject element, OverflowMode mode) {
-    NoesisGUI_PINVOKE.ToolBar_SetOverflowMode(DependencyObject.getCPtr(element), (int)mode);
+    if (element == null) throw new ArgumentNullException("element");
+    {
+      NoesisGUI_PINVOKE.ToolBar_SetOverflowMode(DependencyObject.getCPtr(element), (int)mode);
+    }
   }
 
   public static bool GetIsOverflowItem(DependencyObject element) {
-    bool ret = NoesisGUI_PINVOKE.ToolBar_GetIsOverflowItem(DependencyObject.getCPtr(element));
-    return ret;
+    if (element == null) throw new ArgumentNullException("element");
+    {
+      bool ret = NoesisGUI_PINVOKE.ToolBar_GetIsOverflowItem(DependencyObject.getCPtr(element));
+      return ret;
+    }
   }
 
   public static DependencyProperty BandIndexProperty {
