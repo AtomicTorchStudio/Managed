@@ -31,7 +31,7 @@ public class ToolBar : HeaderedItemsControl {
   }
 
   protected override IntPtr CreateCPtr(Type type, out bool registerExtend) {
-    if ((object)type == typeof(ToolBar)) {
+    if (type == typeof(ToolBar)) {
       registerExtend = false;
       return NoesisGUI_PINVOKE.new_ToolBar();
     }

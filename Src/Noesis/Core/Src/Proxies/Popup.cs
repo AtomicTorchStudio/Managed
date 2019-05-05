@@ -145,7 +145,7 @@ public class Popup : FrameworkElement {
   }
 
   protected override IntPtr CreateCPtr(Type type, out bool registerExtend) {
-    if ((object)type == typeof(Popup)) {
+    if (type == typeof(Popup)) {
       registerExtend = false;
       return NoesisGUI_PINVOKE.new_Popup();
     }

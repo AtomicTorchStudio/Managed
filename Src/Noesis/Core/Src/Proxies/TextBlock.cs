@@ -35,7 +35,7 @@ public class TextBlock : FrameworkElement {
   }
 
   protected override IntPtr CreateCPtr(Type type, out bool registerExtend) {
-    if ((object)type == typeof(TextBlock)) {
+    if (type == typeof(TextBlock)) {
       registerExtend = false;
       return NoesisGUI_PINVOKE.new_TextBlock__SWIG_0();
     }

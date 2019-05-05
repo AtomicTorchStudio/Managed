@@ -61,7 +61,7 @@ public class Thumb : Control {
   }
 
   protected override IntPtr CreateCPtr(Type type, out bool registerExtend) {
-    if ((object)type == typeof(Thumb)) {
+    if (type == typeof(Thumb)) {
       registerExtend = false;
       return NoesisGUI_PINVOKE.new_Thumb();
     }

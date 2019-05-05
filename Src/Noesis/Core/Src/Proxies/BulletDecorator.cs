@@ -31,7 +31,7 @@ public class BulletDecorator : Decorator {
   }
 
   protected override IntPtr CreateCPtr(Type type, out bool registerExtend) {
-    if ((object)type == typeof(BulletDecorator)) {
+    if (type == typeof(BulletDecorator)) {
       registerExtend = false;
       return NoesisGUI_PINVOKE.new_BulletDecorator();
     }

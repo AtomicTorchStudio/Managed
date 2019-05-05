@@ -52,7 +52,7 @@ public class Control : FrameworkElement {
   }
 
   protected override IntPtr CreateCPtr(Type type, out bool registerExtend) {
-    if ((object)type == typeof(Control)) {
+    if (type == typeof(Control)) {
       registerExtend = false;
       return NoesisGUI_PINVOKE.new_Control();
     }

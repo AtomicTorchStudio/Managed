@@ -31,7 +31,7 @@ public class WrapPanel : Panel {
   }
 
   protected override IntPtr CreateCPtr(Type type, out bool registerExtend) {
-    if ((object)type == typeof(WrapPanel)) {
+    if (type == typeof(WrapPanel)) {
       registerExtend = false;
       return NoesisGUI_PINVOKE.new_WrapPanel();
     }

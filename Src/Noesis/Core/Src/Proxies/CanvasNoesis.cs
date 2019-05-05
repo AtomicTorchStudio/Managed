@@ -31,7 +31,7 @@ public class Canvas : Panel {
   }
 
   protected override IntPtr CreateCPtr(Type type, out bool registerExtend) {
-    if ((object)type == typeof(Canvas)) {
+    if (type == typeof(Canvas)) {
       registerExtend = false;
       return NoesisGUI_PINVOKE.new_Canvas();
     }

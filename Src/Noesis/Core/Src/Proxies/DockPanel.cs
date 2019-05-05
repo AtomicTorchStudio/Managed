@@ -31,7 +31,7 @@ public class DockPanel : Panel {
   }
 
   protected override IntPtr CreateCPtr(Type type, out bool registerExtend) {
-    if ((object)type == typeof(DockPanel)) {
+    if (type == typeof(DockPanel)) {
       registerExtend = false;
       return NoesisGUI_PINVOKE.new_DockPanel();
     }

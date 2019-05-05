@@ -88,7 +88,7 @@ public class MenuItem : HeaderedItemsControl {
   }
 
   protected override IntPtr CreateCPtr(Type type, out bool registerExtend) {
-    if ((object)type == typeof(MenuItem)) {
+    if (type == typeof(MenuItem)) {
       registerExtend = false;
       return NoesisGUI_PINVOKE.new_MenuItem();
     }
