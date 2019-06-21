@@ -33,7 +33,7 @@ public class Timeline : Animatable {
 
   #region Events
   #region Completed
-  public delegate void CompletedHandler(object sender, System.EventArgs e);
+  public delegate void CompletedHandler(object sender, EventArgs e);
   public event CompletedHandler Completed {
     add {
       if (!_Completed.ContainsKey(swigCPtr.Handle)) {
@@ -61,64 +61,65 @@ public class Timeline : Animatable {
   internal delegate void RaiseCompletedCallback(IntPtr cPtr, IntPtr sender, IntPtr e);
   private static RaiseCompletedCallback _raiseCompleted = RaiseCompleted;
 
-    [StructLayoutAttribute(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
-    public struct TimelineEventArgs {
-        IntPtr target;
+  [StructLayoutAttribute(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+  public struct TimelineEventArgs {
+      IntPtr target;
 
-        public DependencyObject Target {
-            get {
-                return (DependencyObject)Noesis.Extend.GetProxy(target, false);
-            }
+      public DependencyObject Target {
+          get {
+              return (DependencyObject)Noesis.Extend.GetProxy(target, false);
+          }
+      }
+  }
+
+  [MonoPInvokeCallback(typeof(RaiseCompletedCallback))]
+  private static void RaiseCompleted(IntPtr cPtr, IntPtr sender, IntPtr e) {
+    try {
+      if (Noesis.Extend.Initialized) {
+        if (sender == IntPtr.Zero && e == IntPtr.Zero) {
+          _Completed.Remove(cPtr);
+          return;
         }
-    }
-
-    [MonoPInvokeCallback(typeof(RaiseCompletedCallback))]
-    private static void RaiseCompleted(IntPtr cPtr, IntPtr sender, IntPtr e) {
-        try {
-            if (Noesis.Extend.Initialized) {
-                if (!_Completed.ContainsKey(cPtr)) {
-                    throw new InvalidOperationException("Delegate not registered for Completed event");
-                }
-                if (sender == IntPtr.Zero && e == IntPtr.Zero) {
-                    _Completed.Remove(cPtr);
-                    return;
-                }
-                CompletedHandler handler = _Completed[cPtr];
-                if (handler == null)
-                {
-                    return;
-                }
-
-                var args = Marshal.PtrToStructure<TimelineEventArgs>(e);
+        CompletedHandler handler = null;
+        if (!_Completed.TryGetValue(cPtr, out handler)) {
+          throw new InvalidOperationException("Delegate not registered for Completed event");
+        }
+        
+        if (handler == null) 
+        {
+            return;
+        }
+        
+        var args = Marshal.PtrToStructure<TimelineEventArgs>(e);
 	      
-                foreach (var @delegate in handler.GetInvocationList())
+        foreach (var @delegate in handler.GetInvocationList())
+        {
+            var storyboardTarget = (FrameworkElement)args.Target;
+            if (storyboardTarget.Tag is FrameworkElement)
+            {
+                // special hack found!
+                @delegate.DynamicInvoke(Noesis.Extend.GetProxy(sender, false), new System.EventArgs());
+                return;
+            }
+
+            var delegateTarget = @delegate.Target;
+
+            while (storyboardTarget != null)
+            {
+                if (ReferenceEquals(storyboardTarget, delegateTarget))
                 {
-                    var storyboardTarget = args.Target as FrameworkElement;
-                    if (storyboardTarget.Tag is FrameworkElement)
-                    {
-                        // special hack found!
-                        @delegate.DynamicInvoke(Noesis.Extend.GetProxy(sender, false), new System.EventArgs());
-                        return;
-                    }
-
-                    var delegateTarget = @delegate.Target;
-
-                    while (storyboardTarget != null)
-                    {
-                        if (ReferenceEquals(storyboardTarget, delegateTarget))
-                        {
-                            @delegate.DynamicInvoke(Noesis.Extend.GetProxy(sender, false), new System.EventArgs());
-                            break;
-                        }
-                        storyboardTarget = VisualTreeHelper.GetParent(storyboardTarget) as FrameworkElement;
-                    }
+                    @delegate.DynamicInvoke(Noesis.Extend.GetProxy(sender, false), new System.EventArgs());
+                    break;
                 }
+                storyboardTarget = VisualTreeHelper.GetParent(storyboardTarget) as FrameworkElement;
             }
         }
-        catch (Exception exception) {
-            Noesis.Error.UnhandledException(exception);
-        }
+      }
     }
+    catch (Exception exception) {
+      Noesis.Error.UnhandledException(exception);
+    }
+  }
 
   internal static Dictionary<IntPtr, CompletedHandler> _Completed =
       new Dictionary<IntPtr, CompletedHandler>();
@@ -210,7 +211,7 @@ public class Timeline : Animatable {
       NoesisGUI_PINVOKE.Timeline_AccelerationRatio_set(swigCPtr, (float)value);
     } 
     get {
-      float ret = NoesisGUI_PINVOKE.Timeline_AccelerationRatio_get(swigCPtr);
+      double ret = NoesisGUI_PINVOKE.Timeline_AccelerationRatio_get(swigCPtr);
       return ret;
     } 
   }
@@ -248,7 +249,7 @@ public class Timeline : Animatable {
       NoesisGUI_PINVOKE.Timeline_DecelerationRatio_set(swigCPtr, (float)value);
     } 
     get {
-      float ret = NoesisGUI_PINVOKE.Timeline_DecelerationRatio_get(swigCPtr);
+      double ret = NoesisGUI_PINVOKE.Timeline_DecelerationRatio_get(swigCPtr);
       return ret;
     } 
   }
@@ -313,7 +314,7 @@ public class Timeline : Animatable {
       NoesisGUI_PINVOKE.Timeline_SpeedRatio_set(swigCPtr, (float)value);
     } 
     get {
-      float ret = NoesisGUI_PINVOKE.Timeline_SpeedRatio_get(swigCPtr);
+      double ret = NoesisGUI_PINVOKE.Timeline_SpeedRatio_get(swigCPtr);
       return ret;
     } 
   }
