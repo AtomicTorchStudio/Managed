@@ -261,8 +261,8 @@ namespace NoesisApp
                     delta.Y = 0.0f;
                 }
 
-                delta.X *= _scale.ScaleX;
-                delta.Y *= _scale.ScaleY;
+                delta.X *= (float)_scale.ScaleX;
+                delta.Y *= (float)_scale.ScaleY;
 
                 _translate.X += delta.X;
                 _translate.Y += delta.Y;
@@ -289,21 +289,21 @@ namespace NoesisApp
             {
                 float sensitivity = WheelSensitivity;
                 float factor = 1.0f + sensitivity;
-                float prevScale = _scale.ScaleX;
+                float prevScale = (float)_scale.ScaleX;
                 float scale = prevScale * (e.Delta > 0 ? factor : 1.0f / factor);
 
                 FrameworkElement target = AssociatedObject;
                 Size renderSize = target.RenderSize;
-                Point center = new Point(renderSize.Width* 0.5f, renderSize.Height * 0.5f);
-                Point point = e.GetPosition(target);
-                Point pointScaled = center + (point - center) * scale;
+                Vector center = new Vector(renderSize.Width* 0.5f, renderSize.Height * 0.5f);
+                Vector point = (Vector)e.GetPosition(target);
+                Vector pointScaled = center + (point - center) * scale;
 
                 _scale.ScaleX = 1.0f;
                 _scale.ScaleY = 1.0f;
                 _translate.X = 0.0f;
                 _translate.Y = 0.0f;
 
-                point = e.GetPosition(target);
+                point = (Vector)e.GetPosition(target);
                 Vector offset = point - pointScaled;
 
                 _scale.ScaleX = scale;
