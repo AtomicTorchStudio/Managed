@@ -17,7 +17,6 @@ namespace Noesis
 
 [StructLayoutAttribute(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
 public struct Point {
-  public static readonly Point Zero = new Point(0, 0);
 
   [MarshalAs(UnmanagedType.R4)]
   private float _x;
@@ -45,10 +44,10 @@ public struct Point {
     _x = x;
     _y = y;
   }
-  
+
   public Point(double x, double y) {
-    _x = (float)x;
-    _y = (float)y;
+      _x = (float)x;
+      _y = (float)y;
   }
 
   public float X {
@@ -64,15 +63,6 @@ public struct Point {
   public void Offset(float offsetX, float offsetY) {
     _x += offsetX;
     _y += offsetY;
-  }
-
-  public void Offset(double offsetX, double offsetY) {
-     Offset((float)offsetX, (float)offsetY);
-  }
-
-  public static Point operator +(Point point1, Point point2)
-  {
-      return new Point(point1.X + point2.X, point1.Y + point2.Y);
   }
 
   public static Point operator+(Point point, Vector vector) {
@@ -91,12 +81,12 @@ public struct Point {
     return new Point(point._x - vector.X, point._y - vector.Y);
   }
 
-  public static Point operator-(Point point1, Point point2) {
-    return new Point(point1._x - point2._x, point1._y - point2._y);
+  public static Vector operator-(Point point1, Point point2) {
+    return new Vector(point1._x - point2._x, point1._y - point2._y);
   }
 
-  public static Point Subtract(Point point1, Point point2) {
-    return new Point(point1._x - point2._x, point1._y - point2._y);
+  public static Vector Subtract(Point point1, Point point2) {
+    return new Vector(point1._x - point2._x, point1._y - point2._y);
   }
 
   public static Point operator*(Point point, Matrix matrix) {
@@ -155,6 +145,7 @@ public struct Point {
     bool ret = NoesisGUI_PINVOKE.Point_TryParse(str != null ? str : string.Empty, out result);
     return ret;
   }
+
 }
 
 }
