@@ -9,7 +9,7 @@ This fork still requires acquiring of the NoesisGUI user license and doesn't vio
 NoesisGUI Managed SDK
 =====================
 
-This repository contains source code for [NuGet packages](https://www.nuget.org/profiles/NoesisTechnologies) corresponding to the C# SDK of [NoesisGUI](https://www.noesisengine.com).
+This repository contains source code for [NuGet packages](https://www.nuget.org/profiles/NoesisTechnologies) corresponding to the [C# SDK](https://www.noesisengine.com/developers/downloads.php) of [NoesisGUI](https://www.noesisengine.com).
 
 Organization
 ------------

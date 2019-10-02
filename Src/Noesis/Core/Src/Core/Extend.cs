@@ -63,19 +63,27 @@ namespace Noesis
 
                     Noesis.GUI.SetApplicationResources(null);
 
-                    var pendingReleases = new List<KeyValuePair<IntPtr, WeakReference>>();
+                    var pendingReleases = new List<KeyValuePair<long, WeakReference>>();
 
                     pendingReleases.AddRange(_proxies);
 
                     foreach (var kv in _extends)
                     {
-                        pendingReleases.Add(new KeyValuePair<IntPtr, WeakReference>(
-                            new IntPtr(kv.Key), kv.Value.weak));
+                        pendingReleases.Add(new KeyValuePair<long, WeakReference>(kv.Key, kv.Value.weak));
 
                         if (kv.Value.instance != null && !(kv.Value.instance is BaseComponent))
                         {
+                            WeakInfo info = new WeakInfo
+                            {
+                                hash = RuntimeHelpers.GetHashCode(kv.Value.instance),
+                                weak = kv.Value.weak
+                            };
+                            _weakExtends.Add(kv.Key, info);
+
+                            _weakExtendsHash.Remove(info.hash);
+                            _weakExtendsHash.Add(info.hash, kv.Key);
+
                             _extendPtrs.Remove(kv.Value.instance);
-                            _weakExtends.Add(kv.Key, kv.Value.weak);
                         }
 
                         kv.Value.instance = null;
@@ -91,7 +99,7 @@ namespace Noesis
                         object instance = kv.Value.Target;
                         if (instance != null)
                         {
-                            BaseComponent.ForceRelease(instance, kv.Key);
+                            BaseComponent.ForceRelease(instance, new IntPtr(kv.Key));
                         }
                     }
 
@@ -1122,7 +1130,7 @@ namespace Noesis
             var props = type.GetProperties(BindingFlags.Public | BindingFlags.Instance);
 #endif
 
-            foreach(var p in props)
+            foreach (var p in props)
             {
                 ParameterInfo[] indexParams = p.GetIndexParameters();
                 if (indexParams.Length == 1 && indexParams[0].ParameterType.Equals(paramType))
@@ -4018,7 +4026,7 @@ namespace Noesis
                 if (!_extends.TryGetValue(cPtr.ToInt64(), out extend))
                 {
                     Log.Error("Extend already removed");
-                    return null; 
+                    return null;
                 }
                 else if (extend == null || extend.weak.Target == null)
                 {
@@ -4094,7 +4102,20 @@ namespace Noesis
             {
                 lock (_weakExtends)
                 {
-                    _weakExtends.Add(cPtr.ToInt64(), weak);
+                    long ptr = cPtr.ToInt64();
+
+                    WeakInfo info = new WeakInfo
+                    {
+                        hash = RuntimeHelpers.GetHashCode(instance),
+                        weak = weak
+                    };
+
+                    _weakExtends.Add(ptr, info);
+
+                    // New instance can have the same hash as an already destroyed old one that is
+                    // still referenced in _weakExtends, so we get rid of that old one first
+                    _weakExtendsHash.Remove(info.hash);
+                    _weakExtendsHash.Add(info.hash, ptr);
                 }
             }
         }
@@ -4103,7 +4124,23 @@ namespace Noesis
         {
             lock (_weakExtends)
             {
-                _weakExtends.Remove(cPtr.ToInt64());
+                long ptr = cPtr.ToInt64();
+
+                // Only remove hashed reference if it wasn't already swapped with a new instance
+                WeakInfo info;
+                if (_weakExtends.TryGetValue(ptr, out info))
+                {
+                    long hashedPtr;
+                    if (_weakExtendsHash.TryGetValue(info.hash, out hashedPtr))
+                    {
+                        if (hashedPtr == ptr)
+                        {
+                            _weakExtendsHash.Remove(info.hash);
+                        }
+                    }
+                }
+
+                _weakExtends.Remove(ptr);
             }
         }
 
@@ -4117,7 +4154,7 @@ namespace Noesis
                 {
                     while (enumerator.MoveNext())
                     {
-                        if (enumerator.Current.Value.Target == null)
+                        if (enumerator.Current.Value.weak.Target == null)
                         {
                             IntPtr cPtr = new IntPtr(enumerator.Current.Key);
                             AddPendingRelease(cPtr);
@@ -4138,25 +4175,33 @@ namespace Noesis
             public WeakReference weak;
         }
 
+        private struct WeakInfo
+        {
+            public int hash;
+            public WeakReference weak;
+        }
+
         ////////////////////////////////////////////////////////////////////////////////////////////////
-        static Dictionary<long, ExtendInfo> _extends = new Dictionary<long, ExtendInfo>();
-        static Dictionary<object, IntPtr> _extendPtrs = new Dictionary<object, IntPtr>();
-        private static Dictionary<long, WeakReference> _weakExtends = new Dictionary<long, WeakReference>();
+        private static Dictionary<long, ExtendInfo> _extends = new Dictionary<long, ExtendInfo>();
+        private static Dictionary<object, IntPtr> _extendPtrs = new Dictionary<object, IntPtr>();
+        private static Dictionary<long, WeakInfo> _weakExtends = new Dictionary<long, WeakInfo>();
+        private static Dictionary<int, long> _weakExtendsHash = new Dictionary<int, long>();
 
         ////////////////////////////////////////////////////////////////////////////////////////////////
         private static BaseComponent GetProxyInstance(IntPtr cPtr, bool ownMemory, NativeTypeInfo info)
         {
+            long ptr = cPtr.ToInt64();
             lock (_proxies)
             {
                 WeakReference wr;
-                if (_proxies.TryGetValue(cPtr, out wr))
+                if (_proxies.TryGetValue(ptr, out wr))
                 {
                     if (wr != null)
                     {
                         BaseComponent component = (BaseComponent)wr.Target;
                         if (component == null)
                         {
-                            _proxies.Remove(cPtr);
+                            _proxies.Remove(ptr);
                         }
                         else
                         {
@@ -4173,13 +4218,14 @@ namespace Noesis
         public static BaseComponent AddProxy(BaseComponent instance)
         {
             IntPtr cPtr = BaseComponent.getCPtr(instance).Handle;
+            long ptr = cPtr.ToInt64();
             lock (_proxies)
             {
-                if (_proxies.ContainsKey(cPtr))
+                if (_proxies.ContainsKey(ptr))
                 {
-                    _proxies.Remove(cPtr);
+                    _proxies.Remove(ptr);
                 }
-                _proxies.Add(cPtr, new WeakReference(instance));
+                _proxies.Add(ptr, new WeakReference(instance));
             }
 
             return instance;
@@ -4188,10 +4234,11 @@ namespace Noesis
         ////////////////////////////////////////////////////////////////////////////////////////////////
         public static void RemoveProxy(IntPtr cPtr)
         {
+            long ptr = cPtr.ToInt64();
             lock (_proxies)
             {
                 WeakReference wr;
-                if (_proxies.TryGetValue(cPtr, out wr))
+                if (_proxies.TryGetValue(ptr, out wr))
                 {
                     // A  new proxy may be created for the same cPtr while the previous proxy is
                     // pending for GC. When its Finalizer is called, we have to make sure that a new
@@ -4200,7 +4247,7 @@ namespace Noesis
                     {
                         if (wr.Target == null)
                         {
-                            _proxies.Remove(cPtr);
+                            _proxies.Remove(ptr);
                         }
                     }
                 }
@@ -4208,7 +4255,7 @@ namespace Noesis
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////
-        static Dictionary<IntPtr, WeakReference> _proxies = new Dictionary<IntPtr, WeakReference>();
+        static Dictionary<long, WeakReference> _proxies = new Dictionary<long, WeakReference>();
 
         ////////////////////////////////////////////////////////////////////////////////////////////////
         public static HandleRef GetInstanceHandle(object instance)
@@ -4267,21 +4314,17 @@ namespace Noesis
 
             lock (_weakExtends)
             {
-                var enumerator = _weakExtends.GetEnumerator();
-                try
+                long ptr;
+                if (_weakExtendsHash.TryGetValue(RuntimeHelpers.GetHashCode(instance), out ptr))
                 {
-                    while (enumerator.MoveNext())
+                    WeakInfo info;
+                    if (_weakExtends.TryGetValue(ptr, out info))
                     {
-                        if (enumerator.Current.Value.Target == instance)
+                        if (info.weak.Target == instance)
                         {
-                            cPtr = new IntPtr(enumerator.Current.Key);
-                            break;
+                            cPtr = new IntPtr(ptr);
                         }
                     }
-                }
-                finally
-                {
-                    enumerator.Dispose();
                 }
             }
 
