@@ -73,11 +73,9 @@ namespace Noesis
 
                         if (kv.Value.instance != null && !(kv.Value.instance is BaseComponent))
                         {
-                            WeakInfo info = new WeakInfo
-                            {
-                                hash = RuntimeHelpers.GetHashCode(kv.Value.instance),
-                                weak = kv.Value.weak
-                            };
+                            WeakInfo info = new WeakInfo(RuntimeHelpers.GetHashCode(kv.Value.instance),
+                                                         kv.Value.weak);
+
                             _weakExtends.Add(kv.Key, info);
 
                             _weakExtendsHash.Remove(info.hash);
@@ -4104,11 +4102,8 @@ namespace Noesis
                 {
                     long ptr = cPtr.ToInt64();
 
-                    WeakInfo info = new WeakInfo
-                    {
-                        hash = RuntimeHelpers.GetHashCode(instance),
-                        weak = weak
-                    };
+                    WeakInfo info = new WeakInfo(RuntimeHelpers.GetHashCode(instance),
+                                                 weak);
 
                     _weakExtends.Add(ptr, info);
 
@@ -4175,10 +4170,16 @@ namespace Noesis
             public WeakReference weak;
         }
 
-        private struct WeakInfo
+        private readonly struct WeakInfo
         {
-            public int hash;
-            public WeakReference weak;
+            public readonly int hash;
+            public readonly WeakReference weak;
+
+            public WeakInfo(int hash, WeakReference weak)
+            {
+                this.hash = hash;
+                this.weak = weak;
+            }
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////
