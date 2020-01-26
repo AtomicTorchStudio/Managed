@@ -6,7 +6,7 @@ namespace NoesisApp
     /// <summary>
     /// PreviewInvoke event args. Setting Cancelling to True will cancel invoking the trigger.
     /// </summary>
-    public class PreviewInvokeEventArgs : Noesis.EventArgs
+    public class PreviewInvokeEventArgs : Noesis.NoesisEventArgs
     {
         public bool Cancelling { get; set; }
     }

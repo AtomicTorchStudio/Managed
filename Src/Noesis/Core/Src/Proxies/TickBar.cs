@@ -147,22 +147,22 @@ public class TickBar : FrameworkElement {
     } 
   }
 
-  public float Maximum {
+  public double Maximum {
     set {
-      NoesisGUI_PINVOKE.TickBar_Maximum_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.TickBar_Maximum_set(swigCPtr, (float)value);
     } 
     get {
-      float ret = NoesisGUI_PINVOKE.TickBar_Maximum_get(swigCPtr);
+      double ret = NoesisGUI_PINVOKE.TickBar_Maximum_get(swigCPtr);
       return ret;
     } 
   }
 
-  public float Minimum {
+  public double Minimum {
     set {
-      NoesisGUI_PINVOKE.TickBar_Minimum_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.TickBar_Minimum_set(swigCPtr, (float)value);
     } 
     get {
-      float ret = NoesisGUI_PINVOKE.TickBar_Minimum_get(swigCPtr);
+      double ret = NoesisGUI_PINVOKE.TickBar_Minimum_get(swigCPtr);
       return ret;
     } 
   }
@@ -177,42 +177,42 @@ public class TickBar : FrameworkElement {
     } 
   }
 
-  public float ReservedSpace {
+  public double ReservedSpace {
     set {
-      NoesisGUI_PINVOKE.TickBar_ReservedSpace_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.TickBar_ReservedSpace_set(swigCPtr, (float)value);
     } 
     get {
-      float ret = NoesisGUI_PINVOKE.TickBar_ReservedSpace_get(swigCPtr);
+      double ret = NoesisGUI_PINVOKE.TickBar_ReservedSpace_get(swigCPtr);
       return ret;
     } 
   }
 
-  public float SelectionEnd {
+  public double SelectionEnd {
     set {
-      NoesisGUI_PINVOKE.TickBar_SelectionEnd_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.TickBar_SelectionEnd_set(swigCPtr, (float)value);
     } 
     get {
-      float ret = NoesisGUI_PINVOKE.TickBar_SelectionEnd_get(swigCPtr);
+      double ret = NoesisGUI_PINVOKE.TickBar_SelectionEnd_get(swigCPtr);
       return ret;
     } 
   }
 
-  public float SelectionStart {
+  public double SelectionStart {
     set {
-      NoesisGUI_PINVOKE.TickBar_SelectionStart_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.TickBar_SelectionStart_set(swigCPtr, (float)value);
     } 
     get {
-      float ret = NoesisGUI_PINVOKE.TickBar_SelectionStart_get(swigCPtr);
+      double ret = NoesisGUI_PINVOKE.TickBar_SelectionStart_get(swigCPtr);
       return ret;
     } 
   }
 
-  public float TickFrequency {
+  public double TickFrequency {
     set {
-      NoesisGUI_PINVOKE.TickBar_TickFrequency_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.TickBar_TickFrequency_set(swigCPtr, (float)value);
     } 
     get {
-      float ret = NoesisGUI_PINVOKE.TickBar_TickFrequency_get(swigCPtr);
+      double ret = NoesisGUI_PINVOKE.TickBar_TickFrequency_get(swigCPtr);
       return ret;
     } 
   }

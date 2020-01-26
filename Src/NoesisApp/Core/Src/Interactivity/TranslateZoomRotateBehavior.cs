@@ -172,7 +172,7 @@ namespace NoesisApp
             ManipulationDelta delta = e.DeltaManipulation;
 
             // Update Scale transform
-            float scale = delta.Scale * _scale.ScaleX;
+            var scale = delta.Scale * _scale.ScaleX;
             scale = Math.Max(Math.Max(0.00001f, MinimumScale), Math.Min(scale, MaximumScale));
             _scale.ScaleX = scale;
             _scale.ScaleY = scale;
@@ -205,10 +205,10 @@ namespace NoesisApp
             e.Handled = true;
         }
 
-        private float Deceleration(float friction, float velocity)
+        private double Deceleration(double friction, double velocity)
         {
-            float k = friction == 1.0f ? 1.0f : (float)Math.Log(1 - friction) * 2.0f / 300.0f;
-            return Math.Max(0.0f, velocity * k);
+            var k = friction == 1.0 ? 1.0 : Math.Log(1 - friction) * 2.0 / 300.0;
+            return Math.Max(0.0, velocity * k);
         }
 
         private void OnManipulationInertia(object sender, ManipulationInertiaStartingEventArgs e)
@@ -249,7 +249,7 @@ namespace NoesisApp
                 _settingPosition = true;
 
                 FrameworkElement associatedObject = AssociatedObject;
-                Vector delta = e.GetPosition(associatedObject) - _relativePosition;
+                var delta = e.GetPosition(associatedObject) - _relativePosition;
 
                 ManipulationModes supportedGestures = SupportedGestures;
                 if ((supportedGestures & ManipulationModes.TranslateX) == 0)
@@ -261,8 +261,8 @@ namespace NoesisApp
                     delta.Y = 0.0f;
                 }
 
-                delta.X *= _scale.ScaleX;
-                delta.Y *= _scale.ScaleY;
+                delta.X *= (float)_scale.ScaleX;
+                delta.Y *= (float)_scale.ScaleY;
 
                 _translate.X += delta.X;
                 _translate.Y += delta.Y;
@@ -289,21 +289,21 @@ namespace NoesisApp
             {
                 float sensitivity = WheelSensitivity;
                 float factor = 1.0f + sensitivity;
-                float prevScale = _scale.ScaleX;
+                float prevScale = (float)_scale.ScaleX;
                 float scale = prevScale * (e.Delta > 0 ? factor : 1.0f / factor);
 
                 FrameworkElement target = AssociatedObject;
                 Size renderSize = target.RenderSize;
-                Point center = new Point(renderSize.Width* 0.5f, renderSize.Height * 0.5f);
-                Point point = e.GetPosition(target);
-                Point pointScaled = center + (point - center) * scale;
+                Vector center = new Vector(renderSize.Width* 0.5f, renderSize.Height * 0.5f);
+                Vector point = (Vector)e.GetPosition(target);
+                Vector pointScaled = center + (point - center) * scale;
 
                 _scale.ScaleX = 1.0f;
                 _scale.ScaleY = 1.0f;
                 _translate.X = 0.0f;
                 _translate.Y = 0.0f;
 
-                point = e.GetPosition(target);
+                point = (Vector)e.GetPosition(target);
                 Vector offset = point - pointScaled;
 
                 _scale.ScaleX = scale;

@@ -41,7 +41,7 @@ namespace System.Collections.Specialized
     /// whenever an item is added or removed, or when the contents of the collection
     /// changes dramatically.
     /// </summary>
-    public class NotifyCollectionChangedEventArgs : EventArgs
+    public class NotifyCollectionChangedEventArgs : NoesisEventArgs
     {
         //------------------------------------------------------
         //

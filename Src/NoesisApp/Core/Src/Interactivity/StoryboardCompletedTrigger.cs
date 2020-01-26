@@ -44,7 +44,7 @@ namespace NoesisApp
             }
         }
 
-        private void OnStoryboardCompleted(object sender, Noesis.EventArgs e)
+        private void OnStoryboardCompleted(object sender, EventArgs e)
         {
             InvokeActions(e);
         }
