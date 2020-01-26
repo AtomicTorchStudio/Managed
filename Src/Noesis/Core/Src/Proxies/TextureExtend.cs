@@ -45,7 +45,6 @@ namespace Noesis
         }
 
         #region Imports
-
         #if !UNITY_5_3_OR_NEWER
         static Texture()
         {

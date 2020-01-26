@@ -171,11 +171,6 @@ public class Pen : Animatable {
     } 
   }
 
-  new internal static IntPtr GetStaticType() {
-    IntPtr ret = NoesisGUI_PINVOKE.Pen_GetStaticType();
-    return ret;
-  }
-
 }
 
 }

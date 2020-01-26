@@ -110,11 +110,6 @@ public class SizeAnimation : BaseAnimation {
 
   }
 
-  new internal static IntPtr GetStaticType() {
-    IntPtr ret = NoesisGUI_PINVOKE.SizeAnimation_GetStaticType();
-    return ret;
-  }
-
 }
 
 }

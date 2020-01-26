@@ -52,11 +52,6 @@ public class EasingSizeKeyFrame : SizeKeyFrame {
     }
   }
 
-  new internal static IntPtr GetStaticType() {
-    IntPtr ret = NoesisGUI_PINVOKE.EasingSizeKeyFrame_GetStaticType();
-    return ret;
-  }
-
 }
 
 }

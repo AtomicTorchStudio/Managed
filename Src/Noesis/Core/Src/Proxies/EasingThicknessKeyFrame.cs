@@ -52,11 +52,6 @@ public class EasingThicknessKeyFrame : ThicknessKeyFrame {
     }
   }
 
-  new internal static IntPtr GetStaticType() {
-    IntPtr ret = NoesisGUI_PINVOKE.EasingThicknessKeyFrame_GetStaticType();
-    return ret;
-  }
-
 }
 
 }

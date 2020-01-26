@@ -78,11 +78,6 @@ public class ColorKeyFrame : Freezable {
 
   }
 
-  new internal static IntPtr GetStaticType() {
-    IntPtr ret = NoesisGUI_PINVOKE.ColorKeyFrame_GetStaticType();
-    return ret;
-  }
-
 }
 
 }

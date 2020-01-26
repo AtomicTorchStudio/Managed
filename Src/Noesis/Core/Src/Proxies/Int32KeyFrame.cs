@@ -71,11 +71,6 @@ public class Int32KeyFrame : Freezable {
     } 
   }
 
-  new internal static IntPtr GetStaticType() {
-    IntPtr ret = NoesisGUI_PINVOKE.Int32KeyFrame_GetStaticType();
-    return ret;
-  }
-
 }
 
 }

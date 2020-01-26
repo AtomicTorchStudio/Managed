@@ -110,11 +110,6 @@ public class ThicknessAnimation : BaseAnimation {
 
   }
 
-  new internal static IntPtr GetStaticType() {
-    IntPtr ret = NoesisGUI_PINVOKE.ThicknessAnimation_GetStaticType();
-    return ret;
-  }
-
 }
 
 }

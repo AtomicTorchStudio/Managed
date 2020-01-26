@@ -52,11 +52,6 @@ public class SplinePointKeyFrame : PointKeyFrame {
     }
   }
 
-  new internal static IntPtr GetStaticType() {
-    IntPtr ret = NoesisGUI_PINVOKE.SplinePointKeyFrame_GetStaticType();
-    return ret;
-  }
-
 }
 
 }

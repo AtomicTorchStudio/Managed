@@ -287,11 +287,6 @@ public class ItemContainerGenerator : BaseComponent, Noesis.IRecyclingItemContai
     NoesisGUI_PINVOKE.ItemContainerGenerator_RecycleHelper(swigCPtr, ref position, count);
   }
 
-  new internal static IntPtr GetStaticType() {
-    IntPtr ret = NoesisGUI_PINVOKE.ItemContainerGenerator_GetStaticType();
-    return ret;
-  }
-
 }
 
 }

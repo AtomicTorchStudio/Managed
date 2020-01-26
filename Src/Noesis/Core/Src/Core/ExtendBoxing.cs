@@ -21,6 +21,7 @@ namespace Noesis
         {
             Dictionary<Type, BoxDelegate> boxFunctions = new Dictionary<Type, BoxDelegate>(100);
 
+            boxFunctions[typeof(Type)] = (val) => NoesisGUI_.Box_Type((Type)val);
             boxFunctions[typeof(string)] = (val) => NoesisGUI_.Box_String((string)val);
             boxFunctions[typeof(bool)] = (val) => NoesisGUI_.Box_Bool((bool)val);
             boxFunctions[typeof(float)] = (val) => NoesisGUI_.Box_Float((float)val);
@@ -99,6 +100,7 @@ namespace Noesis
             boxFunctions[typeof(Noesis.ScrollUnit)] = (val) => NoesisGUI_.Box_ScrollUnit((Noesis.ScrollUnit)val);
             boxFunctions[typeof(Noesis.VirtualizationMode)] = (val) => NoesisGUI_.Box_VirtualizationMode((Noesis.VirtualizationMode)val);
             boxFunctions[typeof(Noesis.VirtualizationCacheLengthUnit)] = (val) => NoesisGUI_.Box_VirtualizationCacheLengthUnit((Noesis.VirtualizationCacheLengthUnit)val);
+            boxFunctions[typeof(Noesis.PPAAMode)] = (val) => NoesisGUI_.Box_PPAAMode((Noesis.PPAAMode)val);
 
             return boxFunctions;
         }
@@ -115,13 +117,6 @@ namespace Noesis
             {
                 _boxFunctions.TryGetValue(typeof(int), out boxFunction);
                 return RegisterPendingRelease(boxFunction((int)Convert.ToInt64(val)));
-            }
-            else if (val is Type)
-            {
-                ResourceKeyType resourceKey = GetResourceKeyType((Type)val);
-                HandleRef handle = BaseComponent.getCPtr(resourceKey);
-                BaseComponent.AddReference(handle.Handle);
-                return RegisterPendingRelease(handle.Handle);
             }
             else
             {
@@ -144,6 +139,7 @@ namespace Noesis
         {
             Dictionary<Type, UnboxDelegate> unboxFunctions = new Dictionary<Type, UnboxDelegate>(100);
 
+            unboxFunctions[typeof(Boxed<Type>)] = (cPtr) => NoesisGUI_.Unbox_Type(cPtr);
             unboxFunctions[typeof(Boxed<string>)] = (cPtr) => NoesisGUI_.Unbox_String(cPtr);
             unboxFunctions[typeof(Boxed<bool>)] = (cPtr) => NoesisGUI_.Unbox_Bool(cPtr);
             unboxFunctions[typeof(Boxed<float>)] = (cPtr) => NoesisGUI_.Unbox_Float(cPtr);
@@ -218,6 +214,7 @@ namespace Noesis
             unboxFunctions[typeof(Boxed<Noesis.ScrollUnit>)] = (cPtr) => NoesisGUI_.Unbox_ScrollUnit(cPtr);
             unboxFunctions[typeof(Boxed<Noesis.VirtualizationMode>)] = (cPtr) => NoesisGUI_.Unbox_VirtualizationMode(cPtr);
             unboxFunctions[typeof(Boxed<Noesis.VirtualizationCacheLengthUnit>)] = (cPtr) => NoesisGUI_.Unbox_VirtualizationCacheLengthUnit(cPtr);
+            unboxFunctions[typeof(Boxed<Noesis.PPAAMode>)] = (cPtr) => NoesisGUI_.Unbox_PPAAMode(cPtr);
 
             return unboxFunctions;
         }

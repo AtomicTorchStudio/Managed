@@ -52,11 +52,6 @@ public class SplineThicknessKeyFrame : ThicknessKeyFrame {
     }
   }
 
-  new internal static IntPtr GetStaticType() {
-    IntPtr ret = NoesisGUI_PINVOKE.SplineThicknessKeyFrame_GetStaticType();
-    return ret;
-  }
-
 }
 
 }

@@ -78,11 +78,6 @@ public class ThicknessKeyFrame : Freezable {
 
   }
 
-  new internal static IntPtr GetStaticType() {
-    IntPtr ret = NoesisGUI_PINVOKE.ThicknessKeyFrame_GetStaticType();
-    return ret;
-  }
-
 }
 
 }

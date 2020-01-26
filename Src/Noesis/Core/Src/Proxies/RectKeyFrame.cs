@@ -78,11 +78,6 @@ public class RectKeyFrame : Freezable {
 
   }
 
-  new internal static IntPtr GetStaticType() {
-    IntPtr ret = NoesisGUI_PINVOKE.RectKeyFrame_GetStaticType();
-    return ret;
-  }
-
 }
 
 }

@@ -52,11 +52,6 @@ public class SplineInt16KeyFrame : Int16KeyFrame {
     }
   }
 
-  new internal static IntPtr GetStaticType() {
-    IntPtr ret = NoesisGUI_PINVOKE.SplineInt16KeyFrame_GetStaticType();
-    return ret;
-  }
-
 }
 
 }

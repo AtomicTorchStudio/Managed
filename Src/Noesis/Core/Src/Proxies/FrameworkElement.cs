@@ -499,7 +499,7 @@ public partial class FrameworkElement : UIElement {
 
   public Type DefaultStyleKey {
     set {
-      NoesisGUI_PINVOKE.FrameworkElement_DefaultStyleKey_set(swigCPtr, new HandleRef(value, (value != null ? Noesis.Extend.GetNativeType(value) : IntPtr.Zero)));
+      NoesisGUI_PINVOKE.FrameworkElement_DefaultStyleKey_set(swigCPtr, value != null ? Noesis.Extend.GetNativeType(value) : IntPtr.Zero);
     }
     get {
       IntPtr cPtr = NoesisGUI_PINVOKE.FrameworkElement_DefaultStyleKey_get(swigCPtr);
@@ -767,11 +767,6 @@ public partial class FrameworkElement : UIElement {
   public static FrameworkElement FindTreeElement(object instance) {
     IntPtr cPtr = NoesisGUI_PINVOKE.FrameworkElement_FindTreeElement(Noesis.Extend.GetInstanceHandle(instance));
     return (FrameworkElement)Noesis.Extend.GetProxy(cPtr, false);
-  }
-
-  new internal static IntPtr GetStaticType() {
-    IntPtr ret = NoesisGUI_PINVOKE.FrameworkElement_GetStaticType();
-    return ret;
   }
 
   internal new static IntPtr Extend(string typeName) {

@@ -15,7 +15,7 @@ using System.Runtime.InteropServices;
 namespace Noesis
 {
 
-public class GridViewColumnCollection : UICollection<GridViewColumn> {
+public class GridViewColumnCollection : FreezableCollection<GridViewColumn> {
   internal new static GridViewColumnCollection CreateProxy(IntPtr cPtr, bool cMemoryOwn) {
     return new GridViewColumnCollection(cPtr, cMemoryOwn);
   }
@@ -25,11 +25,6 @@ public class GridViewColumnCollection : UICollection<GridViewColumn> {
 
   internal static HandleRef getCPtr(GridViewColumnCollection obj) {
     return (obj == null) ? new HandleRef(null, IntPtr.Zero) : obj.swigCPtr;
-  }
-
-  new internal static IntPtr GetStaticType() {
-    IntPtr ret = NoesisGUI_PINVOKE.GridViewColumnCollection_GetStaticType();
-    return ret;
   }
 
   public GridViewColumnCollection() {

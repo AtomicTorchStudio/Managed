@@ -52,11 +52,6 @@ public class SplineColorKeyFrame : ColorKeyFrame {
     }
   }
 
-  new internal static IntPtr GetStaticType() {
-    IntPtr ret = NoesisGUI_PINVOKE.SplineColorKeyFrame_GetStaticType();
-    return ret;
-  }
-
 }
 
 }

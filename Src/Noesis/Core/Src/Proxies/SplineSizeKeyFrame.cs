@@ -52,11 +52,6 @@ public class SplineSizeKeyFrame : SizeKeyFrame {
     }
   }
 
-  new internal static IntPtr GetStaticType() {
-    IntPtr ret = NoesisGUI_PINVOKE.SplineSizeKeyFrame_GetStaticType();
-    return ret;
-  }
-
 }
 
 }

@@ -104,11 +104,6 @@ public class ContentPresenter : FrameworkElement {
     }
   }
 
-  new internal static IntPtr GetStaticType() {
-    IntPtr ret = NoesisGUI_PINVOKE.ContentPresenter_GetStaticType();
-    return ret;
-  }
-
 }
 
 }

@@ -105,11 +105,6 @@ public class HeaderedContentControl : ContentControl {
     }
   }
 
-  new internal static IntPtr GetStaticType() {
-    IntPtr ret = NoesisGUI_PINVOKE.HeaderedContentControl_GetStaticType();
-    return ret;
-  }
-
   internal new static IntPtr Extend(string typeName) {
     return NoesisGUI_PINVOKE.Extend_HeaderedContentControl(Marshal.StringToHGlobalAnsi(typeName));
   }

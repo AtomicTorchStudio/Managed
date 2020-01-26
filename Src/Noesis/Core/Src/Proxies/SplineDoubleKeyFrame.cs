@@ -52,11 +52,6 @@ public class SplineDoubleKeyFrame : DoubleKeyFrame {
     }
   }
 
-  new internal static IntPtr GetStaticType() {
-    IntPtr ret = NoesisGUI_PINVOKE.SplineDoubleKeyFrame_GetStaticType();
-    return ret;
-  }
-
 }
 
 }

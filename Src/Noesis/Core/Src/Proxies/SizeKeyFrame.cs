@@ -78,11 +78,6 @@ public class SizeKeyFrame : Freezable {
 
   }
 
-  new internal static IntPtr GetStaticType() {
-    IntPtr ret = NoesisGUI_PINVOKE.SizeKeyFrame_GetStaticType();
-    return ret;
-  }
-
 }
 
 }

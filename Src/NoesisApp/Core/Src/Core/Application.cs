@@ -25,6 +25,8 @@ namespace NoesisApp
     {
         public static Application Current { get; private set; }
 
+        public Dispatcher Dispatcher { get; private set; }
+
         public string Uri { get; set; }
 
         public string StartupUri { get; set; }
@@ -47,6 +49,7 @@ namespace NoesisApp
             }
 
             Current = this;
+            Dispatcher = Dispatcher.CurrentDispatcher;
 
             _exitCode = 0;
 
@@ -150,6 +153,7 @@ namespace NoesisApp
             bool vsync = VSync;
             bool sRGB = StandardRGB;
             bool ppaa = PPAA;
+            bool lcd = LCD;
 
             RenderContext renderContext = CreateRenderContext();
             renderContext.Init(Display.NativeHandle, Display.NativeWindow, samples, vsync, sRGB);
@@ -160,7 +164,7 @@ namespace NoesisApp
                 renderContext.SetWindow(window);
             };
 
-            MainWindow.Init(Display, renderContext, samples, ppaa);
+            MainWindow.Init(Display, renderContext, samples, ppaa, lcd);
 
             StartupEventArgs e = new StartupEventArgs();
             OnStartup(e);
@@ -314,6 +318,11 @@ namespace NoesisApp
         protected virtual bool PPAA
         {
             get { return Samples == 1; }
+        }
+
+        protected virtual bool LCD
+        {
+            get { return false; }
         }
 
         protected virtual void OnStartup(StartupEventArgs e)

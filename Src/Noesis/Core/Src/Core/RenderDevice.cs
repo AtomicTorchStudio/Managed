@@ -71,15 +71,6 @@ namespace Noesis
             set { Noesis_RenderDevice_SetGlyphCacheHeight(CPtr, value); }
         }
 
-        /// <summary>
-        /// Glyphs with size above this are rendered using triangle meshes. Default is 96.
-        /// </summary>
-        public uint GlyphCacheMeshThreshold
-        {
-            get { return Noesis_RenderDevice_GetGlyphCacheMeshThreshold(CPtr); }
-            set { Noesis_RenderDevice_SetGlyphCacheMeshThreshold(CPtr, value); }
-        }
-
         #region Private members
         public RenderDevice(IntPtr cPtr, bool memoryOwn)
         {
@@ -134,12 +125,6 @@ namespace Noesis
 
         [DllImport(Library.Name)]
         static extern void Noesis_RenderDevice_SetGlyphCacheHeight(HandleRef device, uint w);
-
-        [DllImport(Library.Name)]
-        static extern uint Noesis_RenderDevice_GetGlyphCacheMeshThreshold(HandleRef device);
-
-        [DllImport(Library.Name)]
-        static extern void Noesis_RenderDevice_SetGlyphCacheMeshThreshold(HandleRef device, uint t);
         #endregion
     }
 

@@ -110,11 +110,6 @@ public class PointAnimation : BaseAnimation {
 
   }
 
-  new internal static IntPtr GetStaticType() {
-    IntPtr ret = NoesisGUI_PINVOKE.PointAnimation_GetStaticType();
-    return ret;
-  }
-
 }
 
 }

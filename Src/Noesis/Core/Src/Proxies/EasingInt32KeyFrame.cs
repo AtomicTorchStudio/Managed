@@ -52,11 +52,6 @@ public class EasingInt32KeyFrame : Int32KeyFrame {
     }
   }
 
-  new internal static IntPtr GetStaticType() {
-    IntPtr ret = NoesisGUI_PINVOKE.EasingInt32KeyFrame_GetStaticType();
-    return ret;
-  }
-
 }
 
 }

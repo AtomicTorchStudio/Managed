@@ -52,11 +52,6 @@ public class EasingColorKeyFrame : ColorKeyFrame {
     }
   }
 
-  new internal static IntPtr GetStaticType() {
-    IntPtr ret = NoesisGUI_PINVOKE.EasingColorKeyFrame_GetStaticType();
-    return ret;
-  }
-
 }
 
 }

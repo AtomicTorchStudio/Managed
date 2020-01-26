@@ -79,11 +79,6 @@ public partial class DependencyProperty : BaseComponent {
     } 
   }
 
-  new internal static IntPtr GetStaticType() {
-    IntPtr ret = NoesisGUI_PINVOKE.DependencyProperty_GetStaticType();
-    return ret;
-  }
-
   private IntPtr GetOwnerTypeHelper() {
     IntPtr ret = NoesisGUI_PINVOKE.DependencyProperty_GetOwnerTypeHelper(swigCPtr);
     return ret;

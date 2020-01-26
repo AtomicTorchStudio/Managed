@@ -218,11 +218,6 @@ public class Shape : FrameworkElement {
     } 
   }
 
-  new internal static IntPtr GetStaticType() {
-    IntPtr ret = NoesisGUI_PINVOKE.Shape_GetStaticType();
-    return ret;
-  }
-
   internal new static IntPtr Extend(string typeName) {
     return NoesisGUI_PINVOKE.Extend_Shape(Marshal.StringToHGlobalAnsi(typeName));
   }

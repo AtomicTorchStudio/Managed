@@ -7,6 +7,10 @@ namespace Noesis
     {
         ////////////////////////////////////////////////////////////////////////////////////////////////
         [DllImport(Library.Name)]
+        private static extern int Noesis_GetNativeTypes(IntPtr[] types, int capacity);
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////
+        [DllImport(Library.Name)]
         private static extern IntPtr Noesis_RegisterEnumType([MarshalAs(UnmanagedType.LPStr)]string typeName,
             int numEnums, IntPtr enumsData);
 
@@ -105,6 +109,7 @@ namespace Noesis
             Callback_GetPropertyValue_TimeSpan callback_GetPropertyValue_TimeSpan,
             Callback_GetPropertyValue_Duration callback_GetPropertyValue_Duration,
             Callback_GetPropertyValue_KeyTime callback_GetPropertyValue_KeyTime,
+            Callback_GetPropertyValue_Type callback_GetPropertyValue_Type,
             Callback_GetPropertyValue_BaseComponent callback_GetPropertyValue_BaseComponent,
             Callback_SetPropertyValue_Bool callback_SetPropertyValue_Bool,
             Callback_SetPropertyValue_Float callback_SetPropertyValue_Float,
@@ -124,6 +129,7 @@ namespace Noesis
             Callback_SetPropertyValue_TimeSpan callback_SetPropertyValue_TimeSpan,
             Callback_SetPropertyValue_Duration callback_SetPropertyValue_Duration,
             Callback_SetPropertyValue_KeyTime callback_SetPropertyValue_KeyTime,
+            Callback_SetPropertyValue_Type callback_SetPropertyValue_Type,
             Callback_SetPropertyValue_BaseComponent callback_SetPropertyValue_BaseComponent,
             Callback_CreateInstance callback_CreateInstance,
             Callback_DeleteInstance callback_DeleteInstance,

@@ -71,11 +71,6 @@ public class BooleanKeyFrame : Freezable {
     } 
   }
 
-  new internal static IntPtr GetStaticType() {
-    IntPtr ret = NoesisGUI_PINVOKE.BooleanKeyFrame_GetStaticType();
-    return ret;
-  }
-
 }
 
 }

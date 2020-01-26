@@ -63,11 +63,6 @@ public class GridViewColumnHeader : ButtonBase {
     } 
   }
 
-  new internal static IntPtr GetStaticType() {
-    IntPtr ret = NoesisGUI_PINVOKE.GridViewColumnHeader_GetStaticType();
-    return ret;
-  }
-
 }
 
 }

@@ -174,11 +174,6 @@ public class Hyperlink : Span {
     NoesisGUI_PINVOKE.Hyperlink_SetCommandHelper(swigCPtr, Noesis.Extend.GetInstanceHandle(command));
   }
 
-  new internal static IntPtr GetStaticType() {
-    IntPtr ret = NoesisGUI_PINVOKE.Hyperlink_GetStaticType();
-    return ret;
-  }
-
 }
 
 }

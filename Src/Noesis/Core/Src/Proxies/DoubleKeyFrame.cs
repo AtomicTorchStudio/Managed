@@ -71,11 +71,6 @@ public class DoubleKeyFrame : Freezable {
     } 
   }
 
-  new internal static IntPtr GetStaticType() {
-    IntPtr ret = NoesisGUI_PINVOKE.DoubleKeyFrame_GetStaticType();
-    return ret;
-  }
-
 }
 
 }

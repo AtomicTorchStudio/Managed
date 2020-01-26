@@ -15,7 +15,7 @@ using System.Runtime.InteropServices;
 namespace Noesis
 {
 
-public class GridViewColumn : DependencyObject {
+public class GridViewColumn : Animatable {
   internal new static GridViewColumn CreateProxy(IntPtr cPtr, bool cMemoryOwn) {
     return new GridViewColumn(cPtr, cMemoryOwn);
   }
@@ -191,11 +191,6 @@ public class GridViewColumn : DependencyObject {
       float ret = NoesisGUI_PINVOKE.GridViewColumn_Width_get(swigCPtr);
       return ret;
     } 
-  }
-
-  new internal static IntPtr GetStaticType() {
-    IntPtr ret = NoesisGUI_PINVOKE.GridViewColumn_GetStaticType();
-    return ret;
   }
 
 }
