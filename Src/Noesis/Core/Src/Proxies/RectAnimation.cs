@@ -27,14 +27,6 @@ public class RectAnimation : BaseAnimation {
     return (obj == null) ? new HandleRef(null, IntPtr.Zero) : obj.swigCPtr;
   }
 
-  public RectAnimation() {
-  }
-
-  protected override IntPtr CreateCPtr(Type type, out bool registerExtend) {
-    registerExtend = false;
-    return NoesisGUI_PINVOKE.new_RectAnimation();
-  }
-
   public static DependencyProperty ByProperty {
     get {
       IntPtr cPtr = NoesisGUI_PINVOKE.RectAnimation_ByProperty_get();
@@ -108,6 +100,14 @@ public class RectAnimation : BaseAnimation {
       }
     }
 
+  }
+
+  public RectAnimation() {
+  }
+
+  protected override IntPtr CreateCPtr(Type type, out bool registerExtend) {
+    registerExtend = false;
+    return NoesisGUI_PINVOKE.new_RectAnimation();
   }
 
 }

@@ -38,8 +38,8 @@ public class MatrixTransform3D : Transform3D {
   public MatrixTransform3D(Matrix3D matrix) : this(NoesisGUI_PINVOKE.new_MatrixTransform3D__SWIG_1(ref matrix), true) {
   }
 
-  public override Matrix3D GetTransform(Size size) {
-    IntPtr ret = NoesisGUI_PINVOKE.MatrixTransform3D_GetTransform(swigCPtr, ref size);
+  public override Matrix3D GetTransform() {
+    IntPtr ret = NoesisGUI_PINVOKE.MatrixTransform3D_GetTransform(swigCPtr);
     if (ret != IntPtr.Zero) {
       return Marshal.PtrToStructure<Matrix3D>(ret);
     }

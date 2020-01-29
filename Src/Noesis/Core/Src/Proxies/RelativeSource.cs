@@ -38,7 +38,7 @@ public class RelativeSource : MarkupExtension {
   public RelativeSource(RelativeSourceMode mode) : this(NoesisGUI_PINVOKE.new_RelativeSource__SWIG_1((int)mode), true) {
   }
 
-  public RelativeSource(RelativeSourceMode mode, Type type, int level) : this(NoesisGUI_PINVOKE.new_RelativeSource__SWIG_2((int)mode, type != null ? Noesis.Extend.GetNativeType(type) : IntPtr.Zero, level), true) {
+  public RelativeSource(RelativeSourceMode mode, Type type, int level) : this(NoesisGUI_PINVOKE.new_RelativeSource__SWIG_2((int)mode, type != null ? Noesis.Extend.EnsureNativeType(type) : IntPtr.Zero, level), true) {
   }
 
   public RelativeSource(RelativeSource other) : this(NoesisGUI_PINVOKE.new_RelativeSource__SWIG_3(RelativeSource.getCPtr(other)), true) {
@@ -70,7 +70,7 @@ public class RelativeSource : MarkupExtension {
 
   public Type AncestorType {
     set {
-      NoesisGUI_PINVOKE.RelativeSource_AncestorType_set(swigCPtr, value != null ? Noesis.Extend.GetNativeType(value) : IntPtr.Zero);
+      NoesisGUI_PINVOKE.RelativeSource_AncestorType_set(swigCPtr, value != null ? Noesis.Extend.EnsureNativeType(value) : IntPtr.Zero);
     }
     get {
       IntPtr cPtr = NoesisGUI_PINVOKE.RelativeSource_AncestorType_get(swigCPtr);

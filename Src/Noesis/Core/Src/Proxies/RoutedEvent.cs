@@ -30,7 +30,7 @@ public class RoutedEvent : BaseComponent {
   protected RoutedEvent() {
   }
 
-  public RoutedEvent(string name, Type ownerType, RoutingStrategy routingStrategy) : this(NoesisGUI_PINVOKE.new_RoutedEvent(name != null ? name : string.Empty, ownerType != null ? Noesis.Extend.GetNativeType(ownerType) : IntPtr.Zero, (int)routingStrategy), true) {
+  public RoutedEvent(string name, Type ownerType, RoutingStrategy routingStrategy) : this(NoesisGUI_PINVOKE.new_RoutedEvent(name != null ? name : string.Empty, ownerType != null ? Noesis.Extend.EnsureNativeType(ownerType) : IntPtr.Zero, (int)routingStrategy), true) {
   }
 
   public string Name {

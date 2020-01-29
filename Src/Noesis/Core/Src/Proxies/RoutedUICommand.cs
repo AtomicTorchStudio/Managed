@@ -35,10 +35,10 @@ public class RoutedUICommand : RoutedCommand {
     return NoesisGUI_PINVOKE.new_RoutedUICommand__SWIG_0();
   }
 
-  public RoutedUICommand(string text, string name, Type owner) : this(NoesisGUI_PINVOKE.new_RoutedUICommand__SWIG_1(text != null ? text : string.Empty, name != null ? name : string.Empty, owner != null ? Noesis.Extend.GetNativeType(owner) : IntPtr.Zero), true) {
+  public RoutedUICommand(string text, string name, Type owner) : this(NoesisGUI_PINVOKE.new_RoutedUICommand__SWIG_1(text != null ? text : string.Empty, name != null ? name : string.Empty, owner != null ? Noesis.Extend.EnsureNativeType(owner) : IntPtr.Zero), true) {
   }
 
-  public RoutedUICommand(string text, string name, Type owner, InputGestureCollection inputGestures) : this(NoesisGUI_PINVOKE.new_RoutedUICommand__SWIG_2(text != null ? text : string.Empty, name != null ? name : string.Empty, owner != null ? Noesis.Extend.GetNativeType(owner) : IntPtr.Zero, InputGestureCollection.getCPtr(inputGestures)), true) {
+  public RoutedUICommand(string text, string name, Type owner, InputGestureCollection inputGestures) : this(NoesisGUI_PINVOKE.new_RoutedUICommand__SWIG_2(text != null ? text : string.Empty, name != null ? name : string.Empty, owner != null ? Noesis.Extend.EnsureNativeType(owner) : IntPtr.Zero, InputGestureCollection.getCPtr(inputGestures)), true) {
   }
 
   public string Text {

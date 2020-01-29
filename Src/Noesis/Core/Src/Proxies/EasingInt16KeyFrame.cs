@@ -27,14 +27,6 @@ public class EasingInt16KeyFrame : Int16KeyFrame {
     return (obj == null) ? new HandleRef(null, IntPtr.Zero) : obj.swigCPtr;
   }
 
-  public EasingInt16KeyFrame() {
-  }
-
-  protected override IntPtr CreateCPtr(Type type, out bool registerExtend) {
-    registerExtend = false;
-    return NoesisGUI_PINVOKE.new_EasingInt16KeyFrame();
-  }
-
   public static DependencyProperty EasingFunctionProperty {
     get {
       IntPtr cPtr = NoesisGUI_PINVOKE.EasingInt16KeyFrame_EasingFunctionProperty_get();
@@ -50,6 +42,14 @@ public class EasingInt16KeyFrame : Int16KeyFrame {
       IntPtr cPtr = NoesisGUI_PINVOKE.EasingInt16KeyFrame_EasingFunction_get(swigCPtr);
       return (EasingFunctionBase)Noesis.Extend.GetProxy(cPtr, false);
     }
+  }
+
+  public EasingInt16KeyFrame() {
+  }
+
+  protected override IntPtr CreateCPtr(Type type, out bool registerExtend) {
+    registerExtend = false;
+    return NoesisGUI_PINVOKE.new_EasingInt16KeyFrame();
   }
 
 }

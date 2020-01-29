@@ -27,14 +27,6 @@ public class ThicknessAnimation : BaseAnimation {
     return (obj == null) ? new HandleRef(null, IntPtr.Zero) : obj.swigCPtr;
   }
 
-  public ThicknessAnimation() {
-  }
-
-  protected override IntPtr CreateCPtr(Type type, out bool registerExtend) {
-    registerExtend = false;
-    return NoesisGUI_PINVOKE.new_ThicknessAnimation();
-  }
-
   public static DependencyProperty ByProperty {
     get {
       IntPtr cPtr = NoesisGUI_PINVOKE.ThicknessAnimation_ByProperty_get();
@@ -108,6 +100,14 @@ public class ThicknessAnimation : BaseAnimation {
       }
     }
 
+  }
+
+  public ThicknessAnimation() {
+  }
+
+  protected override IntPtr CreateCPtr(Type type, out bool registerExtend) {
+    registerExtend = false;
+    return NoesisGUI_PINVOKE.new_ThicknessAnimation();
   }
 
 }

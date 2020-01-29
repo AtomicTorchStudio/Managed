@@ -27,14 +27,6 @@ public class EasingPointKeyFrame : PointKeyFrame {
     return (obj == null) ? new HandleRef(null, IntPtr.Zero) : obj.swigCPtr;
   }
 
-  public EasingPointKeyFrame() {
-  }
-
-  protected override IntPtr CreateCPtr(Type type, out bool registerExtend) {
-    registerExtend = false;
-    return NoesisGUI_PINVOKE.new_EasingPointKeyFrame();
-  }
-
   public static DependencyProperty EasingFunctionProperty {
     get {
       IntPtr cPtr = NoesisGUI_PINVOKE.EasingPointKeyFrame_EasingFunctionProperty_get();
@@ -50,6 +42,14 @@ public class EasingPointKeyFrame : PointKeyFrame {
       IntPtr cPtr = NoesisGUI_PINVOKE.EasingPointKeyFrame_EasingFunction_get(swigCPtr);
       return (EasingFunctionBase)Noesis.Extend.GetProxy(cPtr, false);
     }
+  }
+
+  public EasingPointKeyFrame() {
+  }
+
+  protected override IntPtr CreateCPtr(Type type, out bool registerExtend) {
+    registerExtend = false;
+    return NoesisGUI_PINVOKE.new_EasingPointKeyFrame();
   }
 
 }

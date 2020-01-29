@@ -116,7 +116,7 @@ namespace Noesis
             {
                 metadata = new PropertyMetadata(GenerateDefaultValue(type));
             }
-            else if (!metadata.HasDefaultValue)
+            else if (!metadata.HasDefaultValue || (type == typeof(string) && metadata.DefaultValue == null))
             {
                 metadata.DefaultValue = GenerateDefaultValue(type);
             }
@@ -128,7 +128,15 @@ namespace Noesis
 
         private static object GenerateDefaultValue(Type type)
         {
-            return type.IsValueType ? Activator.CreateInstance(type) : null;
+            if (type == typeof(string))
+            {
+                return string.Empty;
+            }
+            if (type.IsValueType)
+            {
+                return Activator.CreateInstance(type);
+            }
+            return null;
         }
 
         private static void ValidateDefaultValue(string name, Type type, Type owner, object value)

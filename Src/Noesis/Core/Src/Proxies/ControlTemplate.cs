@@ -37,7 +37,7 @@ public class ControlTemplate : FrameworkTemplate {
 
   public Type TargetType {
     set {
-      NoesisGUI_PINVOKE.ControlTemplate_TargetType_set(swigCPtr, value != null ? Noesis.Extend.GetNativeType(value) : IntPtr.Zero);
+      NoesisGUI_PINVOKE.ControlTemplate_TargetType_set(swigCPtr, value != null ? Noesis.Extend.EnsureNativeType(value) : IntPtr.Zero);
     }
     get {
       IntPtr cPtr = NoesisGUI_PINVOKE.ControlTemplate_TargetType_get(swigCPtr);

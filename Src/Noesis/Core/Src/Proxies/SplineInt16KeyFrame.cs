@@ -27,14 +27,6 @@ public class SplineInt16KeyFrame : Int16KeyFrame {
     return (obj == null) ? new HandleRef(null, IntPtr.Zero) : obj.swigCPtr;
   }
 
-  public SplineInt16KeyFrame() {
-  }
-
-  protected override IntPtr CreateCPtr(Type type, out bool registerExtend) {
-    registerExtend = false;
-    return NoesisGUI_PINVOKE.new_SplineInt16KeyFrame();
-  }
-
   public static DependencyProperty KeySplineProperty {
     get {
       IntPtr cPtr = NoesisGUI_PINVOKE.SplineInt16KeyFrame_KeySplineProperty_get();
@@ -50,6 +42,14 @@ public class SplineInt16KeyFrame : Int16KeyFrame {
       IntPtr cPtr = NoesisGUI_PINVOKE.SplineInt16KeyFrame_KeySpline_get(swigCPtr);
       return (KeySpline)Noesis.Extend.GetProxy(cPtr, false);
     }
+  }
+
+  public SplineInt16KeyFrame() {
+  }
+
+  protected override IntPtr CreateCPtr(Type type, out bool registerExtend) {
+    registerExtend = false;
+    return NoesisGUI_PINVOKE.new_SplineInt16KeyFrame();
   }
 
 }

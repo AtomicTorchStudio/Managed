@@ -27,14 +27,6 @@ public class EasingSizeKeyFrame : SizeKeyFrame {
     return (obj == null) ? new HandleRef(null, IntPtr.Zero) : obj.swigCPtr;
   }
 
-  public EasingSizeKeyFrame() {
-  }
-
-  protected override IntPtr CreateCPtr(Type type, out bool registerExtend) {
-    registerExtend = false;
-    return NoesisGUI_PINVOKE.new_EasingSizeKeyFrame();
-  }
-
   public static DependencyProperty EasingFunctionProperty {
     get {
       IntPtr cPtr = NoesisGUI_PINVOKE.EasingSizeKeyFrame_EasingFunctionProperty_get();
@@ -50,6 +42,14 @@ public class EasingSizeKeyFrame : SizeKeyFrame {
       IntPtr cPtr = NoesisGUI_PINVOKE.EasingSizeKeyFrame_EasingFunction_get(swigCPtr);
       return (EasingFunctionBase)Noesis.Extend.GetProxy(cPtr, false);
     }
+  }
+
+  public EasingSizeKeyFrame() {
+  }
+
+  protected override IntPtr CreateCPtr(Type type, out bool registerExtend) {
+    registerExtend = false;
+    return NoesisGUI_PINVOKE.new_EasingSizeKeyFrame();
   }
 
 }

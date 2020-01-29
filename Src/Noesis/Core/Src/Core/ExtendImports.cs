@@ -67,6 +67,8 @@ namespace Noesis
             Callback_CommandExecute callback_CommandExecute,
             Callback_ConverterConvert callback_ConverterConvert,
             Callback_ConverterConvertBack callback_ConverterConvertBack,
+            Callback_MultiConverterConvert callback_MultiConverterConvert,
+            Callback_MultiConverterConvertBack callback_MultiConverterConvertBack,
             Callback_ListCount callback_ListCount,
             Callback_ListGet callback_ListGet,
             Callback_ListSet callback_ListSet,

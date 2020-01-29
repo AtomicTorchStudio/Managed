@@ -241,7 +241,7 @@ public class NoesisGUI_ {
   }
 
   public static IntPtr Box_Type(Type val) {
-    IntPtr ret = NoesisGUI_PINVOKE.Box_Type(val != null ? Noesis.Extend.GetNativeType(val) : IntPtr.Zero);
+    IntPtr ret = NoesisGUI_PINVOKE.Box_Type(val != null ? Noesis.Extend.EnsureNativeType(val) : IntPtr.Zero);
     return ret;
   }
 
@@ -533,6 +533,13 @@ public class NoesisGUI_ {
   public static IntPtr NullableKeyTime_GetStaticType() {
     IntPtr ret = NoesisGUI_PINVOKE.NullableKeyTime_GetStaticType();
     return ret;
+  }
+
+  public static uint NoThreadId {
+    get {
+      uint ret = NoesisGUI_PINVOKE.NoThreadId_get();
+      return ret;
+    } 
   }
 
   public static UpdateSourceTrigger Unbox_UpdateSourceTrigger(IntPtr val) {
@@ -1287,6 +1294,11 @@ public class NoesisGUI_ {
   public static IntPtr Box_SlipBehavior(SlipBehavior val) {
     IntPtr ret = NoesisGUI_PINVOKE.Box_SlipBehavior((int)val);
     return ret;
+  }
+
+  public static DependencyProperty KeyFrame_KeyTimeProperty() {
+    IntPtr cPtr = NoesisGUI_PINVOKE.KeyFrame_KeyTimeProperty();
+    return (DependencyProperty)Noesis.Extend.GetProxy(cPtr, false);
   }
 
   public static EasingMode Unbox_EasingMode(IntPtr val) {

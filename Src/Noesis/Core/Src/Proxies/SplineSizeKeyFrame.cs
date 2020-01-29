@@ -27,14 +27,6 @@ public class SplineSizeKeyFrame : SizeKeyFrame {
     return (obj == null) ? new HandleRef(null, IntPtr.Zero) : obj.swigCPtr;
   }
 
-  public SplineSizeKeyFrame() {
-  }
-
-  protected override IntPtr CreateCPtr(Type type, out bool registerExtend) {
-    registerExtend = false;
-    return NoesisGUI_PINVOKE.new_SplineSizeKeyFrame();
-  }
-
   public static DependencyProperty KeySplineProperty {
     get {
       IntPtr cPtr = NoesisGUI_PINVOKE.SplineSizeKeyFrame_KeySplineProperty_get();
@@ -50,6 +42,14 @@ public class SplineSizeKeyFrame : SizeKeyFrame {
       IntPtr cPtr = NoesisGUI_PINVOKE.SplineSizeKeyFrame_KeySpline_get(swigCPtr);
       return (KeySpline)Noesis.Extend.GetProxy(cPtr, false);
     }
+  }
+
+  public SplineSizeKeyFrame() {
+  }
+
+  protected override IntPtr CreateCPtr(Type type, out bool registerExtend) {
+    registerExtend = false;
+    return NoesisGUI_PINVOKE.new_SplineSizeKeyFrame();
   }
 
 }

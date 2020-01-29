@@ -41,7 +41,7 @@ public class Style : BaseComponent {
 
   public Type TargetType {
     set {
-      NoesisGUI_PINVOKE.Style_TargetType_set(swigCPtr, value != null ? Noesis.Extend.GetNativeType(value) : IntPtr.Zero);
+      NoesisGUI_PINVOKE.Style_TargetType_set(swigCPtr, value != null ? Noesis.Extend.EnsureNativeType(value) : IntPtr.Zero);
     }
     get {
       IntPtr cPtr = NoesisGUI_PINVOKE.Style_TargetType_get(swigCPtr);

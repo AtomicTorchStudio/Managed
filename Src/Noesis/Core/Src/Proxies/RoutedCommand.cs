@@ -45,10 +45,10 @@ public class RoutedCommand : BaseComponent, ICommand {
     return NoesisGUI_PINVOKE.new_RoutedCommand__SWIG_0();
   }
 
-  public RoutedCommand(string name, Type owner) : this(NoesisGUI_PINVOKE.new_RoutedCommand__SWIG_1(name != null ? name : string.Empty, owner != null ? Noesis.Extend.GetNativeType(owner) : IntPtr.Zero), true) {
+  public RoutedCommand(string name, Type owner) : this(NoesisGUI_PINVOKE.new_RoutedCommand__SWIG_1(name != null ? name : string.Empty, owner != null ? Noesis.Extend.EnsureNativeType(owner) : IntPtr.Zero), true) {
   }
 
-  public RoutedCommand(string name, Type owner, InputGestureCollection inputGestures) : this(NoesisGUI_PINVOKE.new_RoutedCommand__SWIG_2(name != null ? name : string.Empty, owner != null ? Noesis.Extend.GetNativeType(owner) : IntPtr.Zero, InputGestureCollection.getCPtr(inputGestures)), true) {
+  public RoutedCommand(string name, Type owner, InputGestureCollection inputGestures) : this(NoesisGUI_PINVOKE.new_RoutedCommand__SWIG_2(name != null ? name : string.Empty, owner != null ? Noesis.Extend.EnsureNativeType(owner) : IntPtr.Zero, InputGestureCollection.getCPtr(inputGestures)), true) {
   }
 
   public bool CanExecute(object param, UIElement target) {

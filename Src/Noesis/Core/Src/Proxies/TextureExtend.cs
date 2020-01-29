@@ -10,6 +10,11 @@ namespace Noesis
             public object Texture;
         }
 
+        public IntPtr D3D11NativePointer
+        {
+            get { return Noesis_D3D11Texture_GetNativePointer(swigCPtr); }
+        }
+
         /// <summary>
         /// Creates a Texture wrapper for the specified D3D11 texture native handle
         /// <param name="nativePointer">ID3D11Texture2D native pointer</param>
@@ -73,6 +78,9 @@ namespace Noesis
         [DllImport(Library.Name)]
         private static extern IntPtr Noesis_WrapGLTexture(IntPtr nativePointer,
             int width, int height, int numMipMaps, bool isInverted);
+
+        [DllImport(Library.Name)]
+        private static extern IntPtr Noesis_D3D11Texture_GetNativePointer(HandleRef texture);
 
         #endregion
     }

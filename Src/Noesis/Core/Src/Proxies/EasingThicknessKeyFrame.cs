@@ -27,14 +27,6 @@ public class EasingThicknessKeyFrame : ThicknessKeyFrame {
     return (obj == null) ? new HandleRef(null, IntPtr.Zero) : obj.swigCPtr;
   }
 
-  public EasingThicknessKeyFrame() {
-  }
-
-  protected override IntPtr CreateCPtr(Type type, out bool registerExtend) {
-    registerExtend = false;
-    return NoesisGUI_PINVOKE.new_EasingThicknessKeyFrame();
-  }
-
   public static DependencyProperty EasingFunctionProperty {
     get {
       IntPtr cPtr = NoesisGUI_PINVOKE.EasingThicknessKeyFrame_EasingFunctionProperty_get();
@@ -50,6 +42,14 @@ public class EasingThicknessKeyFrame : ThicknessKeyFrame {
       IntPtr cPtr = NoesisGUI_PINVOKE.EasingThicknessKeyFrame_EasingFunction_get(swigCPtr);
       return (EasingFunctionBase)Noesis.Extend.GetProxy(cPtr, false);
     }
+  }
+
+  public EasingThicknessKeyFrame() {
+  }
+
+  protected override IntPtr CreateCPtr(Type type, out bool registerExtend) {
+    registerExtend = false;
+    return NoesisGUI_PINVOKE.new_EasingThicknessKeyFrame();
   }
 
 }

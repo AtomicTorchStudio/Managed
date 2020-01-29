@@ -27,14 +27,6 @@ public class DoubleAnimation : BaseAnimation {
     return (obj == null) ? new HandleRef(null, IntPtr.Zero) : obj.swigCPtr;
   }
 
-  public DoubleAnimation() {
-  }
-
-  protected override IntPtr CreateCPtr(Type type, out bool registerExtend) {
-    registerExtend = false;
-    return NoesisGUI_PINVOKE.new_DoubleAnimation();
-  }
-
   public static DependencyProperty ByProperty {
     get {
       IntPtr cPtr = NoesisGUI_PINVOKE.DoubleAnimation_ByProperty_get();
@@ -108,6 +100,14 @@ public class DoubleAnimation : BaseAnimation {
       }
     }
 
+  }
+
+  public DoubleAnimation() {
+  }
+
+  protected override IntPtr CreateCPtr(Type type, out bool registerExtend) {
+    registerExtend = false;
+    return NoesisGUI_PINVOKE.new_DoubleAnimation();
   }
 
 }

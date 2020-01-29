@@ -130,6 +130,8 @@ namespace Noesis
 
                 _converterConvert,
                 _converterConvertBack,
+                _multiConverterConvert,
+                _multiConverterConvertBack,
 
                 _listCount,
                 _listGet,
@@ -220,7 +222,7 @@ namespace Noesis
                 null, null, null, null, null, null,
                 null, null, null,
                 null, null,
-                null, null,
+                null, null, null, null,
                 null, null, null, null, null,
                 null, null, null,
                 null, null,
@@ -770,6 +772,7 @@ namespace Noesis
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(TriggerBase), TriggerBase.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(BezierSegment), BezierSegment.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(Binding), Binding.CreateProxy));
+            AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(BindingCollection), BindingCollection.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(BitmapImage), BitmapImage.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(BitmapSource), BitmapSource.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(Border), Border.CreateProxy));
@@ -800,6 +803,7 @@ namespace Noesis
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(DashStyle), DashStyle.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(DataTemplate), DataTemplate.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(DataTemplateSelector), DataTemplateSelector.CreateProxy));
+            AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(DataTrigger), DataTrigger.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(HierarchicalDataTemplate), HierarchicalDataTemplate.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(Decorator), Decorator.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(DockPanel), DockPanel.CreateProxy));
@@ -857,6 +861,9 @@ namespace Noesis
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(MatrixTransform3D), MatrixTransform3D.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(Menu), Menu.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(MenuItem), MenuItem.CreateProxy));
+            AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(MultiBinding), MultiBinding.CreateProxy));
+            AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(MultiBindingExpression), MultiBindingExpression.CreateProxy));
+            AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(MultiDataTrigger), MultiDataTrigger.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(MultiTrigger), MultiTrigger.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(NameScope), NameScope.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(Page), Page.CreateProxy));
@@ -1266,6 +1273,10 @@ namespace Noesis
                 else if (typeof(Noesis.IValueConverter).GetTypeInfo().IsAssignableFrom(type.GetTypeInfo()))
                 {
                     nativeType = Noesis.ExtendConverter.Extend(TypeFullName(type));
+                }
+                else if (typeof(Noesis.IMultiValueConverter).GetTypeInfo().IsAssignableFrom(type.GetTypeInfo()))
+                {
+                    nativeType = Noesis.ExtendMultiConverter.Extend(TypeFullName(type));
                 }
                 else if (typeof(System.Collections.IList).GetTypeInfo().IsAssignableFrom(type.GetTypeInfo()))
                 {
@@ -2056,24 +2067,26 @@ namespace Noesis
         {
             try
             {
-                var converter = (Noesis.IValueConverter)GetExtendInstance(cPtr);
+                var converter = (IValueConverter)GetExtendInstance(cPtr);
                 if (converter != null)
                 {
-                    NativeTypeInfo targetType = GetNativeTypeInfo(targetTypePtr);
+                    Type targetType = GetNativeTypeInfo(targetTypePtr).Type;
                     object val = GetProxy(valType, valPtr, false);
                     object param = GetProxy(paramType, paramPtr, false);
 
-                    object obj = converter.Convert(val, targetType.Type, param, CultureInfo.CurrentCulture);
+                    object obj = converter.Convert(val, targetType, param, CultureInfo.CurrentCulture);
 
-                    if (AreCompatibleTypes(obj, targetType.Type))
+                    if (AreCompatibleTypes(obj, targetType))
                     {
-                        result = GetInstanceHandle(obj).Handle;
+                        HandleRef res = GetInstanceHandle(obj);
+                        BaseComponent.AddReference(res.Handle); // released by native bindings
+                        result = res.Handle;
                         return true;
                     }
                     else
                     {
                         Log.Error(string.Format("{0} Convert() expects {1} and {2} is returned",
-                            converter.GetType().FullName, targetType.Type.FullName,
+                            converter.GetType().FullName, targetType.FullName,
                             obj != null ? obj.GetType().FullName : "null"));
                     }
                 }
@@ -2100,24 +2113,26 @@ namespace Noesis
         {
             try
             {
-                var converter = (Noesis.IValueConverter)GetExtendInstance(cPtr);
+                var converter = (IValueConverter)GetExtendInstance(cPtr);
                 if (converter != null)
                 {
-                    NativeTypeInfo targetType = GetNativeTypeInfo(targetTypePtr);
+                    Type targetType = GetNativeTypeInfo(targetTypePtr).Type;
                     object val = GetProxy(valType, valPtr, false);
                     object param = GetProxy(paramType, paramPtr, false);
 
-                    object obj = converter.ConvertBack(val, targetType.Type, param, CultureInfo.CurrentCulture);
+                    object obj = converter.ConvertBack(val, targetType, param, CultureInfo.CurrentCulture);
 
-                    if (AreCompatibleTypes(obj, targetType.Type))
+                    if (AreCompatibleTypes(obj, targetType))
                     {
-                        result = GetInstanceHandle(obj).Handle;
+                        HandleRef res = GetInstanceHandle(obj);
+                        BaseComponent.AddReference(res.Handle); // released by native bindings
+                        result = res.Handle;
                         return true;
                     }
                     else
                     {
                         Log.Error(string.Format("{0} ConvertBack() expects {1} and {2} is returned",
-                            converter.GetType().FullName, targetType.Type.FullName,
+                            converter.GetType().FullName, targetType.FullName,
                             obj != null ? obj.GetType().FullName : "null"));
                     }
                 }
@@ -2128,6 +2143,111 @@ namespace Noesis
             }
 
             result = IntPtr.Zero;
+            return false;
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////
+        private delegate bool Callback_MultiConverterConvert(IntPtr cPtr,
+            int numSources, IntPtr valTypes, IntPtr valPtrs, IntPtr targetTypePtr,
+            IntPtr paramType, IntPtr paramPtr, out IntPtr result);
+        private static Callback_MultiConverterConvert _multiConverterConvert = MultiConverterConvert;
+
+        [MonoPInvokeCallback(typeof(Callback_MultiConverterConvert))]
+        private static bool MultiConverterConvert(IntPtr cPtr,
+            int numSources, IntPtr valTypes, IntPtr valPtrs, IntPtr targetTypePtr,
+            IntPtr paramType, IntPtr paramPtr, out IntPtr result)
+        {
+            try
+            {
+                var converter = (IMultiValueConverter)GetExtendInstance(cPtr);
+                if (converter != null)
+                {
+                    int elementSize = Marshal.SizeOf<IntPtr>();
+                    object[] values = new object[numSources];
+                    for (int i = 0; i < numSources; ++i)
+                    {
+                        IntPtr valType = Marshal.ReadIntPtr(valTypes, i * elementSize);
+                        IntPtr val = Marshal.ReadIntPtr(valPtrs, i * elementSize);
+                        values[i] = GetProxy(valType, val, false);
+                    }
+
+                    Type targetType = GetNativeTypeInfo(targetTypePtr).Type;
+                    object param = GetProxy(paramType, paramPtr, false);
+
+                    object obj = converter.Convert(values, targetType, param, CultureInfo.CurrentCulture);
+
+                    if (AreCompatibleTypes(obj, targetType))
+                    {
+                        HandleRef res = GetInstanceHandle(obj);
+                        BaseComponent.AddReference(res.Handle); // released by native bindings
+                        result = res.Handle;
+                        return true;
+                    }
+                    else
+                    {
+                        Log.Error(string.Format("{0} Convert() expects {1} and {2} is returned",
+                            converter.GetType().FullName, targetType.FullName,
+                            obj != null ? obj.GetType().FullName : "null"));
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Error.UnhandledException(e);
+            }
+
+            result = IntPtr.Zero;
+            return false;
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////
+        private delegate bool Callback_MultiConverterConvertBack(IntPtr cPtr,
+            int numSources, IntPtr valType, IntPtr valPtr, IntPtr targetTypePtrs,
+            IntPtr paramType, IntPtr paramPtr, IntPtr results);
+        private static Callback_MultiConverterConvertBack _multiConverterConvertBack = MultiConverterConvertBack;
+
+        [MonoPInvokeCallback(typeof(Callback_MultiConverterConvertBack))]
+        private static bool MultiConverterConvertBack(IntPtr cPtr,
+            int numSources, IntPtr valType, IntPtr valPtr, IntPtr targetTypePtrs,
+            IntPtr paramType, IntPtr paramPtr, IntPtr results)
+        {
+            try
+            {
+                var converter = (IMultiValueConverter)GetExtendInstance(cPtr);
+                if (converter != null)
+                {
+                    int elementSize = Marshal.SizeOf<IntPtr>();
+                    Type[] types = new Type[numSources];
+                    for (int i = 0; i < numSources; ++i)
+                    {
+                        IntPtr targetType = Marshal.ReadIntPtr(targetTypePtrs, i * elementSize);
+                        types[i] = GetNativeTypeInfo(targetType).Type;
+                    }
+
+                    object val = GetProxy(valType, valPtr, false);
+                    object param = GetProxy(paramType, paramPtr, false);
+
+                    object[] objs = converter.ConvertBack(val, types, param, CultureInfo.CurrentCulture);
+
+                    if (objs != null)
+                    {
+                        for (int i = 0; i < numSources; ++i)
+                        {
+                            object obj = i < objs.Length ? objs[i] : null;
+                            HandleRef res = GetInstanceHandle(obj);
+                            BaseComponent.AddReference(res.Handle); // released by native bindings
+                            Marshal.WriteIntPtr(results, i * elementSize, res.Handle);
+                        }
+
+                        return true;
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Error.UnhandledException(e);
+            }
+
             return false;
         }
 

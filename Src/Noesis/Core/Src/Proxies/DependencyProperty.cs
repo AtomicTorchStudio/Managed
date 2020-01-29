@@ -54,6 +54,13 @@ public partial class DependencyProperty : BaseComponent {
   }
 
   public Noesis.PropertyMetadata GetMetadata(Type forType) {
+    if (forType == null) {
+      throw new ArgumentNullException("forType");
+    }
+    if (!typeof(DependencyObject).IsAssignableFrom(forType)) {
+      throw new ArgumentException(
+        "Can't get metadata for non-DependencyObject type " + forType);
+    }
     return GetMetadataHelper(Noesis.Extend.GetNativeType(forType));
   }
 

@@ -37,7 +37,7 @@ public class DataTemplate : FrameworkTemplate {
 
   public Type DataType {
     set {
-      NoesisGUI_PINVOKE.DataTemplate_DataType_set(swigCPtr, value != null ? Noesis.Extend.GetNativeType(value) : IntPtr.Zero);
+      NoesisGUI_PINVOKE.DataTemplate_DataType_set(swigCPtr, value != null ? Noesis.Extend.EnsureNativeType(value) : IntPtr.Zero);
     }
     get {
       IntPtr cPtr = NoesisGUI_PINVOKE.DataTemplate_DataType_get(swigCPtr);

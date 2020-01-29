@@ -3,6 +3,19 @@ using System.Runtime.InteropServices;
 
 namespace Noesis
 {
+    [StructLayoutAttribute(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+    public struct Tile
+    {
+        [MarshalAs(UnmanagedType.U4)]
+        public uint X;
+        [MarshalAs(UnmanagedType.U4)]
+        public uint Y;
+        [MarshalAs(UnmanagedType.U4)]
+        public uint Width;
+        [MarshalAs(UnmanagedType.U4)]
+        public uint Height;
+    }
+
     /// <summary>
     /// Abstraction of a graphics rendering device.
     /// </summary>
@@ -71,6 +84,50 @@ namespace Noesis
             set { Noesis_RenderDevice_SetGlyphCacheHeight(CPtr, value); }
         }
 
+        /// <summary>
+        /// Clears the given region to transparent (#000000) and sets the scissor rectangle to fit it.
+        /// Until next call to EndTile() all rendering commands will only update the extents of the tile.
+        /// </summary>
+        public void BeginTile(Tile tile, uint surfaceWidth, uint surfaceHeight)
+        {
+            Noesis_RenderDevice_BeginTile(CPtr, ref tile, surfaceWidth, surfaceHeight);
+        }
+
+        /// <summary>
+        /// Completes rendering to the tile specified by BeginTile.
+        /// </summary>
+        public void EndTile()
+        {
+            Noesis_RenderDevice_EndTile(CPtr);
+        }
+
+        /// <summary>
+        /// Creates render target surface with given dimensions and number of samples
+        /// </summary>
+        public RenderTarget CreateRenderTarget(string label, uint width, uint height, uint sampleCount)
+        {
+            IntPtr renderTarget = Noesis_RenderDevice_CreateRenderTarget(CPtr, label,
+                width, height, sampleCount);
+
+            return new RenderTarget(renderTarget, true);
+        }
+
+        /// <summary>
+        /// Binds render target and sets viewport to cover the entire surface.
+        /// </summary>
+        public void SetRenderTarget(RenderTarget surface)
+        {
+            Noesis_RenderDevice_SetRenderTarget(CPtr, surface.CPtr);
+        }
+
+        /// <summary>
+        /// Resolves multisample render target.
+        /// </summary>
+        public void ResolveRenderTarget(RenderTarget surface, Tile[] tiles)
+        {
+            Noesis_RenderDevice_ResolveRenderTarget(CPtr, surface.CPtr, tiles, tiles.Length);
+        }
+
         #region Private members
         public RenderDevice(IntPtr cPtr, bool memoryOwn)
         {
@@ -125,6 +182,24 @@ namespace Noesis
 
         [DllImport(Library.Name)]
         static extern void Noesis_RenderDevice_SetGlyphCacheHeight(HandleRef device, uint w);
+
+        [DllImport(Library.Name)]
+        static extern void Noesis_RenderDevice_BeginTile(HandleRef device, ref Tile tile,
+            uint width, uint height);
+
+        [DllImport(Library.Name)]
+        static extern void Noesis_RenderDevice_EndTile(HandleRef device);
+
+        [DllImport(Library.Name)]
+        static extern IntPtr Noesis_RenderDevice_CreateRenderTarget(HandleRef device, string label,
+            uint width, uint height, uint sampleCount);
+
+        [DllImport(Library.Name)]
+        static extern void Noesis_RenderDevice_SetRenderTarget(HandleRef device, HandleRef surface);
+
+        [DllImport(Library.Name)]
+        static extern void Noesis_RenderDevice_ResolveRenderTarget(HandleRef device, HandleRef surface,
+            [In, Out] Tile[] tiles, int numTiles);
         #endregion
     }
 

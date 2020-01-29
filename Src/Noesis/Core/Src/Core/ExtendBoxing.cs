@@ -21,7 +21,6 @@ namespace Noesis
         {
             Dictionary<Type, BoxDelegate> boxFunctions = new Dictionary<Type, BoxDelegate>(100);
 
-            boxFunctions[typeof(Type)] = (val) => NoesisGUI_.Box_Type((Type)val);
             boxFunctions[typeof(string)] = (val) => NoesisGUI_.Box_String((string)val);
             boxFunctions[typeof(bool)] = (val) => NoesisGUI_.Box_Bool((bool)val);
             boxFunctions[typeof(float)] = (val) => NoesisGUI_.Box_Float((float)val);
@@ -117,6 +116,10 @@ namespace Noesis
             {
                 _boxFunctions.TryGetValue(typeof(int), out boxFunction);
                 return RegisterPendingRelease(boxFunction((int)Convert.ToInt64(val)));
+            }
+            else if (val is Type)
+            {
+                return NoesisGUI_.Box_Type((Type)val);
             }
             else
             {

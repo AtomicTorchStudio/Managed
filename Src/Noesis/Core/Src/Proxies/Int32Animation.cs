@@ -27,14 +27,6 @@ public class Int32Animation : BaseAnimation {
     return (obj == null) ? new HandleRef(null, IntPtr.Zero) : obj.swigCPtr;
   }
 
-  public Int32Animation() {
-  }
-
-  protected override IntPtr CreateCPtr(Type type, out bool registerExtend) {
-    registerExtend = false;
-    return NoesisGUI_PINVOKE.new_Int32Animation();
-  }
-
   public static DependencyProperty ByProperty {
     get {
       IntPtr cPtr = NoesisGUI_PINVOKE.Int32Animation_ByProperty_get();
@@ -108,6 +100,14 @@ public class Int32Animation : BaseAnimation {
       }
     }
 
+  }
+
+  public Int32Animation() {
+  }
+
+  protected override IntPtr CreateCPtr(Type type, out bool registerExtend) {
+    registerExtend = false;
+    return NoesisGUI_PINVOKE.new_Int32Animation();
   }
 
 }

@@ -30,8 +30,8 @@ public class Transform3D : Animatable {
   protected Transform3D() {
   }
 
-  public virtual Matrix3D GetTransform(Size size) {
-    IntPtr ret = NoesisGUI_PINVOKE.Transform3D_GetTransform(swigCPtr, ref size);
+  public virtual Matrix3D GetTransform() {
+    IntPtr ret = NoesisGUI_PINVOKE.Transform3D_GetTransform(swigCPtr);
     if (ret != IntPtr.Zero) {
       return Marshal.PtrToStructure<Matrix3D>(ret);
     }
