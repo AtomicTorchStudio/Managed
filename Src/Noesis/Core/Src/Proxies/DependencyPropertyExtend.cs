@@ -143,9 +143,17 @@ namespace Noesis
         {
             if (!IsValidType(value, type))
             {
-                throw new ArgumentException(string.Format(
-                    "Invalid default value type for dependency property '{0}.{1}'",
-                    owner.FullName, name));
+                try
+                {
+                    value = Convert.ChangeType(value, type);
+                }
+                catch
+                {
+                    throw new ArgumentException(string.Format(
+                                                    "Invalid default value type for dependency property '{0}.{1}'",
+                                                    owner.FullName,
+                                                    name));
+                }
             }
 
             if (value is Expression)
