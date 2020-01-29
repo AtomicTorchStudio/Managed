@@ -49,9 +49,9 @@ public class Rectangle : Shape {
     }
   }
 
-  public float RadiusX {
+  public double RadiusX {
     set {
-      NoesisGUI_PINVOKE.Rectangle_RadiusX_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.Rectangle_RadiusX_set(swigCPtr, (float)value);
     } 
     get {
       float ret = NoesisGUI_PINVOKE.Rectangle_RadiusX_get(swigCPtr);
@@ -59,9 +59,9 @@ public class Rectangle : Shape {
     } 
   }
 
-  public float RadiusY {
+  public double RadiusY {
     set {
-      NoesisGUI_PINVOKE.Rectangle_RadiusY_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.Rectangle_RadiusY_set(swigCPtr, (float)value);
     } 
     get {
       float ret = NoesisGUI_PINVOKE.Rectangle_RadiusY_get(swigCPtr);

@@ -47,9 +47,9 @@ public class ToolBarOverflowPanel : Panel {
     }
   }
 
-  public float WrapWidth {
+  public double WrapWidth {
     set {
-      NoesisGUI_PINVOKE.ToolBarOverflowPanel_WrapWidth_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.ToolBarOverflowPanel_WrapWidth_set(swigCPtr, (float)value);
     } 
     get {
       float ret = NoesisGUI_PINVOKE.ToolBarOverflowPanel_WrapWidth_get(swigCPtr);

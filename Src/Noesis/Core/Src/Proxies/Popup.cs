@@ -30,7 +30,7 @@ public class Popup : FrameworkElement {
 
   #region Events
   #region Closed
-  public delegate void ClosedHandler(object sender, EventArgs e);
+  public delegate void ClosedHandler(object sender, NoesisEventArgs e);
   public event ClosedHandler Closed {
     add {
       if (!_Closed.ContainsKey(swigCPtr.Handle)) {
@@ -71,7 +71,7 @@ public class Popup : FrameworkElement {
           throw new InvalidOperationException("Delegate not registered for Closed event");
         }
         if (handler != null) {
-          handler(Noesis.Extend.GetProxy(sender, false), new EventArgs(e, false));
+          handler(Noesis.Extend.GetProxy(sender, false), new NoesisEventArgs(e, false));
         }
       }
     }
@@ -85,7 +85,7 @@ public class Popup : FrameworkElement {
   #endregion
 
   #region Opened
-  public delegate void OpenedHandler(object sender, EventArgs e);
+  public delegate void OpenedHandler(object sender, NoesisEventArgs e);
   public event OpenedHandler Opened {
     add {
       if (!_Opened.ContainsKey(swigCPtr.Handle)) {
@@ -126,7 +126,7 @@ public class Popup : FrameworkElement {
           throw new InvalidOperationException("Delegate not registered for Opened event");
         }
         if (handler != null) {
-          handler(Noesis.Extend.GetProxy(sender, false), new EventArgs(e, false));
+          handler(Noesis.Extend.GetProxy(sender, false), new NoesisEventArgs(e, false));
         }
       }
     }
@@ -261,9 +261,9 @@ public class Popup : FrameworkElement {
     } 
   }
 
-  public float HorizontalOffset {
+  public double HorizontalOffset {
     set {
-      NoesisGUI_PINVOKE.Popup_HorizontalOffset_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.Popup_HorizontalOffset_set(swigCPtr, (float)value);
     } 
     get {
       float ret = NoesisGUI_PINVOKE.Popup_HorizontalOffset_get(swigCPtr);
@@ -328,9 +328,9 @@ public class Popup : FrameworkElement {
     } 
   }
 
-  public float VerticalOffset {
+  public double VerticalOffset {
     set {
-      NoesisGUI_PINVOKE.Popup_VerticalOffset_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.Popup_VerticalOffset_set(swigCPtr, (float)value);
     } 
     get {
       float ret = NoesisGUI_PINVOKE.Popup_VerticalOffset_get(swigCPtr);

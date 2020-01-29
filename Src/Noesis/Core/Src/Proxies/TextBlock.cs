@@ -186,9 +186,9 @@ public class TextBlock : FrameworkElement {
     }
   }
 
-  public float FontSize {
+  public double FontSize {
     set {
-      NoesisGUI_PINVOKE.TextBlock_FontSize_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.TextBlock_FontSize_set(swigCPtr, (float)value);
     } 
     get {
       float ret = NoesisGUI_PINVOKE.TextBlock_FontSize_get(swigCPtr);
@@ -243,9 +243,9 @@ public class TextBlock : FrameworkElement {
     }
   }
 
-  public float LineHeight {
+  public double LineHeight {
     set {
-      NoesisGUI_PINVOKE.TextBlock_LineHeight_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.TextBlock_LineHeight_set(swigCPtr, (float)value);
     } 
     get {
       float ret = NoesisGUI_PINVOKE.TextBlock_LineHeight_get(swigCPtr);
@@ -290,9 +290,9 @@ public class TextBlock : FrameworkElement {
     }
   }
 
-  public float StrokeThickness {
+  public double StrokeThickness {
     set {
-      NoesisGUI_PINVOKE.TextBlock_StrokeThickness_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.TextBlock_StrokeThickness_set(swigCPtr, (float)value);
     } 
     get {
       float ret = NoesisGUI_PINVOKE.TextBlock_StrokeThickness_get(swigCPtr);

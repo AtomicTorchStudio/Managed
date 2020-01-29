@@ -315,7 +315,7 @@ namespace Noesis
                     }
                     if (handler != null)
                     {
-                        handler((View)Noesis.Extend.GetProxy(cPtr, false), EventArgs.Empty);
+                        handler((View)Noesis.Extend.GetProxy(cPtr, false), NoesisEventArgs.Empty);
                     }
                 }
             }
@@ -562,7 +562,7 @@ namespace Noesis
     /// <summary>
     /// Handler for View.Rendering event.
     /// </summary>
-    public delegate void RenderingEventHandler(object sender, EventArgs e);
+    public delegate void RenderingEventHandler(object sender, NoesisEventArgs e);
 
     /// <summary>
     /// Callback for View.Timer event.

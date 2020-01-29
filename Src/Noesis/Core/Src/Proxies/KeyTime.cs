@@ -30,7 +30,7 @@ public struct KeyTime {
     }
   }
 
-  public float Percent {
+  public double Percent {
     get {
       if (this._type != KeyTimeType.Percent) {
         throw new InvalidOperationException("KeyTime does not have a percent value");

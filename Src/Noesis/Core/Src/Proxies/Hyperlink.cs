@@ -143,14 +143,14 @@ public class Hyperlink : Span {
     }
   }
 
-  public string NavigateUri {
+  public Uri NavigateUri {
     set {
-      NoesisGUI_PINVOKE.Hyperlink_NavigateUri_set(swigCPtr, value != null ? value : string.Empty);
+      NoesisGUI_PINVOKE.Hyperlink_NavigateUri_set(swigCPtr, value != null ? value.AbsoluteUri : string.Empty);
     }
     get {
       IntPtr strPtr = NoesisGUI_PINVOKE.Hyperlink_NavigateUri_get(swigCPtr);
       string str = Noesis.Extend.StringFromNativeUtf8(strPtr);
-      return str;
+      return new Uri(str);
     }
   }
 
