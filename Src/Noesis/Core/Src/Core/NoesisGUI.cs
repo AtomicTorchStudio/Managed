@@ -39,9 +39,9 @@ namespace Noesis
         private static bool _initialized = false;
 
         /// <summary>
-        /// Initializes NoesisGUI.
+        /// Initializes NoesisGUI. Use Name and Key provided when you purchased your NoesisGUI license.
         /// </summary>
-        public static void Init()
+        public static void Init(string licenseName, string licenseKey)
         {
             if (!_initialized)
             {
@@ -50,7 +50,7 @@ namespace Noesis
                 UriHelper.RegisterPack();
                 Extend.RegisterCallbacks();
 
-                Noesis_Init();
+                Noesis_Init(licenseName, licenseKey);
 
                 Extend.Init();
 
@@ -100,6 +100,40 @@ namespace Noesis
         public static void SetFontProvider(FontProvider provider)
         {
             Noesis_SetFontProvider(Extend.GetInstanceHandle(provider));
+        }
+
+        /// <summary>
+        /// Sets the family names to be used by the global font fallback mechanism. These fonts are used
+        /// whenever the FontFamily of an element does not contain needed glyphs. Fallback sequence can
+        /// specify font locations, for example { "./Fonts/#Pericles Light", "Tahoma" , "Verdana" } 
+        /// </summary>
+        public static void SetFontFallbacks(string[] familyNames)
+        {
+            if (familyNames == null)
+            {
+                throw new ArgumentNullException("familyNames");
+            }
+
+            Noesis_SetFontFallbacks(familyNames, familyNames.Length);
+        }
+
+        /// <summary>
+        /// Sets default font properties to be used when not specified in an element
+        /// </summary>
+        public static void SetFontDefaultProperties(float size, FontWeight weight, FontStretch stretch,
+            FontStyle style)
+        {
+            Noesis_SetFontDefaultProperties(size, (int)weight, (int)stretch, (int)style);
+        }
+
+        /// <summary>
+        /// Loads the specified dictionary file as the application-scope resources.
+        /// </summary>
+        public static void LoadApplicationResources(string filename)
+        {
+            ResourceDictionary app = new ResourceDictionary();
+            SetApplicationResources(app);
+            LoadComponent(app, filename);
         }
 
         /// <summary>
@@ -409,7 +443,8 @@ namespace Noesis
         static extern IntPtr Noesis_GetBuildVersion();
 
         [DllImport(Library.Name)]
-        static extern void Noesis_Init();
+        static extern void Noesis_Init([MarshalAs(UnmanagedType.LPStr)] string licenseName,
+            [MarshalAs(UnmanagedType.LPStr)] string licenseKey);
 
         [DllImport(Library.Name)]
         static extern void Noesis_Shutdown();
@@ -422,6 +457,13 @@ namespace Noesis
 
         [DllImport(Library.Name)]
         static extern void Noesis_SetFontProvider(HandleRef provider);
+
+        [DllImport(Library.Name)]
+        static extern void Noesis_SetFontFallbacks(string[] familyNames, int count);
+
+        [DllImport(Library.Name)]
+        static extern void Noesis_SetFontDefaultProperties(float size, int weight, int stretch,
+            int style);
 
         [DllImport(Library.Name)]
         static extern void Noesis_SetApplicationResources(HandleRef resources);

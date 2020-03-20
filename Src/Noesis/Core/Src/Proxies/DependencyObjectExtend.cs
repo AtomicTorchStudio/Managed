@@ -827,10 +827,6 @@ namespace Noesis
         #endregion
 
         #region Imports
-        static DependencyObject()
-        {
-            Noesis.GUI.Init();
-        }
 
         private static void CheckProperty(IntPtr dependencyObject, IntPtr dependencyProperty, string msg)
         {

@@ -65,6 +65,7 @@
   <ItemGroup>
     <None Include="Noesis.App.Displays.WinRT.nuspec" />
     <None Include="$(SolutionDir)LICENSE.txt" />
+    <None Include="$(SolutionDir)THIRD_PARTY.txt" />
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
@@ -72,7 +73,7 @@
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets" />
   <PropertyGroup>
     <PackageOutputPath>$(SolutionDir)NuGet\</PackageOutputPath>
-    <PackageVersion>2.2.5</PackageVersion>
+    <PackageVersion>3.0.0-beta1</PackageVersion>
     <NuGetTool>$(NuGetPackageRoot)nuget.commandline\4.9.3\tools\NuGet.exe</NuGetTool>
     <PostBuildEvent>$(NuGetTool) pack $(ProjectDir)$(ProjectFileName) -OutputDirectory $(PackageOutputPath) -Version $(PackageVersion) -Prop Configuration=$(Configuration) -MSBuildVersion 15.9</PostBuildEvent>
   </PropertyGroup>

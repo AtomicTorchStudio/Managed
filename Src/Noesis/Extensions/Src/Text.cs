@@ -23,12 +23,8 @@ namespace NoesisGUIExtensions
     ///     </Grid>
     ///
     /// </summary>
-    public class Text
+    public static class Text
     {
-        public Text()
-        {
-        }
-
         /// <summary>
         /// Specifies the brush used to stroke the text
         /// </summary>
@@ -78,7 +74,7 @@ namespace NoesisGUIExtensions
 
         public static readonly DependencyProperty PlaceholderProperty =
             DependencyProperty.RegisterAttached("Placeholder", typeof(string), typeof(Text),
-            new FrameworkPropertyMetadata(string.Empty, FrameworkPropertyMetadataOptions.Inherits));
+            new FrameworkPropertyMetadata(string.Empty, OnPlaceholderChanged));
 
         public static void SetPlaceholder(UIElement element, string value)
         {
@@ -120,7 +116,7 @@ namespace NoesisGUIExtensions
             DependencyProperty.RegisterAttached("PasswordLength", typeof(uint), typeof(Text),
             new FrameworkPropertyMetadata(0u));
 
-        public uint GetPasswordLength(PasswordBox element)
+        public static uint GetPasswordLength(PasswordBox element)
         {
             return (uint)element.GetValue(PasswordLengthProperty);
         }

@@ -49,6 +49,13 @@ public class ContentPresenter : FrameworkElement {
     }
   }
 
+  public static DependencyProperty ContentStringFormatProperty {
+    get {
+      IntPtr cPtr = NoesisGUI_PINVOKE.ContentPresenter_ContentStringFormatProperty_get();
+      return (DependencyProperty)Noesis.Extend.GetProxy(cPtr, false);
+    }
+  }
+
   public static DependencyProperty ContentTemplateProperty {
     get {
       IntPtr cPtr = NoesisGUI_PINVOKE.ContentPresenter_ContentTemplateProperty_get();
@@ -79,6 +86,17 @@ public class ContentPresenter : FrameworkElement {
     }
     get {
       IntPtr strPtr = NoesisGUI_PINVOKE.ContentPresenter_ContentSource_get(swigCPtr);
+      string str = Noesis.Extend.StringFromNativeUtf8(strPtr);
+      return str;
+    }
+  }
+
+  public string ContentStringFormat {
+    set {
+      NoesisGUI_PINVOKE.ContentPresenter_ContentStringFormat_set(swigCPtr, value != null ? value : string.Empty);
+    }
+    get {
+      IntPtr strPtr = NoesisGUI_PINVOKE.ContentPresenter_ContentStringFormat_get(swigCPtr);
       string str = Noesis.Extend.StringFromNativeUtf8(strPtr);
       return str;
     }

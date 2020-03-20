@@ -15,11 +15,6 @@ namespace Noesis
     ////////////////////////////////////////////////////////////////////////////////////////////////
     internal partial class Extend
     {
-        static Extend()
-        {
-            Noesis.GUI.Init();
-        }
-
         ////////////////////////////////////////////////////////////////////////////////////////////////
         public static bool Initialized { get; internal set; }
 
@@ -77,7 +72,13 @@ namespace Noesis
                     GC.Collect();
                     GC.WaitForPendingFinalizers();
 
-                    AddDestroyedExtends();
+#if !NETSTANDARD
+                    _weakExtendsIndex = 0;
+                    while (_weakExtendsIndex < _weakExtends.Count)
+                    {
+                        AddDestroyedExtends();
+                    }
+#endif
 
                     foreach (var kv in pendingReleases)
                     {
@@ -89,6 +90,9 @@ namespace Noesis
                     }
 
                     ReleasePending();
+
+                    Noesis_ClearExtendTypes();
+                    Noesis_EnableExtend(false);
                 }
                 catch (Exception)
                 {
@@ -96,11 +100,7 @@ namespace Noesis
                     // assembly unload will close Unity without notifying
                 }
 
-                Noesis_ClearExtendTypes();
-
                 ClearTables();
-
-                Noesis_EnableExtend(false);
             }
         }
 
@@ -155,6 +155,7 @@ namespace Noesis
                 _streamGetPosition,
                 _streamGetLength,
                 _streamRead,
+                _streamClose,
 
                 _providerLoadXaml,
                 _providerTextureInfo,
@@ -228,7 +229,7 @@ namespace Noesis
                 null, null,
                 null, null,
                 null,
-                null, null, null, null,
+                null, null, null, null, null,
                 null, null, null, null, null, null,
                 null,
                 null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
@@ -1877,22 +1878,20 @@ namespace Noesis
 
         ////////////////////////////////////////////////////////////////////////////////////////////////
         private delegate void Callback_FrameworkElementMeasure(IntPtr cPtr,
-            IntPtr availableSizePtr, IntPtr desiredSizePtr, [MarshalAs(UnmanagedType.U1)]ref bool callBase);
+            ref Size availableSize, ref Size desiredSize, [MarshalAs(UnmanagedType.U1)]ref bool callBase);
         private static Callback_FrameworkElementMeasure _frameworkElementMeasure = FrameworkElementMeasure;
 
         [MonoPInvokeCallback(typeof(Callback_FrameworkElementMeasure))]
         private static void FrameworkElementMeasure(IntPtr cPtr,
-            IntPtr availableSizePtr, IntPtr desiredSizePtr, ref bool callBase)
+            ref Size availableSize, ref Size desiredSize, ref bool callBase)
         {
             try
             {
                 FrameworkElement element = (FrameworkElement)GetExtendInstance(cPtr);
                 if (element != null)
                 {
-                    Size availableSize = Marshal.PtrToStructure<Size>(availableSizePtr);
-                    Size desiredSize = element.CallMeasureOverride(availableSize, out callBase);
+                    desiredSize = element.CallMeasureOverride(availableSize, out callBase);
                     if (desiredSize.IsEmpty) desiredSize = new Size(0, 0);
-                    Marshal.StructureToPtr(desiredSize, desiredSizePtr, false);
                 }
             }
             catch (Exception e)
@@ -1903,22 +1902,20 @@ namespace Noesis
 
         ////////////////////////////////////////////////////////////////////////////////////////////////
         private delegate void Callback_FrameworkElementArrange(IntPtr cPtr,
-            IntPtr finalSizePtr, IntPtr renderSizePtr, [MarshalAs(UnmanagedType.U1)]ref bool callBase);
+            ref Size finalSize, ref Size renderSize, [MarshalAs(UnmanagedType.U1)]ref bool callBase);
         private static Callback_FrameworkElementArrange _frameworkElementArrange = FrameworkElementArrange;
 
         [MonoPInvokeCallback(typeof(Callback_FrameworkElementArrange))]
         private static void FrameworkElementArrange(IntPtr cPtr,
-            IntPtr finalSizePtr, IntPtr renderSizePtr, ref bool callBase)
+            ref Size finalSize, ref Size renderSize, ref bool callBase)
         {
             try
             {
                 FrameworkElement element = (FrameworkElement)GetExtendInstance(cPtr);
                 if (element != null)
                 {
-                    Size finalSize = Marshal.PtrToStructure<Size>(finalSizePtr);
-                    Size renderSize = element.CallArrangeOverride(finalSize, out callBase);
+                    renderSize = element.CallArrangeOverride(finalSize, out callBase);
                     if (renderSize.IsEmpty) renderSize = new Size(0, 0);
-                    Marshal.StructureToPtr(renderSize, renderSizePtr, false);
                 }
             }
             catch (Exception e)
@@ -2669,6 +2666,27 @@ namespace Noesis
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////
+        private delegate void Callback_StreamClose(IntPtr cPtr);
+        private static Callback_StreamClose _streamClose = StreamClose;
+
+        [MonoPInvokeCallback(typeof(Callback_StreamClose))]
+        private static void StreamClose(IntPtr cPtr)
+        {
+            try
+            {
+                var stream = (System.IO.Stream)GetExtendInstance(cPtr);
+                if (stream != null)
+                {
+                    stream.Close();
+                }
+            }
+            catch (Exception e)
+            {
+                Error.UnhandledException(e);
+            }
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////
         private delegate IntPtr Callback_ProviderLoadXaml(IntPtr cPtr, IntPtr filename);
         private static Callback_ProviderLoadXaml _providerLoadXaml = ProviderLoadXaml;
 
@@ -3112,47 +3130,17 @@ namespace Noesis
         private static T GetPropertyValueNullable<T>(PropertyAccessor prop, object instance,
             out bool isNull) where T: struct
         {
-            if (instance != null)
+            if (!prop.IsNullable)
             {
-                if (!prop.IsNullable)
-                {
-                    isNull = false;
-                    return GetPropertyValue<T>(prop, instance);
-                }
-                else
-                {
-                    T? value = ((PropertyAccessorT<T?>)prop).Get(instance);
-                    isNull = !value.HasValue;
-                    return value.GetValueOrDefault();
-                }
+                isNull = false;
+                return GetPropertyValue<T>(prop, instance);
             }
-
-            isNull = false;
-            return default(T);
-        }
-
-        private static void GetPropertyValueStruct<T>(PropertyAccessor prop, object instance,
-            IntPtr valuePtr, out bool isNull) where T: struct
-        {
-            if (instance != null)
+            else
             {
-                if (!prop.IsNullable)
-                {
-                    isNull = false;
-                    Marshal.StructureToPtr(((PropertyAccessorT<T>)prop).Get(instance), valuePtr, false);
-                }
-                else
-                {
-                    T? value = ((PropertyAccessorT<T?>)prop).Get(instance);
-                    isNull = !value.HasValue;
-                    if (value.HasValue)
-                    {
-                        Marshal.StructureToPtr(value.Value, valuePtr, false);
-                    }
-                }
+                T? value = GetPropertyValue<T?>(prop, instance);
+                isNull = !value.HasValue;
+                return value.GetValueOrDefault();
             }
-
-            isNull = false;
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -3338,17 +3326,17 @@ namespace Noesis
         }
 
         private delegate void Callback_GetPropertyValue_Color(IntPtr nativeType, int propertyIndex,
-            IntPtr cPtr, IntPtr valuePtr, [MarshalAs(UnmanagedType.U1)]ref bool isNull);
+            IntPtr cPtr, ref Color value, [MarshalAs(UnmanagedType.U1)]ref bool isNull);
         private static Callback_GetPropertyValue_Color _getPropertyValue_Color = GetPropertyValue_Color;
 
         [MonoPInvokeCallback(typeof(Callback_GetPropertyValue_Color))]
         private static void GetPropertyValue_Color(IntPtr nativeType, int propertyIndex,
-            IntPtr cPtr, IntPtr valuePtr, ref bool isNull)
+            IntPtr cPtr, ref Color value, ref bool isNull)
         {
             try
             {
-                GetPropertyValueStruct<Noesis.Color>(GetProperty(nativeType, propertyIndex),
-                    GetExtendInstance(cPtr), valuePtr, out isNull);
+                value = GetPropertyValueNullable<Color>(GetProperty(nativeType, propertyIndex),
+                    GetExtendInstance(cPtr), out isNull);
             }
             catch (Exception e)
             {
@@ -3357,17 +3345,17 @@ namespace Noesis
         }
 
         private delegate void Callback_GetPropertyValue_Point(IntPtr nativeType, int propertyIndex,
-            IntPtr cPtr, IntPtr valuePtr, [MarshalAs(UnmanagedType.U1)]ref bool isNull);
+            IntPtr cPtr, ref Point value, [MarshalAs(UnmanagedType.U1)]ref bool isNull);
         private static Callback_GetPropertyValue_Point _getPropertyValue_Point = GetPropertyValue_Point;
 
         [MonoPInvokeCallback(typeof(Callback_GetPropertyValue_Point))]
         private static void GetPropertyValue_Point(IntPtr nativeType, int propertyIndex,
-            IntPtr cPtr, IntPtr valuePtr, ref bool isNull)
+            IntPtr cPtr, ref Point value, ref bool isNull)
         {
             try
             {
-                GetPropertyValueStruct<Noesis.Point>(GetProperty(nativeType, propertyIndex),
-                    GetExtendInstance(cPtr), valuePtr, out isNull);
+                value = GetPropertyValueNullable<Point>(GetProperty(nativeType, propertyIndex),
+                    GetExtendInstance(cPtr), out isNull);
             }
             catch (Exception e)
             {
@@ -3376,17 +3364,17 @@ namespace Noesis
         }
 
         private delegate void Callback_GetPropertyValue_Rect(IntPtr nativeType, int propertyIndex,
-            IntPtr cPtr, IntPtr valuePtr, [MarshalAs(UnmanagedType.U1)]ref bool isNull);
+            IntPtr cPtr, ref Rect value, [MarshalAs(UnmanagedType.U1)]ref bool isNull);
         private static Callback_GetPropertyValue_Rect _getPropertyValue_Rect = GetPropertyValue_Rect;
 
         [MonoPInvokeCallback(typeof(Callback_GetPropertyValue_Rect))]
         private static void GetPropertyValue_Rect(IntPtr nativeType, int propertyIndex,
-            IntPtr cPtr, IntPtr valuePtr, ref bool isNull)
+            IntPtr cPtr, ref Rect value, ref bool isNull)
         {
             try
             {
-                GetPropertyValueStruct<Noesis.Rect>(GetProperty(nativeType, propertyIndex),
-                    GetExtendInstance(cPtr), valuePtr, out isNull);
+                value = GetPropertyValueNullable<Rect>(GetProperty(nativeType, propertyIndex),
+                    GetExtendInstance(cPtr), out isNull);
             }
             catch (Exception e)
             {
@@ -3395,17 +3383,17 @@ namespace Noesis
         }
 
         private delegate void Callback_GetPropertyValue_Size(IntPtr nativeType, int propertyIndex,
-            IntPtr cPtr, IntPtr valuePtr, [MarshalAs(UnmanagedType.U1)]ref bool isNull);
+            IntPtr cPtr, ref Size value, [MarshalAs(UnmanagedType.U1)]ref bool isNull);
         private static Callback_GetPropertyValue_Size _getPropertyValue_Size = GetPropertyValue_Size;
 
         [MonoPInvokeCallback(typeof(Callback_GetPropertyValue_Size))]
         private static void GetPropertyValue_Size(IntPtr nativeType, int propertyIndex,
-            IntPtr cPtr, IntPtr valuePtr, ref bool isNull)
+            IntPtr cPtr, ref Size value, ref bool isNull)
         {
             try
             {
-                GetPropertyValueStruct<Noesis.Size>(GetProperty(nativeType, propertyIndex),
-                    GetExtendInstance(cPtr), valuePtr, out isNull);
+                value = GetPropertyValueNullable<Size>(GetProperty(nativeType, propertyIndex),
+                    GetExtendInstance(cPtr), out isNull);
             }
             catch (Exception e)
             {
@@ -3414,17 +3402,17 @@ namespace Noesis
         }
 
         private delegate void Callback_GetPropertyValue_Thickness(IntPtr nativeType, int propertyIndex,
-            IntPtr cPtr, IntPtr valuePtr, [MarshalAs(UnmanagedType.U1)]ref bool isNull);
+            IntPtr cPtr, ref Thickness value, [MarshalAs(UnmanagedType.U1)]ref bool isNull);
         private static Callback_GetPropertyValue_Thickness _getPropertyValue_Thickness = GetPropertyValue_Thickness;
 
         [MonoPInvokeCallback(typeof(Callback_GetPropertyValue_Thickness))]
         private static void GetPropertyValue_Thickness(IntPtr nativeType, int propertyIndex,
-            IntPtr cPtr, IntPtr valuePtr, ref bool isNull)
+            IntPtr cPtr, ref Thickness value, ref bool isNull)
         {
             try
             {
-                GetPropertyValueStruct<Noesis.Thickness>(GetProperty(nativeType, propertyIndex),
-                    GetExtendInstance(cPtr), valuePtr, out isNull);
+                value = GetPropertyValueNullable<Thickness>(GetProperty(nativeType, propertyIndex),
+                    GetExtendInstance(cPtr), out isNull);
             }
             catch (Exception e)
             {
@@ -3433,17 +3421,17 @@ namespace Noesis
         }
 
         private delegate void Callback_GetPropertyValue_CornerRadius(IntPtr nativeType, int propertyIndex,
-            IntPtr cPtr, IntPtr valuePtr, [MarshalAs(UnmanagedType.U1)]ref bool isNull);
+            IntPtr cPtr, ref CornerRadius value, [MarshalAs(UnmanagedType.U1)]ref bool isNull);
         private static Callback_GetPropertyValue_CornerRadius _getPropertyValue_CornerRadius = GetPropertyValue_CornerRadius;
 
         [MonoPInvokeCallback(typeof(Callback_GetPropertyValue_CornerRadius))]
         private static void GetPropertyValue_CornerRadius(IntPtr nativeType, int propertyIndex,
-            IntPtr cPtr, IntPtr valuePtr, ref bool isNull)
+            IntPtr cPtr, ref CornerRadius value, ref bool isNull)
         {
             try
             {
-                GetPropertyValueStruct<Noesis.CornerRadius>(GetProperty(nativeType, propertyIndex),
-                    GetExtendInstance(cPtr), valuePtr, out isNull);
+                value = GetPropertyValueNullable<CornerRadius>(GetProperty(nativeType, propertyIndex),
+                    GetExtendInstance(cPtr), out isNull);
             }
             catch (Exception e)
             {
@@ -3452,17 +3440,17 @@ namespace Noesis
         }
 
         private delegate void Callback_GetPropertyValue_TimeSpan(IntPtr nativeType, int propertyIndex,
-            IntPtr cPtr, IntPtr valuePtr, [MarshalAs(UnmanagedType.U1)]ref bool isNull);
+            IntPtr cPtr, ref TimeSpanStruct value, [MarshalAs(UnmanagedType.U1)]ref bool isNull);
         private static Callback_GetPropertyValue_TimeSpan _getPropertyValue_TimeSpan = GetPropertyValue_TimeSpan;
 
         [MonoPInvokeCallback(typeof(Callback_GetPropertyValue_TimeSpan))]
         private static void GetPropertyValue_TimeSpan(IntPtr nativeType, int propertyIndex,
-            IntPtr cPtr, IntPtr valuePtr, ref bool isNull)
+            IntPtr cPtr, ref TimeSpanStruct value, ref bool isNull)
         {
             try
             {
-                GetPropertyValueStruct<Noesis.TimeSpanStruct>(GetProperty(nativeType, propertyIndex),
-                    GetExtendInstance(cPtr), valuePtr, out isNull);
+                value = GetPropertyValueNullable<TimeSpanStruct>(GetProperty(nativeType, propertyIndex),
+                    GetExtendInstance(cPtr), out isNull);
             }
             catch (Exception e)
             {
@@ -3471,17 +3459,17 @@ namespace Noesis
         }
 
         private delegate void Callback_GetPropertyValue_Duration(IntPtr nativeType, int propertyIndex,
-            IntPtr cPtr, IntPtr valuePtr, [MarshalAs(UnmanagedType.U1)]ref bool isNull);
+            IntPtr cPtr, ref Duration value, [MarshalAs(UnmanagedType.U1)]ref bool isNull);
         private static Callback_GetPropertyValue_Duration _getPropertyValue_Duration = GetPropertyValue_Duration;
 
         [MonoPInvokeCallback(typeof(Callback_GetPropertyValue_Duration))]
         private static void GetPropertyValue_Duration(IntPtr nativeType, int propertyIndex,
-            IntPtr cPtr, IntPtr valuePtr, ref bool isNull)
+            IntPtr cPtr, ref Duration value, ref bool isNull)
         {
             try
             {
-                GetPropertyValueStruct<Noesis.Duration>(GetProperty(nativeType, propertyIndex),
-                    GetExtendInstance(cPtr), valuePtr, out isNull);
+                value = GetPropertyValueNullable<Duration>(GetProperty(nativeType, propertyIndex),
+                    GetExtendInstance(cPtr), out isNull);
             }
             catch (Exception e)
             {
@@ -3490,17 +3478,17 @@ namespace Noesis
         }
 
         private delegate void Callback_GetPropertyValue_KeyTime(IntPtr nativeType, int propertyIndex,
-            IntPtr cPtr, IntPtr valuePtr, [MarshalAs(UnmanagedType.U1)]ref bool isNull);
+            IntPtr cPtr, ref KeyTime value, [MarshalAs(UnmanagedType.U1)]ref bool isNull);
         private static Callback_GetPropertyValue_KeyTime _getPropertyValue_KeyTime = GetPropertyValue_KeyTime;
 
         [MonoPInvokeCallback(typeof(Callback_GetPropertyValue_KeyTime))]
         private static void GetPropertyValue_KeyTime(IntPtr nativeType, int propertyIndex,
-            IntPtr cPtr, IntPtr valuePtr, ref bool isNull)
+            IntPtr cPtr, ref KeyTime value, ref bool isNull)
         {
             try
             {
-                GetPropertyValueStruct<Noesis.KeyTime>(GetProperty(nativeType, propertyIndex),
-                    GetExtendInstance(cPtr), valuePtr, out isNull);
+                value = GetPropertyValueNullable<KeyTime>(GetProperty(nativeType, propertyIndex),
+                    GetExtendInstance(cPtr), out isNull);
             }
             catch (Exception e)
             {
@@ -3562,33 +3550,13 @@ namespace Noesis
         private static void SetPropertyValueNullable<T>(PropertyAccessor prop, object instance,
             T value, bool isNull) where T: struct
         {
-            if (instance != null)
+            if (!prop.IsNullable)
             {
-                if (!prop.IsNullable)
-                {
-                    SetPropertyValue<T>(prop, instance, value);
-                }
-                else
-                {
-                    ((PropertyAccessorT<T?>)prop).Set(instance, isNull ? (T?)null : (T?)value);
-                }
+                SetPropertyValue<T>(prop, instance, value);
             }
-        }
-
-        private static void SetPropertyValueStruct<T>(PropertyAccessor prop, object instance,
-            IntPtr valuePtr, bool isNull) where T: struct
-        {
-            if (instance != null)
+            else
             {
-                if (!prop.IsNullable)
-                {
-                    ((PropertyAccessorT<T>)prop).Set(instance, Marshal.PtrToStructure<T>(valuePtr));
-                }
-                else
-                {
-                    ((PropertyAccessorT<T?>)prop).Set(instance, isNull ? (T?)null :
-                        (T?)Marshal.PtrToStructure<T>(valuePtr));
-                }
+                SetPropertyValue<T?>(prop, instance, isNull ? null : (T?)value);
             }
         }
 
@@ -3773,17 +3741,16 @@ namespace Noesis
         }
 
         private delegate void Callback_SetPropertyValue_Color(IntPtr nativeType, int propertyIndex,
-            IntPtr cPtr, IntPtr val,
-            [MarshalAs(UnmanagedType.U1)] bool isNull);
+            IntPtr cPtr, ref Color val, [MarshalAs(UnmanagedType.U1)] bool isNull);
         private static Callback_SetPropertyValue_Color _setPropertyValue_Color = SetPropertyValue_Color;
 
         [MonoPInvokeCallback(typeof(Callback_SetPropertyValue_Color))]
         private static void SetPropertyValue_Color(IntPtr nativeType, int propertyIndex,
-            IntPtr cPtr, IntPtr val, bool isNull)
+            IntPtr cPtr, ref Color val, bool isNull)
         {
             try
             {
-                SetPropertyValueStruct<Noesis.Color>(GetProperty(nativeType, propertyIndex),
+                SetPropertyValueNullable<Color>(GetProperty(nativeType, propertyIndex),
                     GetExtendInstance(cPtr), val, isNull);
             }
             catch (Exception e)
@@ -3793,17 +3760,16 @@ namespace Noesis
         }
 
         private delegate void Callback_SetPropertyValue_Point(IntPtr nativeType, int propertyIndex,
-            IntPtr cPtr, IntPtr val,
-            [MarshalAs(UnmanagedType.U1)] bool isNull);
+            IntPtr cPtr, ref Point val, [MarshalAs(UnmanagedType.U1)] bool isNull);
         private static Callback_SetPropertyValue_Point _setPropertyValue_Point = SetPropertyValue_Point;
 
         [MonoPInvokeCallback(typeof(Callback_SetPropertyValue_Point))]
         private static void SetPropertyValue_Point(IntPtr nativeType, int propertyIndex,
-            IntPtr cPtr, IntPtr val, bool isNull)
+            IntPtr cPtr, ref Point val, bool isNull)
         {
             try
             {
-                SetPropertyValueStruct<Noesis.Point>(GetProperty(nativeType, propertyIndex),
+                SetPropertyValueNullable<Point>(GetProperty(nativeType, propertyIndex),
                     GetExtendInstance(cPtr), val, isNull);
             }
             catch (Exception e)
@@ -3813,17 +3779,16 @@ namespace Noesis
         }
 
         private delegate void Callback_SetPropertyValue_Rect(IntPtr nativeType, int propertyIndex,
-            IntPtr cPtr, IntPtr val,
-            [MarshalAs(UnmanagedType.U1)] bool isNull);
+            IntPtr cPtr, ref Rect val, [MarshalAs(UnmanagedType.U1)] bool isNull);
         private static Callback_SetPropertyValue_Rect _setPropertyValue_Rect = SetPropertyValue_Rect;
 
         [MonoPInvokeCallback(typeof(Callback_SetPropertyValue_Rect))]
         private static void SetPropertyValue_Rect(IntPtr nativeType, int propertyIndex,
-            IntPtr cPtr, IntPtr val, bool isNull)
+            IntPtr cPtr, ref Rect val, bool isNull)
         {
             try
             {
-                SetPropertyValueStruct<Noesis.Rect>(GetProperty(nativeType, propertyIndex),
+                SetPropertyValueNullable<Rect>(GetProperty(nativeType, propertyIndex),
                     GetExtendInstance(cPtr), val, isNull);
             }
             catch (Exception e)
@@ -3833,17 +3798,16 @@ namespace Noesis
         }
 
         private delegate void Callback_SetPropertyValue_Size(IntPtr nativeType, int propertyIndex,
-            IntPtr cPtr, IntPtr val,
-            [MarshalAs(UnmanagedType.U1)] bool isNull);
+            IntPtr cPtr, ref Size val, [MarshalAs(UnmanagedType.U1)] bool isNull);
         private static Callback_SetPropertyValue_Size _setPropertyValue_Size = SetPropertyValue_Size;
 
         [MonoPInvokeCallback(typeof(Callback_SetPropertyValue_Size))]
         private static void SetPropertyValue_Size(IntPtr nativeType, int propertyIndex,
-            IntPtr cPtr, IntPtr val, bool isNull)
+            IntPtr cPtr, ref Size val, bool isNull)
         {
             try
             {
-                SetPropertyValueStruct<Noesis.Size>(GetProperty(nativeType, propertyIndex),
+                SetPropertyValueNullable<Size>(GetProperty(nativeType, propertyIndex),
                     GetExtendInstance(cPtr), val, isNull);
             }
             catch (Exception e)
@@ -3853,17 +3817,16 @@ namespace Noesis
         }
 
         private delegate void Callback_SetPropertyValue_Thickness(IntPtr nativeType, int propertyIndex,
-            IntPtr cPtr, IntPtr val,
-            [MarshalAs(UnmanagedType.U1)] bool isNull);
+            IntPtr cPtr, ref Thickness val, [MarshalAs(UnmanagedType.U1)] bool isNull);
         private static Callback_SetPropertyValue_Thickness _setPropertyValue_Thickness = SetPropertyValue_Thickness;
 
         [MonoPInvokeCallback(typeof(Callback_SetPropertyValue_Thickness))]
         private static void SetPropertyValue_Thickness(IntPtr nativeType, int propertyIndex,
-            IntPtr cPtr, IntPtr val, bool isNull)
+            IntPtr cPtr, ref Thickness val, bool isNull)
         {
             try
             {
-                SetPropertyValueStruct<Noesis.Thickness>(GetProperty(nativeType, propertyIndex),
+                SetPropertyValueNullable<Thickness>(GetProperty(nativeType, propertyIndex),
                     GetExtendInstance(cPtr), val, isNull);
             }
             catch (Exception e)
@@ -3873,17 +3836,16 @@ namespace Noesis
         }
 
         private delegate void Callback_SetPropertyValue_CornerRadius(IntPtr nativeType, int propertyIndex,
-            IntPtr cPtr, IntPtr val,
-            [MarshalAs(UnmanagedType.U1)] bool isNull);
+            IntPtr cPtr, ref CornerRadius val, [MarshalAs(UnmanagedType.U1)] bool isNull);
         private static Callback_SetPropertyValue_CornerRadius _setPropertyValue_CornerRadius = SetPropertyValue_CornerRadius;
 
         [MonoPInvokeCallback(typeof(Callback_SetPropertyValue_CornerRadius))]
         private static void SetPropertyValue_CornerRadius(IntPtr nativeType, int propertyIndex,
-            IntPtr cPtr, IntPtr val, bool isNull)
+            IntPtr cPtr, ref CornerRadius val, bool isNull)
         {
             try
             {
-                SetPropertyValueStruct<Noesis.CornerRadius>(GetProperty(nativeType, propertyIndex),
+                SetPropertyValueNullable<CornerRadius>(GetProperty(nativeType, propertyIndex),
                     GetExtendInstance(cPtr), val, isNull);
             }
             catch (Exception e)
@@ -3893,17 +3855,16 @@ namespace Noesis
         }
 
         private delegate void Callback_SetPropertyValue_TimeSpan(IntPtr nativeType, int propertyIndex,
-            IntPtr cPtr, IntPtr val,
-            [MarshalAs(UnmanagedType.U1)] bool isNull);
+            IntPtr cPtr, ref TimeSpanStruct val, [MarshalAs(UnmanagedType.U1)] bool isNull);
         private static Callback_SetPropertyValue_TimeSpan _setPropertyValue_TimeSpan = SetPropertyValue_TimeSpan;
 
         [MonoPInvokeCallback(typeof(Callback_SetPropertyValue_TimeSpan))]
         private static void SetPropertyValue_TimeSpan(IntPtr nativeType, int propertyIndex,
-            IntPtr cPtr, IntPtr val, bool isNull)
+            IntPtr cPtr, ref TimeSpanStruct val, bool isNull)
         {
             try
             {
-                SetPropertyValueStruct<Noesis.TimeSpanStruct>(GetProperty(nativeType, propertyIndex),
+                SetPropertyValueNullable<TimeSpanStruct>(GetProperty(nativeType, propertyIndex),
                     GetExtendInstance(cPtr), val, isNull);
             }
             catch (Exception e)
@@ -3913,17 +3874,16 @@ namespace Noesis
         }
 
         private delegate void Callback_SetPropertyValue_Duration(IntPtr nativeType, int propertyIndex,
-            IntPtr cPtr, IntPtr val,
-            [MarshalAs(UnmanagedType.U1)] bool isNull);
+            IntPtr cPtr, ref Duration val, [MarshalAs(UnmanagedType.U1)] bool isNull);
         private static Callback_SetPropertyValue_Duration _setPropertyValue_Duration = SetPropertyValue_Duration;
 
         [MonoPInvokeCallback(typeof(Callback_SetPropertyValue_Duration))]
         private static void SetPropertyValue_Duration(IntPtr nativeType, int propertyIndex,
-            IntPtr cPtr, IntPtr val, bool isNull)
+            IntPtr cPtr, ref Duration val, bool isNull)
         {
             try
             {
-                SetPropertyValueStruct<Noesis.Duration>(GetProperty(nativeType, propertyIndex),
+                SetPropertyValueNullable<Duration>(GetProperty(nativeType, propertyIndex),
                     GetExtendInstance(cPtr), val, isNull);
             }
             catch (Exception e)
@@ -3933,17 +3893,16 @@ namespace Noesis
         }
 
         private delegate void Callback_SetPropertyValue_KeyTime(IntPtr nativeType, int propertyIndex,
-            IntPtr cPtr, IntPtr val,
-            [MarshalAs(UnmanagedType.U1)] bool isNull);
+            IntPtr cPtr, ref KeyTime val, [MarshalAs(UnmanagedType.U1)] bool isNull);
         private static Callback_SetPropertyValue_KeyTime _setPropertyValue_KeyTime = SetPropertyValue_KeyTime;
 
         [MonoPInvokeCallback(typeof(Callback_SetPropertyValue_KeyTime))]
         private static void SetPropertyValue_KeyTime(IntPtr nativeType, int propertyIndex,
-            IntPtr cPtr, IntPtr val, bool isNull)
+            IntPtr cPtr, ref KeyTime val, bool isNull)
         {
             try
             {
-                SetPropertyValueStruct<Noesis.KeyTime>(GetProperty(nativeType, propertyIndex),
+                SetPropertyValueNullable<KeyTime>(GetProperty(nativeType, propertyIndex),
                     GetExtendInstance(cPtr), val, isNull);
             }
             catch (Exception e)
@@ -4127,22 +4086,6 @@ namespace Noesis
                         else
                         {
                             extend.instance = null;
-                        }
-                    }
-                }
-                else if (!grab)
-                {
-                    ExtendInfo extend;
-                    if (_extends.TryGetValue(cPtr.ToInt64(), out extend))
-                    {
-                        object instance = extend.weak.Target;
-                        if (instance == null && !_pendingRelease.Contains(cPtr))
-                        {
-                            // During shutdown C# proxies are all converted to weak references, so
-                            // they can be marked for finalize. In this situation we need to force
-                            // the release of C++ instance for proxies that are already destroyed
-
-                            BaseComponent.Release(cPtr);
                         }
                     }
                 }

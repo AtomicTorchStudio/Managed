@@ -28,7 +28,11 @@ namespace NoesisGUIExtensions
         /// </summary>
         public void Refresh()
         {
-            FilterRequired?.Invoke();
+            FilterRequiredEventHandler handler =  FilterRequired;
+            if (handler != null)
+            {
+                handler();
+            }
         }
 
         /// <summary>

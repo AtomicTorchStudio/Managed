@@ -810,6 +810,13 @@ public class UIElement : Visual {
     }
   }
 
+  public static DependencyProperty EffectProperty {
+    get {
+      IntPtr cPtr = NoesisGUI_PINVOKE.UIElement_EffectProperty_get();
+      return (DependencyProperty)Noesis.Extend.GetProxy(cPtr, false);
+    }
+  }
+
   public static DependencyProperty FocusableProperty {
     get {
       IntPtr cPtr = NoesisGUI_PINVOKE.UIElement_FocusableProperty_get();
@@ -1562,6 +1569,17 @@ public class UIElement : Visual {
     } 
     get {
       bool ret = NoesisGUI_PINVOKE.UIElement_ClipToBounds_get(swigCPtr);
+      return ret;
+    } 
+  }
+
+  public Effect Effect {
+    set {
+      NoesisGUI_PINVOKE.UIElement_Effect_set(swigCPtr, Effect.getCPtr(value));
+    } 
+    get {
+      IntPtr cPtr = NoesisGUI_PINVOKE.UIElement_Effect_get(swigCPtr);
+      Effect ret = (cPtr == IntPtr.Zero) ? null : new Effect(cPtr, false);
       return ret;
     } 
   }

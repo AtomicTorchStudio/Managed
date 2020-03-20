@@ -86,6 +86,7 @@ namespace Noesis
             Callback_StreamGetPosition callback_StreamGetPosition,
             Callback_StreamGetLength callback_StreamGetLength,
             Callback_StreamRead callback_StreamRead,
+            Callback_StreamClose callback_StreamClose,
             Callback_ProviderLoadXaml callback_ProviderLoadXaml,
             Callback_ProviderTextureInfo callback_ProviderTextureInfo,
             Callback_ProviderTextureLoad callback_ProviderTextureLoad,

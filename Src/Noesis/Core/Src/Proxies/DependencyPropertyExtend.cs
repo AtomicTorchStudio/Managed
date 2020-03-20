@@ -229,10 +229,6 @@ namespace Noesis
         #endregion
 
         #region Imports
-        static DependencyProperty()
-        {
-            Noesis.GUI.Init();
-        }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////
         [DllImport(Library.Name)]

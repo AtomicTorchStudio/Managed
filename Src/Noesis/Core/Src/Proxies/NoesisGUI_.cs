@@ -535,13 +535,6 @@ public class NoesisGUI_ {
     return ret;
   }
 
-  public static uint NoThreadId {
-    get {
-      uint ret = NoesisGUI_PINVOKE.NoThreadId_get();
-      return ret;
-    } 
-  }
-
   public static UpdateSourceTrigger Unbox_UpdateSourceTrigger(IntPtr val) {
     UpdateSourceTrigger ret = (UpdateSourceTrigger)NoesisGUI_PINVOKE.Unbox_UpdateSourceTrigger(val);
     return ret;

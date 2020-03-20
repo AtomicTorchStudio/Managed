@@ -268,24 +268,26 @@ namespace Noesis
         {
             add
             {
-                if (!_Rendering.ContainsKey(CPtr.Handle))
+                long ptr = CPtr.Handle.ToInt64();
+                if (!_Rendering.ContainsKey(ptr))
                 {
-                    _Rendering.Add(CPtr.Handle, null);
+                    _Rendering.Add(ptr, null);
                     Noesis_View_BindRenderingEvent(CPtr, _raiseRendering);
                 }
 
-                _Rendering[CPtr.Handle] += value;
+                _Rendering[ptr] += value;
             }
             remove
             {
-                if (_Rendering.ContainsKey(CPtr.Handle))
+                long ptr = CPtr.Handle.ToInt64();
+                if (_Rendering.ContainsKey(ptr))
                 {
-                    _Rendering[CPtr.Handle] -= value;
+                    _Rendering[ptr] -= value;
 
-                    if (_Rendering[CPtr.Handle] == null)
+                    if (_Rendering[ptr] == null)
                     {
                         Noesis_View_UnbindRenderingEvent(CPtr, _raiseRendering);
-                        _Rendering.Remove(CPtr.Handle);
+                        _Rendering.Remove(ptr);
                     }
                 }
             }
@@ -302,13 +304,14 @@ namespace Noesis
             {
                 if (Noesis.Extend.Initialized)
                 {
+                    long ptr = cPtr.ToInt64();
                     if (sender == IntPtr.Zero)
                     {
-                        _Rendering.Remove(cPtr);
+                        _Rendering.Remove(ptr);
                         return;
                     }
                     RenderingEventHandler handler = null;
-                    if (!_Rendering.TryGetValue(cPtr, out handler))
+                    if (!_Rendering.TryGetValue(ptr, out handler))
                     {
                         throw new InvalidOperationException(
                             "Delegate not registered for Rendering event");
@@ -325,8 +328,8 @@ namespace Noesis
             }
         }
 
-        internal static Dictionary<IntPtr, RenderingEventHandler> _Rendering =
-            new Dictionary<IntPtr, RenderingEventHandler>();
+        internal static Dictionary<long, RenderingEventHandler> _Rendering =
+            new Dictionary<long, RenderingEventHandler>();
         #endregion
 
         /// <summary>

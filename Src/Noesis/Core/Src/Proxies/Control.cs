@@ -180,13 +180,6 @@ public class Control : FrameworkElement {
     }
   }
 
-  public static DependencyProperty SupportsFocusEngagementProperty {
-    get {
-      IntPtr cPtr = NoesisGUI_PINVOKE.Control_SupportsFocusEngagementProperty_get();
-      return (DependencyProperty)Noesis.Extend.GetProxy(cPtr, false);
-    }
-  }
-
   public static RoutedEvent MouseDoubleClickEvent {
     set {
       NoesisGUI_PINVOKE.Control_MouseDoubleClickEvent_set(RoutedEvent.getCPtr(value));
@@ -387,16 +380,6 @@ public class Control : FrameworkElement {
     } 
     get {
       bool ret = NoesisGUI_PINVOKE.Control_IsFocusEngagementEnabled_get(swigCPtr);
-      return ret;
-    } 
-  }
-
-  public bool SupportsFocusEngagement {
-    set {
-      NoesisGUI_PINVOKE.Control_SupportsFocusEngagement_set(swigCPtr, value);
-    } 
-    get {
-      bool ret = NoesisGUI_PINVOKE.Control_SupportsFocusEngagement_get(swigCPtr);
       return ret;
     } 
   }

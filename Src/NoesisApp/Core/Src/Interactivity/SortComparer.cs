@@ -30,7 +30,11 @@ namespace NoesisGUIExtensions
         /// </summary>
         public void Refresh()
         {
-            SortRequired?.Invoke();
+            SortRequiredEventHandler handler = SortRequired;
+            if (handler != null)
+            {
+                handler();
+            }
         }
 
         /// <summary>

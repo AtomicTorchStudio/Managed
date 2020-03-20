@@ -35,13 +35,6 @@ public class GridViewColumnHeader : ButtonBase {
     return NoesisGUI_PINVOKE.new_GridViewColumnHeader();
   }
 
-  public static DependencyProperty ColumnProperty {
-    get {
-      IntPtr cPtr = NoesisGUI_PINVOKE.GridViewColumnHeader_ColumnProperty_get();
-      return (DependencyProperty)Noesis.Extend.GetProxy(cPtr, false);
-    }
-  }
-
   public static DependencyProperty RoleProperty {
     get {
       IntPtr cPtr = NoesisGUI_PINVOKE.GridViewColumnHeader_RoleProperty_get();

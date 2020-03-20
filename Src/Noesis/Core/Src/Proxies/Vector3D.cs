@@ -179,7 +179,7 @@ public struct Vector3D {
   }
 
   private static string sParseExpression = @"\s*(.*[^,\s])\s*[,\s]\s*(.*[^,\s])\s*[,\s]\s*(.*[^,\s])\s*";
-  private static Regex sRegex = new Regex(sParseExpression, RegexOptions.Compiled);
+  private static Regex sRegex = new Regex(sParseExpression);
 
 }
 

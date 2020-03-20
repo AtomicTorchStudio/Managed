@@ -214,11 +214,6 @@ namespace Noesis
         }
 
         #region Imports
-        static RenderDeviceGL()
-        {
-            Noesis.GUI.Init();
-        }
-
         [DllImport(Library.Name)]
         static extern IntPtr Noesis_RenderDevice_CreateGL();
         #endregion
@@ -239,11 +234,6 @@ namespace Noesis
         }
 
         #region Imports
-        static RenderDeviceD3D11()
-        {
-            Noesis.GUI.Init();
-        }
-
         [DllImport(Library.Name)]
         static extern IntPtr Noesis_RenderDevice_CreateD3D11(IntPtr deviceContext, bool sRGB);
         #endregion
@@ -270,11 +260,6 @@ namespace Noesis
         }
 
         #region Imports
-        static RenderDeviceMTL()
-        {
-            Noesis.GUI.Init();
-        }
-
         [DllImport(Library.Name)]
         static extern IntPtr Noesis_RenderDevice_CreateMTL(IntPtr device, bool sRGB);
 

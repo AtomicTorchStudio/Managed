@@ -54,6 +54,13 @@ public class HeaderedContentControl : ContentControl {
     }
   }
 
+  public static DependencyProperty HeaderStringFormatProperty {
+    get {
+      IntPtr cPtr = NoesisGUI_PINVOKE.HeaderedContentControl_HeaderStringFormatProperty_get();
+      return (DependencyProperty)Noesis.Extend.GetProxy(cPtr, false);
+    }
+  }
+
   public static DependencyProperty HeaderTemplateProperty {
     get {
       IntPtr cPtr = NoesisGUI_PINVOKE.HeaderedContentControl_HeaderTemplateProperty_get();
@@ -82,6 +89,17 @@ public class HeaderedContentControl : ContentControl {
     get {
       IntPtr cPtr = NoesisGUI_PINVOKE.HeaderedContentControl_Header_get(swigCPtr);
       return Noesis.Extend.GetProxy(cPtr, false);
+    }
+  }
+
+  public string HeaderStringFormat {
+    set {
+      NoesisGUI_PINVOKE.HeaderedContentControl_HeaderStringFormat_set(swigCPtr, value != null ? value : string.Empty);
+    }
+    get {
+      IntPtr strPtr = NoesisGUI_PINVOKE.HeaderedContentControl_HeaderStringFormat_get(swigCPtr);
+      string str = Noesis.Extend.StringFromNativeUtf8(strPtr);
+      return str;
     }
   }
 
