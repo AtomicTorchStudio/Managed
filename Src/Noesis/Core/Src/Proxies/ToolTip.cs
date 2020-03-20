@@ -152,9 +152,9 @@ public class ToolTip : ContentControl {
     } 
   }
 
-  public float HorizontalOffset {
+  public double HorizontalOffset {
     set {
-      NoesisGUI_PINVOKE.ToolTip_HorizontalOffset_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.ToolTip_HorizontalOffset_set(swigCPtr, (float)value);
     } 
     get {
       float ret = NoesisGUI_PINVOKE.ToolTip_HorizontalOffset_get(swigCPtr);
@@ -219,9 +219,9 @@ public class ToolTip : ContentControl {
     } 
   }
 
-  public float VerticalOffset {
+  public double VerticalOffset {
     set {
-      NoesisGUI_PINVOKE.ToolTip_VerticalOffset_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.ToolTip_VerticalOffset_set(swigCPtr, (float)value);
     } 
     get {
       float ret = NoesisGUI_PINVOKE.ToolTip_VerticalOffset_get(swigCPtr);

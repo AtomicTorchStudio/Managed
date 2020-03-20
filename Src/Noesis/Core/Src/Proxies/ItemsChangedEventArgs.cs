@@ -16,7 +16,7 @@ using System.Collections.Specialized;
 namespace Noesis
 {
 
-public class ItemsChangedEventArgs : EventArgs {
+public class ItemsChangedEventArgs : NoesisEventArgs {
   private HandleRef swigCPtr;
 
   internal ItemsChangedEventArgs(IntPtr cPtr, bool cMemoryOwn) : base(cPtr, cMemoryOwn) {
