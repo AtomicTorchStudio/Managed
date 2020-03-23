@@ -54,8 +54,8 @@ namespace Noesis
 
                 Extend.Init();
 
-                Dispatcher dispatcher = Dispatcher.CurrentDispatcher;
-                SynchronizationContext.SetSynchronizationContext(dispatcher.SynchronizationContext);
+                //Dispatcher dispatcher = Dispatcher.CurrentDispatcher;
+                //SynchronizationContext.SetSynchronizationContext(dispatcher.SynchronizationContext);
             }
         }
 

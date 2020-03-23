@@ -139,7 +139,18 @@ namespace Noesis
                 {
                     SynchronizationContext.SetSynchronizationContext(_context);
 
-                    operation.Invoke();
+                    try
+                    {
+                        operation.Invoke();
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        // that's fine
+                    }
+                    catch (Exception)
+                    {
+                        // TODO: add logging
+                    }
                 }
                 finally
                 {
