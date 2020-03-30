@@ -15,7 +15,7 @@ using System.Runtime.InteropServices;
 namespace Noesis
 {
 
-public class Menu : MenuBase {
+internal class Menu : MenuBase {
   internal new static Menu CreateProxy(IntPtr cPtr, bool cMemoryOwn) {
     return new Menu(cPtr, cMemoryOwn);
   }

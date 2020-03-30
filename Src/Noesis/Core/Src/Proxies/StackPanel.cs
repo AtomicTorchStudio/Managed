@@ -72,44 +72,44 @@ public class StackPanel : Panel, Noesis.IScrollInfo {
     NoesisGUI_PINVOKE.StackPanel_PageDown(swigCPtr);
   }
 
-  public void MouseWheelLeft(float delta) {
-    NoesisGUI_PINVOKE.StackPanel_MouseWheelLeft__SWIG_0(swigCPtr, delta);
+  public void MouseWheelLeft(double delta) {
+    NoesisGUI_PINVOKE.StackPanel_MouseWheelLeft__SWIG_0(swigCPtr, (float)delta);
   }
 
   public void MouseWheelLeft() {
     NoesisGUI_PINVOKE.StackPanel_MouseWheelLeft__SWIG_1(swigCPtr);
   }
 
-  public void MouseWheelRight(float delta) {
-    NoesisGUI_PINVOKE.StackPanel_MouseWheelRight__SWIG_0(swigCPtr, delta);
+  public void MouseWheelRight(double delta) {
+    NoesisGUI_PINVOKE.StackPanel_MouseWheelRight__SWIG_0(swigCPtr, (float)delta);
   }
 
   public void MouseWheelRight() {
     NoesisGUI_PINVOKE.StackPanel_MouseWheelRight__SWIG_1(swigCPtr);
   }
 
-  public void MouseWheelUp(float delta) {
-    NoesisGUI_PINVOKE.StackPanel_MouseWheelUp__SWIG_0(swigCPtr, delta);
+  public void MouseWheelUp(double delta) {
+    NoesisGUI_PINVOKE.StackPanel_MouseWheelUp__SWIG_0(swigCPtr, (float)delta);
   }
 
   public void MouseWheelUp() {
     NoesisGUI_PINVOKE.StackPanel_MouseWheelUp__SWIG_1(swigCPtr);
   }
 
-  public void MouseWheelDown(float delta) {
-    NoesisGUI_PINVOKE.StackPanel_MouseWheelDown__SWIG_0(swigCPtr, delta);
+  public void MouseWheelDown(double delta) {
+    NoesisGUI_PINVOKE.StackPanel_MouseWheelDown__SWIG_0(swigCPtr, (float)delta);
   }
 
   public void MouseWheelDown() {
     NoesisGUI_PINVOKE.StackPanel_MouseWheelDown__SWIG_1(swigCPtr);
   }
 
-  public void SetHorizontalOffset(float offset) {
-    NoesisGUI_PINVOKE.StackPanel_SetHorizontalOffset(swigCPtr, offset);
+  public void SetHorizontalOffset(double offset) {
+    NoesisGUI_PINVOKE.StackPanel_SetHorizontalOffset(swigCPtr, (float)offset);
   }
 
-  public void SetVerticalOffset(float offset) {
-    NoesisGUI_PINVOKE.StackPanel_SetVerticalOffset(swigCPtr, offset);
+  public void SetVerticalOffset(double offset) {
+    NoesisGUI_PINVOKE.StackPanel_SetVerticalOffset(swigCPtr, (float)offset);
   }
 
   public Rect MakeVisible(Visual visual, Rect rect) {
@@ -159,44 +159,44 @@ public class StackPanel : Panel, Noesis.IScrollInfo {
     } 
   }
 
-  public float ExtentWidth {
+  public double ExtentWidth {
     get {
-      float ret = NoesisGUI_PINVOKE.StackPanel_ExtentWidth_get(swigCPtr);
+      double ret = NoesisGUI_PINVOKE.StackPanel_ExtentWidth_get(swigCPtr);
       return ret;
     } 
   }
 
-  public float ExtentHeight {
+  public double ExtentHeight {
     get {
-      float ret = NoesisGUI_PINVOKE.StackPanel_ExtentHeight_get(swigCPtr);
+      double ret = NoesisGUI_PINVOKE.StackPanel_ExtentHeight_get(swigCPtr);
       return ret;
     } 
   }
 
-  public float ViewportWidth {
+  public double ViewportWidth {
     get {
-      float ret = NoesisGUI_PINVOKE.StackPanel_ViewportWidth_get(swigCPtr);
+      double ret = NoesisGUI_PINVOKE.StackPanel_ViewportWidth_get(swigCPtr);
       return ret;
     } 
   }
 
-  public float ViewportHeight {
+  public double ViewportHeight {
     get {
-      float ret = NoesisGUI_PINVOKE.StackPanel_ViewportHeight_get(swigCPtr);
+      double ret = NoesisGUI_PINVOKE.StackPanel_ViewportHeight_get(swigCPtr);
       return ret;
     } 
   }
 
-  public float HorizontalOffset {
+  public double HorizontalOffset {
     get {
-      float ret = NoesisGUI_PINVOKE.StackPanel_HorizontalOffset_get(swigCPtr);
+      double ret = NoesisGUI_PINVOKE.StackPanel_HorizontalOffset_get(swigCPtr);
       return ret;
     } 
   }
 
-  public float VerticalOffset {
+  public double VerticalOffset {
     get {
-      float ret = NoesisGUI_PINVOKE.StackPanel_VerticalOffset_get(swigCPtr);
+      double ret = NoesisGUI_PINVOKE.StackPanel_VerticalOffset_get(swigCPtr);
       return ret;
     } 
   }

@@ -1690,9 +1690,9 @@ public class UIElement : Visual {
     }
   }
 
-  public float Opacity {
+  public double Opacity {
     set {
-      NoesisGUI_PINVOKE.UIElement_Opacity_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.UIElement_Opacity_set(swigCPtr, (float)value);
     } 
     get {
       float ret = NoesisGUI_PINVOKE.UIElement_Opacity_get(swigCPtr);
