@@ -134,7 +134,28 @@ namespace Noesis
                     operation = _operations.Dequeue();
                 }
 
-                operation.Invoke(_context);
+                 SynchronizationContext currentContext = SynchronizationContext.Current;
+                try
+                {
+                    SynchronizationContext.SetSynchronizationContext(_context);
+
+                    try
+                    {
+                        operation.Invoke();
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        // that's fine
+                    }
+                    catch (Exception)
+                    {
+                        // TODO: add logging
+                    }
+                }
+                finally
+                {
+                    SynchronizationContext.SetSynchronizationContext(currentContext);
+                }
             }
         }
         #endregion
