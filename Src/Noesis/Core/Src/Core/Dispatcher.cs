@@ -134,14 +134,14 @@ namespace Noesis
                     operation = _operations.Dequeue();
                 }
 
-                 SynchronizationContext currentContext = SynchronizationContext.Current;
+                SynchronizationContext currentContext = SynchronizationContext.Current;
                 try
                 {
                     SynchronizationContext.SetSynchronizationContext(_context);
 
                     try
                     {
-                        operation.Invoke();
+                        operation.Invoke(currentContext);
                     }
                     catch (OperationCanceledException)
                     {
