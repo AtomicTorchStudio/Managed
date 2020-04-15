@@ -2919,7 +2919,7 @@ namespace Noesis
             if (type.Equals(typeof(double)) ||
                 type.Equals(typeof(decimal)))
             {
-                return (int)NativePropertyType.Double;
+                return (int)NativePropertyType.Float;
             }
 
             if (type.Equals(typeof(int)) ||
