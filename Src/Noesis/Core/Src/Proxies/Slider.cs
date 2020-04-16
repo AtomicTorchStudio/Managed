@@ -254,9 +254,9 @@ public class Slider : RangeBase {
     } 
   }
 
-  public float SelectionStart {
+  public double SelectionStart {
     set {
-      NoesisGUI_PINVOKE.Slider_SelectionStart_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.Slider_SelectionStart_set(swigCPtr, (float)value);
     } 
     get {
       float ret = NoesisGUI_PINVOKE.Slider_SelectionStart_get(swigCPtr);
@@ -264,9 +264,9 @@ public class Slider : RangeBase {
     } 
   }
 
-  public float SelectionEnd {
+  public double SelectionEnd {
     set {
-      NoesisGUI_PINVOKE.Slider_SelectionEnd_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.Slider_SelectionEnd_set(swigCPtr, (float)value);
     } 
     get {
       float ret = NoesisGUI_PINVOKE.Slider_SelectionEnd_get(swigCPtr);
@@ -274,13 +274,13 @@ public class Slider : RangeBase {
     } 
   }
 
-  public float TickFrequency {
+  public double TickFrequency {
     set {
-      NoesisGUI_PINVOKE.Slider_TickFrequency_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.Slider_TickFrequency_set(swigCPtr, (float)value);
     } 
     get {
       float ret = NoesisGUI_PINVOKE.Slider_TickFrequency_get(swigCPtr);
-      return ret;
+      return (float)ret;
     } 
   }
 

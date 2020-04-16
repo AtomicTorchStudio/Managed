@@ -42,9 +42,9 @@ public class ExponentialEase : EasingFunctionBase {
     }
   }
 
-  public float Exponent {
+  public double Exponent {
     set {
-      NoesisGUI_PINVOKE.ExponentialEase_Exponent_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.ExponentialEase_Exponent_set(swigCPtr, (float)value);
     } 
     get {
       float ret = NoesisGUI_PINVOKE.ExponentialEase_Exponent_get(swigCPtr);

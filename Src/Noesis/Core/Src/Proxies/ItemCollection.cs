@@ -203,7 +203,7 @@ public class ItemCollection : BaseComponent, IList {
     bool ret = NoesisGUI_PINVOKE.ItemCollection_Contains(swigCPtr, Noesis.Extend.GetInstanceHandle(item));
     return ret;
   }
-
+  
   public bool MoveCurrentTo(object item) {
     bool ret = NoesisGUI_PINVOKE.ItemCollection_MoveCurrentTo(swigCPtr, Noesis.Extend.GetInstanceHandle(item));
     return ret;

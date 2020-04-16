@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 namespace Noesis
 {
     #region Event Handlers
-    public delegate void EventHandler(object sender, EventArgs args);
+    public delegate void NoesisEventHandler(object sender, NoesisEventArgs args);
 
     public delegate void DependencyPropertyChangedEventHandler(object sender, DependencyPropertyChangedEventArgs args);
 
@@ -80,18 +80,36 @@ namespace Noesis
 
     internal static class RoutedPropertyChangedEventArgsHelper
     {
+        private static T GetConvertedValue<T>(IntPtr value)
+        {
+            var result = Extend.GetProxy(value, true);
+            if (result is T castedResult)
+            {
+                return castedResult;
+            }
+
+            if (ReferenceEquals(result, null))
+            {
+                return default(T);
+            }
+
+            return Extend.ConvertValue<T>(result);
+        }
+
         public static T GetOldValue<T>(HandleRef cPtr)
         {
             int type = Extend.GetNativePropertyType(typeof(T));
             IntPtr value = Noesis_RoutedPropertyChangedEventArgs_GetOldValue(cPtr, type);
-            return (T)Extend.GetProxy(value, true);
+
+            return GetConvertedValue<T>(value);
         }
 
         public static T GetNewValue<T>(HandleRef cPtr)
         {
             int type = Extend.GetNativePropertyType(typeof(T));
             IntPtr value = Noesis_RoutedPropertyChangedEventArgs_GetNewValue(cPtr, type);
-            return (T)Extend.GetProxy(value, true);
+
+            return GetConvertedValue<T>(value);
         }
 
         [DllImport(Library.Name)]
@@ -751,7 +769,7 @@ namespace Noesis
             RegisterRoutedEvent(FrameworkElement.ContextMenuClosingEvent, typeof(ContextMenuEventHandler), ContextMenuEventArgs.InvokeHandler);
             RegisterRoutedEvent(FrameworkElement.ToolTipOpeningEvent, typeof(ToolTipEventHandler), ToolTipEventArgs.InvokeHandler);
             RegisterRoutedEvent(FrameworkElement.ToolTipClosingEvent, typeof(ToolTipEventHandler), ToolTipEventArgs.InvokeHandler);
-            RegisterCLREvent("Initialized", typeof(EventHandler), EventArgs.InvokeHandler);
+            RegisterCLREvent("Initialized", typeof(NoesisEventHandler), NoesisEventArgs.InvokeHandler);
             RegisterCLREvent("DataContextChanged", typeof(DependencyPropertyChangedEventHandler), DependencyPropertyChangedEventArgs.InvokeHandler);
 
             // Control
@@ -802,7 +820,7 @@ namespace Noesis
             RegisterRoutedEvent(TreeView.SelectedItemChangedEvent, typeof(RoutedPropertyChangedEventHandler<object>), RoutedPropertyChangedEventArgs<object>.InvokeHandler);
 
             // RangeBase
-            RegisterRoutedEvent(RangeBase.ValueChangedEvent, typeof(RoutedPropertyChangedEventHandler<float>), RoutedPropertyChangedEventArgs<float>.InvokeHandler);
+            RegisterRoutedEvent(RangeBase.ValueChangedEvent, typeof(RoutedPropertyChangedEventHandler<double>), RoutedPropertyChangedEventArgs<double>.InvokeHandler);
 
             // Thumb
             RegisterRoutedEvent(Thumb.DragStartedEvent, typeof(DragStartedEventHandler), DragStartedEventArgs.InvokeHandler);
@@ -877,9 +895,10 @@ namespace Noesis
         private static void RegisterRoutedEvent(RoutedEvent routedEvent,
             Type handlerType, InvokeHandlerDelegate invoker)
         {
-            _handlerTypes.Add(Key(routedEvent), new HandlerInfo 
+            _handlerTypes.Add(Key(routedEvent), new HandlerInfo
             {
-                Type = handlerType, Invoker = invoker
+                Type = handlerType,
+                Invoker = invoker
             });
         }
 
@@ -888,7 +907,8 @@ namespace Noesis
         {
             _handlerTypes.Add(Key(eventId), new HandlerInfo
             {
-                Type = handlerType, Invoker = invoker
+                Type = handlerType,
+                Invoker = invoker
             });
         }
 

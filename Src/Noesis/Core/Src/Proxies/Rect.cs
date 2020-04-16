@@ -39,6 +39,11 @@ public struct Rect {
     _width = width;
     _height = height;
   }
+  
+  public Rect(double x, double y, double width, double height)
+    : this((float)x, (float)y, (float)width, (float)height)
+  {
+  }
 
   public Rect(Point p0, Point p1) {
     _x = Math.Min(p0.X, p1.X);
@@ -57,8 +62,8 @@ public struct Rect {
     }
     else {
       _x = _y = 0.0f;
-      _width = size.Width;
-      _height = size.Height;
+      _width = (float)size.Width;
+      _height = (float)size.Height;
     }
   }
 
@@ -67,10 +72,10 @@ public struct Rect {
       this = _empty;
     }
     else {
-      _x = location.X;
-      _y = location.Y;
-      _width = size.Width;
-      _height = size.Height;
+      _x = (float)location.X;
+      _y = (float)location.Y;
+      _width = (float)size.Width;
+      _height = (float)size.Height;
     }
   }
 
@@ -99,32 +104,32 @@ public struct Rect {
       if (IsEmpty) {
         throw new InvalidOperationException("Empty Rect cannot be modified");
       }
-      _width = value.Width;
-      _height = value.Height;
+      _width = (float)value.Width;
+      _height = (float)value.Height;
     }
   }
 
-  public float X {
+  public double X {
     get { return _x; }
     set {
       if (IsEmpty) {
         throw new InvalidOperationException("Empty Rect cannot be modified");
       }
-      _x = value;
+      _x = (float)value;
     }
   }
 
-  public float Y {
+  public double Y {
     get { return _y; }
     set {
       if (IsEmpty) {
         throw new InvalidOperationException("Empty Rect cannot be modified");
       }
-      _y = value;
+      _y = (float)value;
     }
   }
 
-  public float Width {
+  public double Width {
     get { return _width; }
     set {
       if (IsEmpty) {
@@ -133,11 +138,11 @@ public struct Rect {
       if (value < 0.0f) {
         throw new ArgumentException("Width cannot be negative");
       }
-      _width = value;
+      _width = (float)value;
     }
   }
 
-  public float Height {
+  public double Height {
     get { return _height; }
     set {
       if (IsEmpty) {
@@ -146,23 +151,23 @@ public struct Rect {
       if (value < 0.0f) {
         throw new ArgumentException("Height cannot be negative");
       }
-      _height = value;
+      _height = (float)value;
     }
   }
 
-  public float Left {
+  public double Left {
     get { return X; }
   }
 
-  public float Right {
+  public double Right {
     get { return IsEmpty ? Single.NegativeInfinity : X + Width; }
   }
   
-  public float Top {
+  public double Top {
     get { return Y; }
   }
 
-  public float Bottom {
+  public double Bottom {
     get { return IsEmpty ? Single.NegativeInfinity : Y + Height; }
   }
 
@@ -182,7 +187,7 @@ public struct Rect {
     get { return new Point(Right, Bottom); }
   }
 
-  public bool Contains(float x, float y) {
+  public bool Contains(double x, double y) {
     if (IsEmpty) {
       return false;
     }
@@ -214,12 +219,12 @@ public struct Rect {
       this = Empty;
     }
     else {
-      float left = Math.Max(Left, rect.Left);
-      float top = Math.Max(Top, rect.Top);
-      _width = Math.Max(Math.Min(_x + _width, rect._x + rect._width) - left, 0.0f);
-      _height = Math.Max(Math.Min(_y + _height, rect._y + rect._height) - top, 0.0f);
-      _x = left;
-      _y = top;
+      var left = Math.Max(Left, rect.Left);
+      var top = Math.Max(Top, rect.Top);
+      _width = (float)Math.Max(Math.Min(this._x + this._width, rect._x + rect._width) - left, 0.0f);
+      _height = (float)Math.Max(Math.Min(this._y + this._height, rect._y + rect._height) - top, 0.0f);
+      _x = (float)left;
+      _y = (float)top;
     }
   }
 
@@ -234,26 +239,26 @@ public struct Rect {
     }
     else if (!rect.IsEmpty)
     {
-      float left = Math.Min(Left, rect.Left);
-      float top = Math.Min(Top, rect.Top);
+      var left = Math.Min(Left, rect.Left);
+      var top = Math.Min(Top, rect.Top);
       if (Single.IsPositiveInfinity(_width) ||
           Single.IsPositiveInfinity(rect._width)) {
           _width = Single.PositiveInfinity;
       }
       else {
-          float right = Math.Max(_x + _width, rect._x + rect._width);
-          _width = Math.Max(right - left, 0.0f);
+          var right = Math.Max(_x + _width, rect._x + rect._width);
+          _width = (float)Math.Max(right - left, 0.0f);
       }
       if (Single.IsPositiveInfinity(_height) ||
           Single.IsPositiveInfinity(rect._height)) {
           _height = Single.PositiveInfinity;
       }
       else {
-          float bottom = Math.Max(_y + _height, rect._y + rect._height);
-          _height = Math.Max(bottom - top, 0.0f);
+          var bottom = Math.Max(_y + _height, rect._y + rect._height);
+          _height = (float)Math.Max(bottom - top, 0.0f);
       }
-      _x = left;
-      _y = top;
+      _x = (float)left;
+      _y = (float)top;
     }
   }
 
@@ -279,11 +284,16 @@ public struct Rect {
     _y += y;
   }
 
+  public void Offset(double x, double y)
+  {
+      Offset((float)x, (float)y);
+  }
+
   public void Offset(Vector offset) {
     Offset(offset.X, offset.Y);
   }
 
-  public static Rect Offset(Rect rect, float x, float y) {
+  public static Rect Offset(Rect rect, double x, double y) {
     rect.Offset(x, y);
     return rect;
   }
@@ -306,11 +316,16 @@ public struct Rect {
     }
   }
 
+  public void Inflate(double width, double height)
+  {
+      Inflate((float)width, (float)height);
+  }
+
   public void Inflate(Size size) {
     Inflate(size.Width, size.Height);
   }
 
-  public static Rect Inflate(Rect rect, float width, float height) {
+  public static Rect Inflate(Rect rect, double width, double height) {
     rect.Inflate(width, height);
     return rect;
   }
@@ -362,7 +377,7 @@ public struct Rect {
     }
   }
 
-  public void Scale(float scaleX, float scaleY) {
+  public void Scale(double scaleX, double scaleY) {
     if (scaleX < 0.0f) {
       Width *= -scaleX;
       X = X * scaleX - Width;

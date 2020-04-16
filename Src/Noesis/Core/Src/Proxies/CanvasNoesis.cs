@@ -40,63 +40,63 @@ public class Canvas : Panel {
     }
   }
 
-  public static float GetLeft(UIElement element) {
+  public static double GetLeft(UIElement element) {
     if (element == null) throw new ArgumentNullException("element");
     {
-      float ret = NoesisGUI_PINVOKE.Canvas_GetLeft(UIElement.getCPtr(element));
+      double ret = NoesisGUI_PINVOKE.Canvas_GetLeft(UIElement.getCPtr(element));
       return ret;
     }
   }
 
-  public static void SetLeft(UIElement element, float left) {
+  public static void SetLeft(UIElement element, double left) {
     if (element == null) throw new ArgumentNullException("element");
     {
-      NoesisGUI_PINVOKE.Canvas_SetLeft(UIElement.getCPtr(element), left);
+      NoesisGUI_PINVOKE.Canvas_SetLeft(UIElement.getCPtr(element), (float)left);
     }
   }
 
-  public static float GetTop(UIElement element) {
+  public static double GetTop(UIElement element) {
     if (element == null) throw new ArgumentNullException("element");
     {
-      float ret = NoesisGUI_PINVOKE.Canvas_GetTop(UIElement.getCPtr(element));
+      double ret = NoesisGUI_PINVOKE.Canvas_GetTop(UIElement.getCPtr(element));
       return ret;
     }
   }
 
-  public static void SetTop(UIElement element, float top) {
+  public static void SetTop(UIElement element, double top) {
     if (element == null) throw new ArgumentNullException("element");
     {
-      NoesisGUI_PINVOKE.Canvas_SetTop(UIElement.getCPtr(element), top);
+      NoesisGUI_PINVOKE.Canvas_SetTop(UIElement.getCPtr(element), (float)top);
     }
   }
 
-  public static float GetRight(UIElement element) {
+  public static double GetRight(UIElement element) {
     if (element == null) throw new ArgumentNullException("element");
     {
-      float ret = NoesisGUI_PINVOKE.Canvas_GetRight(UIElement.getCPtr(element));
+      double ret = NoesisGUI_PINVOKE.Canvas_GetRight(UIElement.getCPtr(element));
       return ret;
     }
   }
 
-  public static void SetRight(UIElement element, float right) {
+  public static void SetRight(UIElement element, double right) {
     if (element == null) throw new ArgumentNullException("element");
     {
-      NoesisGUI_PINVOKE.Canvas_SetRight(UIElement.getCPtr(element), right);
+      NoesisGUI_PINVOKE.Canvas_SetRight(UIElement.getCPtr(element), (float)right);
     }
   }
 
-  public static float GetBottom(UIElement element) {
+  public static double GetBottom(UIElement element) {
     if (element == null) throw new ArgumentNullException("element");
     {
-      float ret = NoesisGUI_PINVOKE.Canvas_GetBottom(UIElement.getCPtr(element));
+      double ret = NoesisGUI_PINVOKE.Canvas_GetBottom(UIElement.getCPtr(element));
       return ret;
     }
   }
 
-  public static void SetBottom(UIElement element, float bottom) {
+  public static void SetBottom(UIElement element, double bottom) {
     if (element == null) throw new ArgumentNullException("element");
     {
-      NoesisGUI_PINVOKE.Canvas_SetBottom(UIElement.getCPtr(element), bottom);
+      NoesisGUI_PINVOKE.Canvas_SetBottom(UIElement.getCPtr(element), (float)bottom);
     }
   }
 

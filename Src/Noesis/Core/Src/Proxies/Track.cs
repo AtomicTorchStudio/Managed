@@ -40,12 +40,12 @@ public class Track : FrameworkElement {
     }
   }
 
-  public float ValueFromDistance(float horizontal, float vertical) {
+  public double ValueFromDistance(float horizontal, float vertical) {
     float ret = NoesisGUI_PINVOKE.Track_ValueFromDistance(swigCPtr, horizontal, vertical);
     return ret;
   }
 
-  public float ValueFromPoint(Point point) {
+  public double ValueFromPoint(Point point) {
     float ret = NoesisGUI_PINVOKE.Track_ValueFromPoint(swigCPtr, ref point);
     return ret;
   }
@@ -122,9 +122,9 @@ public class Track : FrameworkElement {
     } 
   }
 
-  public float Maximum {
+  public double Maximum {
     set {
-      NoesisGUI_PINVOKE.Track_Maximum_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.Track_Maximum_set(swigCPtr, (float)value);
     } 
     get {
       float ret = NoesisGUI_PINVOKE.Track_Maximum_get(swigCPtr);
@@ -132,9 +132,9 @@ public class Track : FrameworkElement {
     } 
   }
 
-  public float Minimum {
+  public double Minimum {
     set {
-      NoesisGUI_PINVOKE.Track_Minimum_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.Track_Minimum_set(swigCPtr, (float)value);
     } 
     get {
       float ret = NoesisGUI_PINVOKE.Track_Minimum_get(swigCPtr);
@@ -162,9 +162,9 @@ public class Track : FrameworkElement {
     }
   }
 
-  public float Value {
-    set {
-      NoesisGUI_PINVOKE.Track_Value_set(swigCPtr, value);
+  public double Value {
+    set {    
+      NoesisGUI_PINVOKE.Track_Value_set(swigCPtr, (float)value);
     } 
     get {
       float ret = NoesisGUI_PINVOKE.Track_Value_get(swigCPtr);
@@ -172,9 +172,9 @@ public class Track : FrameworkElement {
     } 
   }
 
-  public float ViewportSize {
-    set {
-      NoesisGUI_PINVOKE.Track_ViewportSize_set(swigCPtr, value);
+  public double ViewportSize {
+    set {      
+      NoesisGUI_PINVOKE.Track_ViewportSize_set(swigCPtr, (float)value);
     } 
     get {
       float ret = NoesisGUI_PINVOKE.Track_ViewportSize_get(swigCPtr);
