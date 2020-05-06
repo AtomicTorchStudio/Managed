@@ -82,6 +82,10 @@ namespace Noesis
                     }
 #endif
 
+                    // NOTE: During release of pending objects new proxies could be created and those
+                    // references will show as leaks when Noesis shuts down.
+                    // TODO: Find a way to track those objects and correctly release them.
+
                     foreach (var kv in pendingReleases)
                     {
                         object instance = kv.Value.Target;
@@ -500,7 +504,7 @@ namespace Noesis
                             info.Type.Name));
 
                     case NativeTypeKind.Boxed:
-                        return Unbox(cPtr, info);
+                        return Unbox(cPtr, ownMemory, info);
 
                     case NativeTypeKind.Component:
                         return GetProxyInstance(cPtr, ownMemory, info);
@@ -529,7 +533,7 @@ namespace Noesis
                             info.Type.Name));
 
                     case NativeTypeKind.Boxed:
-                        return Unbox(cPtr, info);
+                        return Unbox(cPtr, ownMemory, info);
 
                     case NativeTypeKind.Component:
                         return GetProxyInstance(cPtr, ownMemory, info);
@@ -556,7 +560,7 @@ namespace Noesis
         ////////////////////////////////////////////////////////////////////////////////////////////////
         public static void RegisterNativeTypes()
         {
-            const int TypesCapacity = 512;
+            const int TypesCapacity = 600;
             IntPtr[] types = new IntPtr[TypesCapacity];
             for (int t = 0; t < TypesCapacity; ++t) types[t] = IntPtr.Zero;
 
@@ -628,6 +632,8 @@ namespace Noesis
             AddNativeType(types[i++], new NativeTypeInfo(NativeTypeKind.Basic, typeof(GeometryCombineMode)));
             AddNativeType(types[i++], new NativeTypeInfo(NativeTypeKind.Basic, typeof(GradientSpreadMethod)));
             AddNativeType(types[i++], new NativeTypeInfo(NativeTypeKind.Basic, typeof(HorizontalAlignment)));
+            AddNativeType(types[i++], new NativeTypeInfo(NativeTypeKind.Basic, typeof(Key)));
+            AddNativeType(types[i++], new NativeTypeInfo(NativeTypeKind.Basic, typeof(ModifierKeys)));
             AddNativeType(types[i++], new NativeTypeInfo(NativeTypeKind.Basic, typeof(KeyboardNavigationMode)));
             AddNativeType(types[i++], new NativeTypeInfo(NativeTypeKind.Basic, typeof(LineStackingStrategy)));
             AddNativeType(types[i++], new NativeTypeInfo(NativeTypeKind.Basic, typeof(ListSortDirection)));
@@ -708,6 +714,8 @@ namespace Noesis
             AddNativeType(types[i++], new NativeTypeInfo(NativeTypeKind.Boxed, typeof(Boxed<GeometryCombineMode>)));
             AddNativeType(types[i++], new NativeTypeInfo(NativeTypeKind.Boxed, typeof(Boxed<GradientSpreadMethod>)));
             AddNativeType(types[i++], new NativeTypeInfo(NativeTypeKind.Boxed, typeof(Boxed<HorizontalAlignment>)));
+            AddNativeType(types[i++], new NativeTypeInfo(NativeTypeKind.Boxed, typeof(Boxed<Key>)));
+            AddNativeType(types[i++], new NativeTypeInfo(NativeTypeKind.Boxed, typeof(Boxed<ModifierKeys>)));
             AddNativeType(types[i++], new NativeTypeInfo(NativeTypeKind.Boxed, typeof(Boxed<KeyboardNavigationMode>)));
             AddNativeType(types[i++], new NativeTypeInfo(NativeTypeKind.Boxed, typeof(Boxed<LineStackingStrategy>)));
             AddNativeType(types[i++], new NativeTypeInfo(NativeTypeKind.Boxed, typeof(Boxed<ListSortDirection>)));
@@ -4082,20 +4090,20 @@ namespace Noesis
 
         public static object GetExtendInstance(IntPtr cPtr, bool ownMemory)
         {
+            object instance = null;
+
             ExtendInfo extend = GetExtendInfo(cPtr);
             if (extend != null)
             {
-                object instance = extend.weak.Target;
-
-                if (ownMemory)
-                {
-                    BaseComponent.Release(cPtr);
-                }
-
-                return instance;
+                instance = extend.weak.Target;
             }
 
-            return null;
+            if (ownMemory)
+            {
+                BaseComponent.Release(cPtr);
+            }
+
+            return instance;
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -4283,6 +4291,11 @@ namespace Noesis
                         }
                         else
                         {
+                            if (ownMemory)
+                            {
+                                BaseComponent.Release(cPtr);
+                            }
+
                             return component;
                         }
                     }
