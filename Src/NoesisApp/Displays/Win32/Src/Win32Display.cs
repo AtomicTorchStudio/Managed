@@ -11,6 +11,26 @@ namespace NoesisApp
 
         public Win32Display()
         {
+            _shcore = WinApi.LoadLibrary("shcore.dll");
+            if (_shcore != IntPtr.Zero)
+            {
+                IntPtr setProcessDpiAwarePtr = WinApi.GetProcAddress(_shcore, "SetProcessDpiAwareness");
+                if (setProcessDpiAwarePtr != IntPtr.Zero)
+                {
+                    WinApi.SetProcessDpiAwareness setProcessDpiAwareness =
+                        Marshal.GetDelegateForFunctionPointer<WinApi.SetProcessDpiAwareness>(setProcessDpiAwarePtr);
+
+                    setProcessDpiAwareness(WinApi.ProcessDpiAwareness.PROCESS_PER_MONITOR_DPI_AWARE);
+                }
+
+                IntPtr getDpiForMonitorPtr = WinApi.GetProcAddress(_shcore, "GetDpiForMonitor");
+                if (getDpiForMonitorPtr != IntPtr.Zero)
+                {
+                    _getDpiForMonitor = Marshal.GetDelegateForFunctionPointer<WinApi.GetDpiForMonitor>(getDpiForMonitorPtr);
+                }
+            }
+
+
             IntPtr hInstance = WinApi.GetModuleHandle(null);
             WinApi.WindowClassEx windowClass;
             if (!WinApi.GetClassInfoEx(hInstance, ClassName, out windowClass))
@@ -60,6 +80,11 @@ namespace NoesisApp
             WinApi.ReleaseDC(_hWnd, _hDC);
             _hDC = IntPtr.Zero;
             RemoveDisplay(NativeWindow);
+
+            if (_shcore != IntPtr.Zero)
+            {
+                WinApi.FreeLibrary(_shcore);
+            }
         }
 
         #region Display overrides
@@ -90,6 +115,20 @@ namespace NoesisApp
                 WinApi.Rectangle r;
                 WinApi.GetClientRect(NativeWindow, out r);
                 return r.Bottom - r.Top;
+            }
+        }
+
+        public override float Scale
+        {
+            get
+            {
+                uint dpiX = 96, dpiY = 96;
+                if (_getDpiForMonitor != null)
+                {
+                    IntPtr hMonitor = WinApi.MonitorFromWindow(NativeWindow, WinApi.MonitorFlag.MONITOR_DEFAULTTONEAREST);
+                    _getDpiForMonitor(hMonitor, WinApi.MonitorDpiType.MDT_EFFECTIVE_DPI, out dpiX, out dpiY);
+                }
+                return dpiX / 96.0f;
             }
         }
 
@@ -1150,8 +1189,10 @@ namespace NoesisApp
         #region Private members
         private IntPtr _hWnd = IntPtr.Zero;
         private IntPtr _hDC = IntPtr.Zero;
-        WindowStartupLocation _startupLocation = WindowStartupLocation.Manual;
-        Noesis.Cursor _cursor = Noesis.Cursor.Arrow;
+        private WindowStartupLocation _startupLocation = WindowStartupLocation.Manual;
+        private Noesis.Cursor _cursor = Noesis.Cursor.Arrow;
+        private WinApi.GetDpiForMonitor _getDpiForMonitor = null;
+        private IntPtr _shcore = IntPtr.Zero;
         #endregion
 
         private static class WinApi
@@ -1356,6 +1397,20 @@ namespace NoesisApp
             {
                 MONITORINFOF_NONE = 0,
                 MONITORINFOF_PRIMARY = 0x00000001
+            }
+
+            public enum MonitorDpiType
+            {
+                MDT_EFFECTIVE_DPI = 0,
+                MDT_ANGULAR_DPI = 1,
+                MDT_RAW_DPI = 2,
+            }
+
+            public enum ProcessDpiAwareness
+            {
+                PROCESS_DPI_UNAWARE = 0,
+                PROCESS_SYSTEM_DPI_AWARE = 1,
+                PROCESS_PER_MONITOR_DPI_AWARE = 2
             }
 
             public enum WM
@@ -1937,9 +1992,22 @@ namespace NoesisApp
                 public int X;
                 public int Y;
             }
+
+            public delegate uint SetProcessDpiAwareness(WinApi.ProcessDpiAwareness dpi);
+            public delegate uint GetDpiForMonitor(IntPtr hmonitor, WinApi.MonitorDpiType dpiType, out uint dpiX, out uint dpiY);
             #endregion
 
             #region Imports
+            [DllImport("kernel32", SetLastError = true, CharSet = CharSet.Ansi)]
+            public static extern IntPtr LoadLibrary([MarshalAs(UnmanagedType.LPStr)]string lpFileName);
+
+            [DllImport("kernel32", CharSet = CharSet.Ansi, ExactSpelling = true, SetLastError = true)]
+            public static extern IntPtr GetProcAddress(IntPtr hModule, string procName);
+
+            [DllImport("kernel32", SetLastError = true)]
+            [return: MarshalAs(UnmanagedType.Bool)]
+            public static extern bool FreeLibrary(IntPtr hModule);
+
             [DllImport("kernel32", CharSet = CharSet.Auto)]
             public static extern IntPtr GetModuleHandle(string lpModuleName);
 
