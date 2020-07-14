@@ -3025,7 +3025,7 @@ namespace Noesis
                 IScrollInfo scrollInfo = (IScrollInfo)GetExtendInstance(cPtr);
                 if (scrollInfo != null)
                 {
-                    return scrollInfo.ExtentWidth;
+                    return (float)scrollInfo.ExtentWidth;
                 }
             }
             catch (Exception e)
@@ -3048,7 +3048,7 @@ namespace Noesis
                 IScrollInfo scrollInfo = (IScrollInfo)GetExtendInstance(cPtr);
                 if (scrollInfo != null)
                 {
-                    return scrollInfo.ExtentHeight;
+                    return (float)scrollInfo.ExtentHeight;
                 }
             }
             catch (Exception e)
@@ -3071,7 +3071,7 @@ namespace Noesis
                 IScrollInfo scrollInfo = (IScrollInfo)GetExtendInstance(cPtr);
                 if (scrollInfo != null)
                 {
-                    return scrollInfo.ViewportWidth;
+                    return (float)scrollInfo.ViewportWidth;
                 }
             }
             catch (Exception e)
@@ -3094,7 +3094,7 @@ namespace Noesis
                 IScrollInfo scrollInfo = (IScrollInfo)GetExtendInstance(cPtr);
                 if (scrollInfo != null)
                 {
-                    return scrollInfo.ViewportHeight;
+                    return (float)scrollInfo.ViewportHeight;
                 }
             }
             catch (Exception e)
@@ -3117,7 +3117,7 @@ namespace Noesis
                 IScrollInfo scrollInfo = (IScrollInfo)GetExtendInstance(cPtr);
                 if (scrollInfo != null)
                 {
-                    return scrollInfo.HorizontalOffset;
+                    return (float)scrollInfo.HorizontalOffset;
                 }
             }
             catch (Exception e)
@@ -3140,7 +3140,7 @@ namespace Noesis
                 IScrollInfo scrollInfo = (IScrollInfo)GetExtendInstance(cPtr);
                 if (scrollInfo != null)
                 {
-                    return scrollInfo.VerticalOffset;
+                    return (float)scrollInfo.VerticalOffset;
                 }
             }
             catch (Exception e)
