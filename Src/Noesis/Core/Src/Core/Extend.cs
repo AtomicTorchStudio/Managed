@@ -2708,10 +2708,18 @@ namespace Noesis
                 var stream = (System.IO.Stream)GetExtendInstance(cPtr);
                 if (stream != null)
                 {
-                    byte[] bytes = new byte[bufferSize];
-                    int readBytes = stream.Read(bytes, 0, (int)bufferSize);
-                    System.Runtime.InteropServices.Marshal.Copy(bytes, 0, buffer, (int)bufferSize);
-                    return (uint)readBytes;
+                    var tempBuffer = ExternalBufferManager.Rent((int)bufferSize);
+                    try
+                    {
+                        var bytes = tempBuffer.Data;
+                        int readBytes = stream.Read(bytes, 0, (int)bufferSize);
+                        System.Runtime.InteropServices.Marshal.Copy(bytes, 0, buffer, (int)bufferSize);
+                        return (uint)readBytes;
+                    }
+                    finally
+                    {
+                        ExternalBufferManager.Return(ref tempBuffer);
+                    }
                 }
             }
             catch (Exception e)
