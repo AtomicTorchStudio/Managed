@@ -43,7 +43,7 @@ namespace NoesisApp
             }
         }
 
-        private void OnStoryboardCompleted(object sender, EventArgs e)
+        private void OnStoryboardCompleted(object sender, System.EventArgs e)
         {
             InvokeActions(e);
         }
@@ -57,7 +57,7 @@ namespace NoesisApp
         {
             public System.WeakReference wr;
 
-            public void Completed(object sender, EventArgs e)
+            public void Completed(object sender, System.EventArgs e)
             {
                 ((StoryboardCompletedTrigger)wr.Target).OnStoryboardCompleted(sender, e);
             }
