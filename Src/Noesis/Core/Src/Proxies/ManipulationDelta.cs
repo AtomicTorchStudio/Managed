@@ -62,9 +62,9 @@ public class ManipulationDelta : IDisposable {
 
   }
 
-  public float Rotation {
+  public double Rotation {
     set {
-      NoesisGUI_PINVOKE.ManipulationDelta_Rotation_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.ManipulationDelta_Rotation_set(swigCPtr, (float)value);
     } 
     get {
       float ret = NoesisGUI_PINVOKE.ManipulationDelta_Rotation_get(swigCPtr);
@@ -72,9 +72,9 @@ public class ManipulationDelta : IDisposable {
     } 
   }
 
-  public float Scale {
+  public double Scale {
     set {
-      NoesisGUI_PINVOKE.ManipulationDelta_Scale_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.ManipulationDelta_Scale_set(swigCPtr, (float)value);
     } 
     get {
       float ret = NoesisGUI_PINVOKE.ManipulationDelta_Scale_get(swigCPtr);

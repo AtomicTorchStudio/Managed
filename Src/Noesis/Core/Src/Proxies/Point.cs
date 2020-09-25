@@ -23,7 +23,7 @@ public struct Point {
   [MarshalAs(UnmanagedType.R4)]
   private float _y;
 
-  public float this[uint i] {
+  public double this[uint i] {
     get {
       switch (i) {
         case 0: return X;
@@ -33,8 +33,8 @@ public struct Point {
     }
     set {
       switch (i) {
-        case 0: X = value; break;
-        case 1: Y = value; break;
+        case 0: X = (float)value; break;
+        case 1: Y = (float)value; break;
         default: throw new IndexOutOfRangeException();
       }
     }
@@ -43,6 +43,11 @@ public struct Point {
   public Point(float x, float y) {
     _x = x;
     _y = y;
+  }
+
+  public Point(double x, double y) {
+      _x = (float)x;
+      _y = (float)y;
   }
 
   public float X {

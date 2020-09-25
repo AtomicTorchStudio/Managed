@@ -29,7 +29,7 @@ public class RangeBase : Control {
 
   #region Events
 
-  public event RoutedPropertyChangedEventHandler<float> ValueChanged {
+  public event RoutedPropertyChangedEventHandler<double> ValueChanged {
     add {
       AddHandler(ValueChangedEvent, value);
     }
@@ -84,52 +84,52 @@ public class RangeBase : Control {
     }
   }
 
-  public float LargeChange {
+  public double LargeChange {
     set {
-      NoesisGUI_PINVOKE.RangeBase_LargeChange_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.RangeBase_LargeChange_set(swigCPtr, (float)value);
     } 
     get {
-      float ret = NoesisGUI_PINVOKE.RangeBase_LargeChange_get(swigCPtr);
+      double ret = NoesisGUI_PINVOKE.RangeBase_LargeChange_get(swigCPtr);
       return ret;
     } 
   }
 
-  public float Maximum {
+  public double Maximum {
     set {
-      NoesisGUI_PINVOKE.RangeBase_Maximum_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.RangeBase_Maximum_set(swigCPtr, (float)value);
     } 
     get {
-      float ret = NoesisGUI_PINVOKE.RangeBase_Maximum_get(swigCPtr);
+      double ret = NoesisGUI_PINVOKE.RangeBase_Maximum_get(swigCPtr);
       return ret;
     } 
   }
 
-  public float Minimum {
+  public double Minimum {
     set {
-      NoesisGUI_PINVOKE.RangeBase_Minimum_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.RangeBase_Minimum_set(swigCPtr, (float)value);
     } 
     get {
-      float ret = NoesisGUI_PINVOKE.RangeBase_Minimum_get(swigCPtr);
+      double ret = NoesisGUI_PINVOKE.RangeBase_Minimum_get(swigCPtr);
       return ret;
     } 
   }
 
-  public float SmallChange {
+  public double SmallChange {
     set {
-      NoesisGUI_PINVOKE.RangeBase_SmallChange_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.RangeBase_SmallChange_set(swigCPtr, (float)value);
     } 
     get {
-      float ret = NoesisGUI_PINVOKE.RangeBase_SmallChange_get(swigCPtr);
+      double ret = NoesisGUI_PINVOKE.RangeBase_SmallChange_get(swigCPtr);
       return ret;
     } 
   }
 
-  public float Value {
+  public double Value {
     set {
-      NoesisGUI_PINVOKE.RangeBase_Value_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.RangeBase_Value_set(swigCPtr, (float)value);
     } 
     get {
-      float ret = NoesisGUI_PINVOKE.RangeBase_Value_get(swigCPtr);
+      double ret = NoesisGUI_PINVOKE.RangeBase_Value_get(swigCPtr);
       return ret;
     } 
   }

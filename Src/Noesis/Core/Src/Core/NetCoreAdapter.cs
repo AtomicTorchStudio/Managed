@@ -205,7 +205,7 @@ namespace Noesis
     using System.Runtime;
     using System.Collections.Generic;
 
-    public static class ExtensionMethods
+    internal static class ExtensionMethods
     {
         // In .NET 4.5 Type and TypeInfo are different classes. This extension method adapts the
         // version of Mono used in Unity to that API. That way we can mantain the same code without
@@ -226,7 +226,7 @@ namespace Noesis
         }
     }
 
-    public static class Marshal
+    internal static class Marshal
     {
         public static void StructureToPtr(object structure, IntPtr ptr, bool fDeleteOld)
         {
