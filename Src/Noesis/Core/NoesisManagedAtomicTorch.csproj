@@ -11,12 +11,15 @@
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>    
     <DefineConstants>NOESIS_API</DefineConstants>
     <LangVersion>latest</LangVersion>
+     <EnableDefaultItems>false</EnableDefaultItems>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
   </PropertyGroup>
   
   <Import Sdk="Microsoft.NET.Sdk" Project="Sdk.targets" />
   
   <ItemGroup>    
     <Compile Include="..\..\NoesisApp\Core\Src\Interactivity\**\*.cs" />
+    <Compile Include="Src\**\*.cs" />
   </ItemGroup>
   
   <PropertyGroup>

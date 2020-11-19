@@ -1366,6 +1366,14 @@ namespace Noesis
                 info = CreateNativeTypeInfo(type, indexer, props);
                 AddNativeType(nativeType, info);
             }
+            
+            if (!ReferenceEquals(null, Noesis.ExternalTypeHelper.CheckTypeCanContainDependencyProperties)
+                && !Noesis.ExternalTypeHelper.CheckTypeCanContainDependencyProperties(type))
+            {
+                // external type should not provide any properties
+                props = Array.Empty<PropertyInfo>();
+                registerDP = false;
+            }
 
             // Fill native type with C# public properties
             ExtendTypeData typeData = CreateNativeTypeData(type, nativeType);
@@ -1631,6 +1639,18 @@ namespace Noesis
         ////////////////////////////////////////////////////////////////////////////////////////////////
         private static void RegisterDependencyProperties(System.Type type)
         {
+            if (ReferenceEquals(type.Assembly, BclAssembly))
+            {    
+                return;
+            }
+            
+            if (!ReferenceEquals(null, Noesis.ExternalTypeHelper.CheckTypeCanContainDependencyProperties)
+                && !Noesis.ExternalTypeHelper.CheckTypeCanContainDependencyProperties(type))
+            {
+                // external type that cannot have dependency properties
+                return;
+            }
+            
             if (typeof(DependencyObject).GetTypeInfo().IsAssignableFrom(type.GetTypeInfo()))
             {
                 RunClassConstructor(type);
@@ -1649,6 +1669,8 @@ namespace Noesis
                 RunClassConstructor(type);
             }
         }
+        
+        private static readonly Assembly BclAssembly = typeof(object).Assembly;
 
         private static void RunClassConstructor(Type type)
         {
