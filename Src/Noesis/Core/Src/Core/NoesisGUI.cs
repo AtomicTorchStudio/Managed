@@ -159,7 +159,7 @@ namespace Noesis
         {
             ResourceDictionary app = new ResourceDictionary();
             SetApplicationResources(app);
-            LoadComponent(app, filename);
+            app.Source = new Uri(filename, UriKind.RelativeOrAbsolute);
         }
 
         /// <summary>
