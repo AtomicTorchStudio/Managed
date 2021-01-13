@@ -118,7 +118,7 @@ public partial class FrameworkElement : UIElement {
     }
   }
 
-  public event EventHandler Initialized {
+  public event NoesisEventHandler Initialized {
     add {
       AddEventHandler("Initialized", value);
     }
@@ -462,14 +462,14 @@ public partial class FrameworkElement : UIElement {
     }
   }
 
-  public float ActualHeight {
+  public double ActualHeight {
     get {
       float ret = NoesisGUI_PINVOKE.FrameworkElement_ActualHeight_get(swigCPtr);
       return ret;
     } 
   }
 
-  public float ActualWidth {
+  public double ActualWidth {
     get {
       float ret = NoesisGUI_PINVOKE.FrameworkElement_ActualWidth_get(swigCPtr);
       return ret;
@@ -540,9 +540,9 @@ public partial class FrameworkElement : UIElement {
     } 
   }
 
-  public float Height {
+  public double Height {
     set {
-      NoesisGUI_PINVOKE.FrameworkElement_Height_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.FrameworkElement_Height_set(swigCPtr, (float)value);
     } 
     get {
       float ret = NoesisGUI_PINVOKE.FrameworkElement_Height_get(swigCPtr);
@@ -611,9 +611,9 @@ public partial class FrameworkElement : UIElement {
 
   }
 
-  public float MaxHeight {
+  public double MaxHeight {
     set {
-      NoesisGUI_PINVOKE.FrameworkElement_MaxHeight_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.FrameworkElement_MaxHeight_set(swigCPtr, (float)value);
     } 
     get {
       float ret = NoesisGUI_PINVOKE.FrameworkElement_MaxHeight_get(swigCPtr);
@@ -621,9 +621,9 @@ public partial class FrameworkElement : UIElement {
     } 
   }
 
-  public float MaxWidth {
+  public double MaxWidth {
     set {
-      NoesisGUI_PINVOKE.FrameworkElement_MaxWidth_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.FrameworkElement_MaxWidth_set(swigCPtr, (float)value);
     } 
     get {
       float ret = NoesisGUI_PINVOKE.FrameworkElement_MaxWidth_get(swigCPtr);
@@ -631,9 +631,9 @@ public partial class FrameworkElement : UIElement {
     } 
   }
 
-  public float MinHeight {
+  public double MinHeight {
     set {
-      NoesisGUI_PINVOKE.FrameworkElement_MinHeight_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.FrameworkElement_MinHeight_set(swigCPtr, (float)value);
     } 
     get {
       float ret = NoesisGUI_PINVOKE.FrameworkElement_MinHeight_get(swigCPtr);
@@ -641,9 +641,9 @@ public partial class FrameworkElement : UIElement {
     } 
   }
 
-  public float MinWidth {
+  public double MinWidth {
     set {
-      NoesisGUI_PINVOKE.FrameworkElement_MinWidth_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.FrameworkElement_MinWidth_set(swigCPtr, (float)value);
     } 
     get {
       float ret = NoesisGUI_PINVOKE.FrameworkElement_MinWidth_get(swigCPtr);
@@ -752,9 +752,9 @@ public partial class FrameworkElement : UIElement {
     } 
   }
 
-  public float Width {
+  public double Width {
     set {
-      NoesisGUI_PINVOKE.FrameworkElement_Width_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.FrameworkElement_Width_set(swigCPtr, (float)value);
     } 
     get {
       float ret = NoesisGUI_PINVOKE.FrameworkElement_Width_get(swigCPtr);

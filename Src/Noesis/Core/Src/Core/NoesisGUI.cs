@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Threading;
 
 namespace Noesis
 {
@@ -78,6 +79,9 @@ namespace Noesis
                 Noesis_Init(licenseName, licenseKey);
 
                 Extend.Init();
+
+                //Dispatcher dispatcher = Dispatcher.CurrentDispatcher;
+                //SynchronizationContext.SetSynchronizationContext(dispatcher.SynchronizationContext);
             }
         }
 

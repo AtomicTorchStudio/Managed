@@ -1,0 +1,33 @@
+﻿<Project>
+
+  <Import Sdk="Microsoft.NET.Sdk" Project="Sdk.props" />
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <DebugType>portable</DebugType>    
+    <OutputType>Library</OutputType>
+    <RootNamespace>Noesis</RootNamespace>
+    <AssemblyName>NoesisManaged</AssemblyName>   
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>    
+    <DefineConstants>NOESIS_API</DefineConstants>
+    <LangVersion>latest</LangVersion>
+     <EnableDefaultItems>false</EnableDefaultItems>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+  
+  <Import Sdk="Microsoft.NET.Sdk" Project="Sdk.targets" />
+  
+  <ItemGroup>    
+    <Compile Include="..\..\NoesisApp\Core\Src\Interactivity\**\*.cs" />
+    <Compile Include="Src\**\*.cs" />
+  </ItemGroup>
+  
+  <PropertyGroup>
+    <PostBuildEvent>REM Copy Noesis.dll (native library)
+mkdir "$(SolutionDir)Libs\Output"&gt; NUL
+REM copy /Y "$(ProjectDir)runtimes\win-x86\native\Noesis.dll" "$(SolutionDir)Libs\Output\Noesis.dll"
+copy /Y "$(ProjectDir)runtimes\win-x64\native\Noesis.dll" "$(SolutionDir)Libs\Output\Noesis.dll"
+if %errorlevel% gtr 3 (exit %errorlevel%) else (cd .)</PostBuildEvent>
+  </PropertyGroup>
+     
+</Project>

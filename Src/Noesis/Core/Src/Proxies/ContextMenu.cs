@@ -141,9 +141,9 @@ public class ContextMenu : MenuBase {
     } 
   }
 
-  public float HorizontalOffset {
-    set {
-      NoesisGUI_PINVOKE.ContextMenu_HorizontalOffset_set(swigCPtr, value);
+  public double HorizontalOffset {
+    set {    
+      NoesisGUI_PINVOKE.ContextMenu_HorizontalOffset_set(swigCPtr, (float)value);
     } 
     get {
       float ret = NoesisGUI_PINVOKE.ContextMenu_HorizontalOffset_get(swigCPtr);
@@ -208,9 +208,9 @@ public class ContextMenu : MenuBase {
     } 
   }
 
-  public float VerticalOffset {
+  public double VerticalOffset {
     set {
-      NoesisGUI_PINVOKE.ContextMenu_VerticalOffset_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.ContextMenu_VerticalOffset_set(swigCPtr, (float)value);
     } 
     get {
       float ret = NoesisGUI_PINVOKE.ContextMenu_VerticalOffset_get(swigCPtr);

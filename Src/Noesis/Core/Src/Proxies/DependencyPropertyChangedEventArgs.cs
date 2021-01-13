@@ -14,8 +14,9 @@ using System.Runtime.InteropServices;
 
 namespace Noesis
 {
+    using System.Reflection;
 
-public class DependencyPropertyChangedEventArgs : IDisposable {
+    public class DependencyPropertyChangedEventArgs : IDisposable {
   private HandleRef swigCPtr;
   protected bool swigCMemOwn;
 
