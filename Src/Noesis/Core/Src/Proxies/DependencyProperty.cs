@@ -100,7 +100,6 @@ public partial class DependencyProperty : BaseComponent {
     IntPtr cPtr = NoesisGUI_PINVOKE.DependencyProperty_GetMetadataHelper(swigCPtr, type);
     return (PropertyMetadata)Noesis.Extend.GetProxy(cPtr, false);
   }
-
 }
 
 }

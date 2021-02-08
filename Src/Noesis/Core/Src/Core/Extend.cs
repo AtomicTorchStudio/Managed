@@ -1694,22 +1694,15 @@ namespace Noesis
 
             if (_constructedTypes.Add(type))
             {
-                // New type added to the HashSet - ensure constructor was invoked.
+                // New type added to the HashSet - ensure the static constructor was invoked.
                 RuntimeHelpers.RunClassConstructor(type.TypeHandle);
             }
             else
             {
-                // We've already ensured the class constructor was called sometime.
-                // With this trick we force CLR to call the constructor again.
-#if NETFX_CORE
-                ConstructorInfo initializer = type.GetTypeInfo().DeclaredConstructors.Where(x => x.IsStatic).FirstOrDefault();
-#else
-                ConstructorInfo initializer = type.GetTypeInfo().TypeInitializer;
-#endif
-                if (initializer != null)
-                {
-                    initializer.Invoke(null, null);
-                }
+                // We've already ensured the static class constructor was called sometime.
+                // It's no longer possible to invoke it again, but we have everything in registry.
+                DependencyPropertyResurrectionManager.TryResurrectAll(type);
+                DependencyPropertyMetadataOverrideResurrectionManager.TryResurrect(type);
             }
         }
 
