@@ -67,6 +67,7 @@
                 }
 
                 dependencyProperty.ReplacePointer(cPtr);
+                return true;
             }
 
             dependencyProperty = null;
