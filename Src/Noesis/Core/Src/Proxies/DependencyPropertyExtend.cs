@@ -50,18 +50,18 @@ namespace Noesis
                 ValidateDefaultValue(Name, PropertyType, OwnerType, typeMetadata.DefaultValue);
             }
 
+            DependencyPropertyRegistry.Override(this, forType, typeMetadata);
+
             IntPtr forTypePtr = Noesis.Extend.EnsureNativeType(forType, false);
 
             Noesis_OverrideMetadata(forTypePtr, swigCPtr.Handle,
                 PropertyMetadata.getCPtr(typeMetadata).Handle);
         }
 
-        internal static bool RegisterCalled { get; set; }
-
         #region Register implementation
 
-        private static DependencyProperty RegisterCommon(string name, Type propertyType,
-            Type ownerType, PropertyMetadata propertyMetadata)
+        internal static DependencyProperty RegisterCommon(string name, Type propertyType,
+            Type ownerType, PropertyMetadata propertyMetadata, DependencyProperty existingProperty = null)
         {
             ValidateParams(name, propertyType, ownerType);
 
@@ -79,10 +79,22 @@ namespace Noesis
             IntPtr dependencyPtr = Noesis_RegisterDependencyProperty(ownerTypePtr,
                 name, nativeType, PropertyMetadata.getCPtr(propertyMetadata).Handle);
 
-            DependencyProperty dependencyProperty = new DependencyProperty(dependencyPtr, false);
-            dependencyProperty.OriginalPropertyType = originalPropertyType;
+            DependencyProperty dependencyProperty = existingProperty;
+            if (dependencyProperty != null)
+            {
+                // Replace DependencyProperty native pointer with the newly created
+                dependencyProperty.swigCPtr = new HandleRef(dependencyProperty, dependencyPtr);
+                Noesis.Extend.AddProxy(dependencyProperty);
+                BaseComponent.AddReference(dependencyPtr);
+            }
+            else
+            {
+                dependencyProperty = new DependencyProperty(dependencyPtr, false);
+                dependencyProperty.OriginalPropertyType = originalPropertyType;
 
-            RegisterCalled = true;
+                DependencyPropertyRegistry.Register(dependencyProperty, name, propertyType, ownerType, propertyMetadata);
+            }
+
             return dependencyProperty;
         }
 
