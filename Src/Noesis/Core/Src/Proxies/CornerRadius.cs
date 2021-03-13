@@ -30,24 +30,24 @@ public struct CornerRadius {
   [MarshalAs(UnmanagedType.R4)]
   private float _bl;
 
-  public float TopLeft {
+  public double TopLeft {
     get { return this._tl; }
-    set { this._tl = value; }
+    set { this._tl = (float)value; }
   }
 
-  public float TopRight {
+  public double TopRight {
     get { return this._tr; }
-    set { this._tr = value; }
+    set { this._tr = (float)value; }
   }
 
-  public float BottomRight {
+  public double BottomRight {
     get { return this._br; }
-    set { this._br = value; }
+    set { this._br = (float)value; }
   }
 
-  public float BottomLeft {
+  public double BottomLeft {
     get { return this._bl; }
-    set { this._bl = value; }
+    set { this._bl = (float)value; }
   }
 
   public CornerRadius(float radius) : this(radius, radius, radius, radius) {

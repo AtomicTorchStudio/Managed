@@ -61,6 +61,17 @@ public class Timeline : Animatable {
   internal delegate void RaiseCompletedCallback(IntPtr cPtr, IntPtr sender, IntPtr e);
   private static RaiseCompletedCallback _raiseCompleted = RaiseCompleted;
 
+  [StructLayoutAttribute(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+  public struct TimelineEventArgs {
+      IntPtr target;
+
+      public DependencyObject Target {
+          get {
+              return (DependencyObject)Noesis.Extend.GetProxy(target, false);
+          }
+      }
+  }
+
   [MonoPInvokeCallback(typeof(RaiseCompletedCallback))]
   private static void RaiseCompleted(IntPtr cPtr, IntPtr sender, IntPtr e) {
     try {
@@ -73,8 +84,35 @@ public class Timeline : Animatable {
         if (!_Completed.TryGetValue(cPtr, out handler)) {
           throw new InvalidOperationException("Delegate not registered for Completed event");
         }
-        if (handler != null) {
-          handler(Noesis.Extend.GetProxy(sender, false), new EventArgs(e, false));
+        
+        if (handler == null) 
+        {
+            return;
+        }
+        
+        var args = Marshal.PtrToStructure<TimelineEventArgs>(e);
+	      
+        foreach (var @delegate in handler.GetInvocationList())
+        {
+            var storyboardTarget = (FrameworkElement)args.Target;
+            if (storyboardTarget.Tag is FrameworkElement)
+            {
+                // special hack found!
+                @delegate.DynamicInvoke(Noesis.Extend.GetProxy(sender, false), new System.EventArgs());
+                return;
+            }
+
+            var delegateTarget = @delegate.Target;
+
+            while (storyboardTarget != null)
+            {
+                if (ReferenceEquals(storyboardTarget, delegateTarget))
+                {
+                    @delegate.DynamicInvoke(Noesis.Extend.GetProxy(sender, false), new System.EventArgs());
+                    break;
+                }
+                storyboardTarget = VisualTreeHelper.GetParent(storyboardTarget) as FrameworkElement;
+            }
         }
       }
     }
@@ -168,12 +206,12 @@ public class Timeline : Animatable {
     }
   }
 
-  public float AccelerationRatio {
+  public double AccelerationRatio {
     set {
-      NoesisGUI_PINVOKE.Timeline_AccelerationRatio_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.Timeline_AccelerationRatio_set(swigCPtr, (float)value);
     } 
     get {
-      float ret = NoesisGUI_PINVOKE.Timeline_AccelerationRatio_get(swigCPtr);
+      double ret = NoesisGUI_PINVOKE.Timeline_AccelerationRatio_get(swigCPtr);
       return ret;
     } 
   }
@@ -206,12 +244,12 @@ public class Timeline : Animatable {
 
   }
 
-  public float DecelerationRatio {
+  public double DecelerationRatio {
     set {
-      NoesisGUI_PINVOKE.Timeline_DecelerationRatio_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.Timeline_DecelerationRatio_set(swigCPtr, (float)value);
     } 
     get {
-      float ret = NoesisGUI_PINVOKE.Timeline_DecelerationRatio_get(swigCPtr);
+      double ret = NoesisGUI_PINVOKE.Timeline_DecelerationRatio_get(swigCPtr);
       return ret;
     } 
   }
@@ -271,12 +309,12 @@ public class Timeline : Animatable {
 
   }
 
-  public float SpeedRatio {
+  public double SpeedRatio {
     set {
-      NoesisGUI_PINVOKE.Timeline_SpeedRatio_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.Timeline_SpeedRatio_set(swigCPtr, (float)value);
     } 
     get {
-      float ret = NoesisGUI_PINVOKE.Timeline_SpeedRatio_get(swigCPtr);
+      double ret = NoesisGUI_PINVOKE.Timeline_SpeedRatio_get(swigCPtr);
       return ret;
     } 
   }

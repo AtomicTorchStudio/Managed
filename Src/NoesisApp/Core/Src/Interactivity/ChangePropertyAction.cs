@@ -172,6 +172,7 @@ namespace NoesisApp
                         _convertedValue = _converter.ConvertFrom(Value);
                     }
                 }
+                catch (NotSupportedException) { }
                 catch (Exception) { }
             }
         }

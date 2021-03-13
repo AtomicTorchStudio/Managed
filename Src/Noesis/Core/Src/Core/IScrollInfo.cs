@@ -64,7 +64,7 @@ namespace Noesis
         /// <param name="delta">Indicates the number of turns made on the mouse wheel. Number of
         /// lines advanced on each wheel turn can be configured in the operating system.</param>
         /// </summary>
-        void MouseWheelUp(float delta);
+        void MouseWheelUp(double delta);
         void MouseWheelUp();
 
         /// <summary>
@@ -72,7 +72,7 @@ namespace Noesis
         /// <param name="delta">Indicates the number of turns made on the mouse wheel. Number of
         /// lines advanced on each wheel turn can be configured in the operating system.</param>
         /// </summary>
-        void MouseWheelDown(float delta);
+        void MouseWheelDown(double delta);
         void MouseWheelDown();
 
         /// <summary>
@@ -80,7 +80,7 @@ namespace Noesis
         /// <param name="delta">Indicates the number of turns made on the mouse wheel. Number of
         /// lines advanced on each wheel turn can be configured in the operating system.</param>
         /// </summary>
-        void MouseWheelLeft(float delta);
+        void MouseWheelLeft(double delta);
         void MouseWheelLeft();
 
         /// <summary>
@@ -88,7 +88,7 @@ namespace Noesis
         /// <param name="delta">Indicates the number of turns made on the mouse wheel. Number of
         /// lines advanced on each wheel turn can be configured in the operating system.</param>
         /// </summary>
-        void MouseWheelRight(float delta);
+        void MouseWheelRight(double delta);
         void MouseWheelRight();
 
 
@@ -97,14 +97,14 @@ namespace Noesis
         /// An implementation may coerce this value into a valid range, typically inclusively
         /// between 0 and ExtentWidth less ViewportWidth.
         /// </summary>
-        void SetHorizontalOffset(float offset);
+        void SetHorizontalOffset(double offset);
 
         /// <summary>
         /// Set the VerticalOffset to the passed value.
         /// An implementation may coerce this value into a valid range, typically inclusively
         /// between 0 and ExtentHeight less ViewportHeight.
         /// </summary>
-        void SetVerticalOffset(float offset);
+        void SetVerticalOffset(double offset);
 
 
         /// <summary>
@@ -147,34 +147,34 @@ namespace Noesis
         /// <summary>
         /// ExtentWidth contains the full horizontal range of the scrolled content.
         /// </summary>
-        float ExtentWidth { get; }
+        double ExtentWidth { get; }
 
         /// <summary>
         /// ExtentHeight contains the full vertical range of the scrolled content.
         /// </summary>
-        float ExtentHeight { get; }
+        double ExtentHeight { get; }
 
         /// <summary>
         /// ViewportWidth contains the currently visible horizontal range of the scrolled content.
         /// </summary>
-        float ViewportWidth { get; }
+        double ViewportWidth { get; }
 
         /// <summary>
         /// ViewportHeight contains the currently visible vertical range of the scrolled content.
         /// </summary>
-        float ViewportHeight { get; }
+        double ViewportHeight { get; }
 
         /// <summary>
         /// HorizontalOffset is the horizontal offset into the scrolled content that represents the
         /// first unit visible.
         /// </summary>
-        float HorizontalOffset { get; }
+        double HorizontalOffset { get; }
 
         /// <summary>
         /// VerticalOffset is the vertical offset into the scrolled content that represents the
         /// first unit visible.
         /// </summary>
-        float VerticalOffset { get; }
+        double VerticalOffset { get; }
 
         /// <summary>
         /// ScrollOwner is the container that controls any scrollbars, headers, etc... that are

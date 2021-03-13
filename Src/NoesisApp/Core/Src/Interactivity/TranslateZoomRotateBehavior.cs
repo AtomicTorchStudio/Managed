@@ -172,9 +172,9 @@ namespace NoesisApp
             ManipulationDelta delta = e.DeltaManipulation;
 
             // Update Scale transform
-            float scaleX = delta.Scale.X * _scale.ScaleX;
+            var scaleX = delta.Scale.X * _scale.ScaleX;
             _scale.ScaleX = Math.Max(Math.Max(0.00001f, MinimumScale), Math.Min(scaleX, MaximumScale));
-            float scaleY = delta.Scale.Y * _scale.ScaleY;
+            var scaleY = delta.Scale.Y * _scale.ScaleY;
             _scale.ScaleY = Math.Max(Math.Max(0.00001f, MinimumScale), Math.Min(scaleY, MaximumScale));
 
             // Update Rotate transform
@@ -261,8 +261,8 @@ namespace NoesisApp
                     delta.Y = 0.0f;
                 }
 
-                delta.X *= _scale.ScaleX;
-                delta.Y *= _scale.ScaleY;
+                delta.X *= (float)_scale.ScaleX;
+                delta.Y *= (float)_scale.ScaleY;
 
                 _translate.X += delta.X;
                 _translate.Y += delta.Y;
@@ -289,14 +289,14 @@ namespace NoesisApp
             {
                 float sensitivity = WheelSensitivity;
                 float factor = 1.0f + sensitivity;
-                float prevScale = _scale.ScaleX;
-                float scale = prevScale * (e.Delta > 0 ? factor : 1.0f / factor);
+                var prevScale = _scale.ScaleX;
+                var scale = prevScale * (e.Delta > 0 ? factor : 1.0f / factor);
 
                 FrameworkElement target = AssociatedObject;
                 Size renderSize = target.RenderSize;
                 Point center = new Point(renderSize.Width* 0.5f, renderSize.Height * 0.5f);
                 Point point = e.GetPosition(target);
-                Point pointScaled = center + (point - center) * scale;
+                Point pointScaled = center + (point - center) * (float)scale;
 
                 _scale.ScaleX = 1.0f;
                 _scale.ScaleY = 1.0f;
