@@ -80,7 +80,7 @@ namespace Noesis
                 name, nativeType, PropertyMetadata.getCPtr(propertyMetadata).Handle);
 
             DependencyProperty dependencyProperty = existingProperty;
-            if (dependencyProperty != null)
+            if (!ReferenceEquals(existingProperty, null))
             {
                 // Replace DependencyProperty native pointer with the newly created
                 dependencyProperty.swigCPtr = new HandleRef(dependencyProperty, dependencyPtr);
