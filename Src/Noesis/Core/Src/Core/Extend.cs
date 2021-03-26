@@ -1652,26 +1652,23 @@ namespace Noesis
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////
-        private static void RegisterDependencyProperties(System.Type type)
+        private static void RegisterDependencyProperties(Type type)
         {
-            if (ReferenceEquals(type.Assembly, BclAssembly))
-            {    
-                return;
-            }
-            
-            if (!ReferenceEquals(null, Noesis.ExternalTypeHelper.CheckTypeCanContainDependencyProperties)
-                && !Noesis.ExternalTypeHelper.CheckTypeCanContainDependencyProperties(type))
+            // Skip types from Base Class Library assembly
+            if (type.Assembly == BclAssembly)
             {
-                // external type that cannot have dependency properties
-                return;
-            }
-            
-            if (typeof(DependencyObject).GetTypeInfo().IsAssignableFrom(type.GetTypeInfo()))
-            {
-                RunClassConstructor(type);
                 return;
             }
 
+            // Ensure static constructor is called for DependencyObjects or types defining DependencyProperties
+            if (typeof(DependencyObject).GetTypeInfo().IsAssignableFrom(type.GetTypeInfo()) || HasDependencyProperties(type))
+            {
+                RunClassConstructor(type);
+            }
+        }
+
+        private static bool HasDependencyProperties(Type type)
+        {
 #if NETFX_CORE
             var fields = type.GetTypeInfo().DeclaredFields.Where(p => p.IsStatic);
             if (fields.Any())
@@ -1681,11 +1678,17 @@ namespace Noesis
             if (fields.Length > 0)
             {
 #endif
-                RunClassConstructor(type);
+                foreach (FieldInfo field in fields)
+                {
+                    if (field.FieldType == typeof(DependencyProperty))
+                    {
+                        return true;
+                    }
+                }
             }
+
+            return false;
         }
-        
-        private static readonly Assembly BclAssembly = typeof(object).Assembly;
 
         private static void RunClassConstructor(Type type)
         {
@@ -1694,25 +1697,18 @@ namespace Noesis
 
             if (_constructedTypes.Add(type))
             {
-                // New type added to the HashSet - ensure constructor was invoked.
+                // New type added to the HashSet - ensure the static constructor was invoked.
                 RuntimeHelpers.RunClassConstructor(type.TypeHandle);
             }
             else
             {
-                // We've already ensured the class constructor was called sometime.
-                // With this trick we force CLR to call the constructor again.
-#if NETFX_CORE
-                ConstructorInfo initializer = type.GetTypeInfo().DeclaredConstructors.Where(x => x.IsStatic).FirstOrDefault();
-#else
-                ConstructorInfo initializer = type.GetTypeInfo().TypeInitializer;
-#endif
-                if (initializer != null)
-                {
-                    initializer.Invoke(null, null);
-                }
+                // We've already ensured the static class constructor was called sometime.
+                // It's no longer possible to invoke it again, but we have everything in registry.
+                DependencyPropertyRegistry.Restore(type);
             }
         }
 
+        private static readonly Assembly BclAssembly = typeof(object).Assembly;
         private static HashSet<Type> _constructedTypes = new HashSet<Type>();
 
         ////////////////////////////////////////////////////////////////////////////////////////////////
