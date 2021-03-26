@@ -10,7 +10,7 @@ namespace Noesis
     }
 
     [StructLayoutAttribute(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
-    public struct Tile
+    internal struct Tile
     {
         [MarshalAs(UnmanagedType.U4)]
         public uint X;
@@ -127,7 +127,7 @@ namespace Noesis
         /// Clears the given region to transparent (#000000) and sets the scissor rectangle to fit it.
         /// Until next call to EndTile() all rendering commands will only update the extents of the tile.
         /// </summary>
-        public void BeginTile(Tile tile, uint surfaceWidth, uint surfaceHeight)
+        internal void BeginTile(Tile tile, uint surfaceWidth, uint surfaceHeight)
         {
             Noesis_RenderDevice_BeginTile(CPtr, ref tile, surfaceWidth, surfaceHeight);
         }
@@ -167,7 +167,7 @@ namespace Noesis
         /// <summary>
         /// Resolves multisample render target.
         /// </summary>
-        public void ResolveRenderTarget(RenderTarget surface, Tile[] tiles)
+        internal void ResolveRenderTarget(RenderTarget surface, Tile[] tiles)
         {
             if (surface == null)
             {

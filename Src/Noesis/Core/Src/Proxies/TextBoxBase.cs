@@ -243,9 +243,9 @@ public class TextBoxBase : Control {
     }
   }
 
-  public float SelectionOpacity {
+  public double SelectionOpacity {
     set {
-      NoesisGUI_PINVOKE.TextBoxBase_SelectionOpacity_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.TextBoxBase_SelectionOpacity_set(swigCPtr, (float)value);
     } 
     get {
       float ret = NoesisGUI_PINVOKE.TextBoxBase_SelectionOpacity_get(swigCPtr);
@@ -263,42 +263,42 @@ public class TextBoxBase : Control {
     } 
   }
 
-  public float ExtentWidth {
+  public double ExtentWidth {
     get {
       float ret = NoesisGUI_PINVOKE.TextBoxBase_ExtentWidth_get(swigCPtr);
       return ret;
     } 
   }
 
-  public float ExtentHeight {
+  public double ExtentHeight {
     get {
       float ret = NoesisGUI_PINVOKE.TextBoxBase_ExtentHeight_get(swigCPtr);
       return ret;
     } 
   }
 
-  public float ViewportWidth {
+  public double ViewportWidth {
     get {
       float ret = NoesisGUI_PINVOKE.TextBoxBase_ViewportWidth_get(swigCPtr);
       return ret;
     } 
   }
 
-  public float ViewportHeight {
+  public double ViewportHeight {
     get {
       float ret = NoesisGUI_PINVOKE.TextBoxBase_ViewportHeight_get(swigCPtr);
       return ret;
     } 
   }
 
-  public float HorizontalOffset {
+  public double HorizontalOffset {
     get {
       float ret = NoesisGUI_PINVOKE.TextBoxBase_HorizontalOffset_get(swigCPtr);
       return ret;
     } 
   }
 
-  public float VerticalOffset {
+  public double VerticalOffset {
     get {
       float ret = NoesisGUI_PINVOKE.TextBoxBase_VerticalOffset_get(swigCPtr);
       return ret;

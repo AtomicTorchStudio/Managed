@@ -81,9 +81,9 @@ public class EllipseGeometry : Geometry {
 
   }
 
-  public float RadiusX {
+  public double RadiusX {
     set {
-      NoesisGUI_PINVOKE.EllipseGeometry_RadiusX_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.EllipseGeometry_RadiusX_set(swigCPtr, (float)value);
     } 
     get {
       float ret = NoesisGUI_PINVOKE.EllipseGeometry_RadiusX_get(swigCPtr);
@@ -91,9 +91,9 @@ public class EllipseGeometry : Geometry {
     } 
   }
 
-  public float RadiusY {
+  public double RadiusY {
     set {
-      NoesisGUI_PINVOKE.EllipseGeometry_RadiusY_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.EllipseGeometry_RadiusY_set(swigCPtr, (float)value);
     } 
     get {
       float ret = NoesisGUI_PINVOKE.EllipseGeometry_RadiusY_get(swigCPtr);

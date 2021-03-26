@@ -173,6 +173,7 @@ namespace NoesisApp
                         _convertedValue = _converter.ConvertFrom(null, CultureInfo.InvariantCulture, Value);
                     }
                 }
+                catch (NotSupportedException) { }
                 catch (Exception) { }
             }
         }

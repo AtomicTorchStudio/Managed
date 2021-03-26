@@ -158,7 +158,7 @@ namespace NoesisApp
             public static readonly MethodInfo InvokeMethod = typeof(EventWrapper).GetMethod(
                 "Invoke", BindingFlags.Instance | BindingFlags.NonPublic);
 
-            private void Invoke(object sender, Noesis.EventArgs e)
+            private void Invoke(object sender, NoesisEventArgs e)
             {
                 ((EventTriggerBase)weak.Target).OnEventImpl(sender, e);
             }
@@ -209,7 +209,7 @@ namespace NoesisApp
             }
         }
 
-        private void OnEventImpl(object sender, Noesis.EventArgs eventArgs)
+        private void OnEventImpl(object sender, Noesis.NoesisEventArgs eventArgs)
         {
             OnEvent(eventArgs);
         }
@@ -223,7 +223,7 @@ namespace NoesisApp
                 ParameterInfo[] parameters = method.GetParameters();
                 return parameters.Length == 2
                     && typeof(object).IsAssignableFrom(parameters[0].ParameterType)
-                    && typeof(Noesis.EventArgs).IsAssignableFrom(parameters[1].ParameterType);
+                    && typeof(Noesis.NoesisEventArgs).IsAssignableFrom(parameters[1].ParameterType);
             }
             return false;
         }

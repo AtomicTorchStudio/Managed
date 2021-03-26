@@ -24,10 +24,10 @@ namespace Noesis
         {
             Texture tex = WrapD3D11(nativePointer, width, height, numMipMaps, isInverted);
 
-            if (texture != null)
-            {
-                tex.SetPrivateData(new ManagedTexture { Texture = texture });
-            }
+            //if (texture != null)
+            //{
+            //    tex.SetPrivateData(new ManagedTexture { Texture = texture });
+            //}
 
             return tex;
         }
@@ -41,10 +41,10 @@ namespace Noesis
         {
             Texture tex = WrapGL(nativePointer, width, height, numMipMaps, isInverted);
 
-            if (texture != null)
-            {
-                tex.SetPrivateData(new ManagedTexture { Texture = texture });
-            }
+            //if (texture != null)
+            //{
+            //    tex.SetPrivateData(new ManagedTexture { Texture = texture });
+            //}
 
             return tex;
         }

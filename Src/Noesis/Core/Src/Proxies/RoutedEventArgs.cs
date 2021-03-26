@@ -15,7 +15,7 @@ using System.Runtime.InteropServices;
 namespace Noesis
 {
 
-public class RoutedEventArgs : EventArgs {
+public class RoutedEventArgs : NoesisEventArgs {
   private HandleRef swigCPtr;
 
   internal protected RoutedEventArgs(IntPtr cPtr, bool cMemoryOwn) : base(cPtr, cMemoryOwn) {
