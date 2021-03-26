@@ -19,6 +19,7 @@
   
   <ItemGroup>    
     <Compile Include="..\..\NoesisApp\Core\Src\Interactivity\**\*.cs" />
+    <Compile Include="..\..\NoesisApp\Core\Src\MediaElement\**\*.cs" />
     <Compile Include="Src\**\*.cs" />
   </ItemGroup>
   

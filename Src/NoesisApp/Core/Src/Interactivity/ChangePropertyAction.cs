@@ -1,7 +1,6 @@
 ﻿using Noesis;
 using System;
 using System.ComponentModel;
-using System.Globalization;
 using System.Reflection;
 
 namespace NoesisApp
@@ -128,7 +127,12 @@ namespace NoesisApp
             if (target != null && !string.IsNullOrEmpty(propName))
             {
                 Type targetType = target.GetType();
-                PropertyInfo prop = targetType.GetProperty(propName);
+                DependencyProperty prop = GetDependencyPropertyByName(targetType, propName + "Property");
+
+                if (prop == null)
+                {
+                    prop = TryFindAttachedProperty(ref targetType, propName);
+                }
 
                 if (prop == null)
                 {
@@ -136,7 +140,7 @@ namespace NoesisApp
                         "Property '{0}' not found in target '{1}'",
                         propName, targetType));
                 }
-                if (!prop.CanWrite)
+                if (prop.ReadOnly)
                 {
                     throw new InvalidOperationException(string.Format(
                         "Property '{0}.{1}' is read-only",
@@ -159,6 +163,45 @@ namespace NoesisApp
 
             return false;
         }
+        
+        public static DependencyProperty GetDependencyPropertyByName(Type dependencyObjectType, string name)
+        {
+            var bindingFlags = BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy;
+            var propertyInfo = dependencyObjectType.GetProperty(name, bindingFlags);
+            if (propertyInfo != null)
+            {
+                return propertyInfo.GetValue(null) as DependencyProperty;
+            }
+
+            var fieldInfo = dependencyObjectType.GetField(name, bindingFlags);
+            if (fieldInfo != null)
+            {
+                return fieldInfo.GetValue(null) as DependencyProperty;
+            }
+
+            return null;
+        }
+
+        private static DependencyProperty TryFindAttachedProperty(ref Type targetType, string fullName)
+        {
+            var indexOfDot = fullName.IndexOf('.');
+            if (indexOfDot <= 0)
+            {
+                return null;
+            }
+
+            var typeName = fullName.Substring(0, indexOfDot);
+            var type = Noesis.Extend.FindType("Noesis." + typeName);
+            if (type == null)
+            {
+                return null;
+            }
+
+            targetType = type;
+
+            var propertyName = fullName.Substring(indexOfDot + 1) + "Property";
+            return GetDependencyPropertyByName(targetType, propertyName);
+        }
 
         private void UpdateConvertedValue()
         {
@@ -170,7 +213,7 @@ namespace NoesisApp
                 {
                     if (Value != null)
                     {
-                        _convertedValue = _converter.ConvertFrom(null, CultureInfo.InvariantCulture, Value);
+                        _convertedValue = _converter.ConvertFrom(Value);
                     }
                 }
                 catch (NotSupportedException) { }
@@ -180,10 +223,10 @@ namespace NoesisApp
 
         private void SetPropertyValue()
         {
-            _property.SetValue(Target, _convertedValue, new object[0]);
+            ((DependencyObject)Target).SetValue(this._property, _convertedValue);
         }
 
-        private PropertyInfo _property;
+        private DependencyProperty _property;
         private TypeConverter _converter;
         private object _convertedValue;
     }
