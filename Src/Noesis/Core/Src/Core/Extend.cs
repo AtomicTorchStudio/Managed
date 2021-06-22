@@ -4793,6 +4793,13 @@ namespace Noesis
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////
+        public static bool IsGrabbed(object o)
+        {
+            lock (_extends)
+                return _extends.Any(x => Object.ReferenceEquals(x.Value.instance, o));
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////
         public static void RegisterExtendInstance(BaseComponent instance)
         {
             IntPtr cPtr = BaseComponent.getCPtr(instance).Handle;
