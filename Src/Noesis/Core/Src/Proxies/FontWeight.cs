@@ -34,6 +34,5 @@ public enum FontWeight {
   ExtraBlack = 950,
   UltraBlack = 950
 }
-
 }
 

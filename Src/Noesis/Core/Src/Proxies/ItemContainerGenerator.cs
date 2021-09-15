@@ -88,7 +88,7 @@ public class ItemContainerGenerator : BaseComponent, Noesis.IRecyclingItemContai
   #endregion
 
   #region StatusChanged
-  public delegate void StatusChangedHandler(object sender, EventArgs e);
+  public delegate void StatusChangedHandler(object sender, NoesisEventArgs e);
   public event StatusChangedHandler StatusChanged {
     add {
       if (!_StatusChanged.ContainsKey(swigCPtr.Handle)) {
@@ -129,7 +129,7 @@ public class ItemContainerGenerator : BaseComponent, Noesis.IRecyclingItemContai
           throw new System.InvalidOperationException("Delegate not registered for StatusChanged event");
         }
         if (handler != null) {
-          handler(Noesis.Extend.GetProxy(sender, false), new EventArgs(e, false));
+          handler(Noesis.Extend.GetProxy(sender, false), new NoesisEventArgs());// new NoesisEventArgs(e, false));
         }
       }
     }

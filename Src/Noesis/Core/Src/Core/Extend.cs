@@ -1,3 +1,5 @@
+#undef NETSTANDARD
+
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
@@ -1327,6 +1329,14 @@ namespace Noesis
                 props = GetPublicProperties(type);
                 info = CreateNativeTypeInfo(type, indexer, props);
                 AddNativeType(nativeType, info);
+            }
+            
+            if (!ReferenceEquals(null, Noesis.ExternalTypeHelper.CheckTypeCanContainDependencyProperties)
+                && !Noesis.ExternalTypeHelper.CheckTypeCanContainDependencyProperties(type))
+            {
+                // external type should not provide any properties
+                props = Array.Empty<PropertyInfo>();
+                registerDP = false;
             }
 
             // Fill native type with C# public properties
@@ -2700,10 +2710,18 @@ namespace Noesis
                 var stream = (System.IO.Stream)GetExtendInstance(cPtr);
                 if (stream != null)
                 {
-                    byte[] bytes = new byte[bufferSize];
-                    int readBytes = stream.Read(bytes, 0, (int)bufferSize);
-                    System.Runtime.InteropServices.Marshal.Copy(bytes, 0, buffer, (int)bufferSize);
-                    return (uint)readBytes;
+                    var tempBuffer = ExternalBufferManager.Rent((int)bufferSize);
+                    try
+                    {
+                        var bytes = tempBuffer.Data;
+                        int readBytes = stream.Read(bytes, 0, (int)bufferSize);
+                        System.Runtime.InteropServices.Marshal.Copy(bytes, 0, buffer, (int)bufferSize);
+                        return (uint)readBytes;
+                    }
+                    finally
+                    {
+                        ExternalBufferManager.Return(ref tempBuffer);
+                    }
                 }
             }
             catch (Exception e)
@@ -3023,7 +3041,7 @@ namespace Noesis
                 IScrollInfo scrollInfo = (IScrollInfo)GetExtendInstance(cPtr);
                 if (scrollInfo != null)
                 {
-                    return scrollInfo.ExtentWidth;
+                    return (float)scrollInfo.ExtentWidth;
                 }
             }
             catch (Exception e)
@@ -3046,7 +3064,7 @@ namespace Noesis
                 IScrollInfo scrollInfo = (IScrollInfo)GetExtendInstance(cPtr);
                 if (scrollInfo != null)
                 {
-                    return scrollInfo.ExtentHeight;
+                    return (float)scrollInfo.ExtentHeight;
                 }
             }
             catch (Exception e)
@@ -3069,7 +3087,7 @@ namespace Noesis
                 IScrollInfo scrollInfo = (IScrollInfo)GetExtendInstance(cPtr);
                 if (scrollInfo != null)
                 {
-                    return scrollInfo.ViewportWidth;
+                    return (float)scrollInfo.ViewportWidth;
                 }
             }
             catch (Exception e)
@@ -3092,7 +3110,7 @@ namespace Noesis
                 IScrollInfo scrollInfo = (IScrollInfo)GetExtendInstance(cPtr);
                 if (scrollInfo != null)
                 {
-                    return scrollInfo.ViewportHeight;
+                    return (float)scrollInfo.ViewportHeight;
                 }
             }
             catch (Exception e)
@@ -3115,7 +3133,7 @@ namespace Noesis
                 IScrollInfo scrollInfo = (IScrollInfo)GetExtendInstance(cPtr);
                 if (scrollInfo != null)
                 {
-                    return scrollInfo.HorizontalOffset;
+                    return (float)scrollInfo.HorizontalOffset;
                 }
             }
             catch (Exception e)
@@ -3138,7 +3156,7 @@ namespace Noesis
                 IScrollInfo scrollInfo = (IScrollInfo)GetExtendInstance(cPtr);
                 if (scrollInfo != null)
                 {
-                    return scrollInfo.VerticalOffset;
+                    return (float)scrollInfo.VerticalOffset;
                 }
             }
             catch (Exception e)
@@ -3601,7 +3619,7 @@ namespace Noesis
             if (type.Equals(typeof(double)) ||
                 type.Equals(typeof(decimal)))
             {
-                return (int)NativePropertyType.Double;
+                return (int)NativePropertyType.Float;
             }
 
             if (type.Equals(typeof(int)) ||

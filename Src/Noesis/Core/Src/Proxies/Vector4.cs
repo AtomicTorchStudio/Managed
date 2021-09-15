@@ -118,6 +118,11 @@ public struct Vector4 {
   public Vector4(Vector v, float z, float w) : this(v.X, v.Y, z, w) {
   }
 
+  public Vector4(double x, double y, double z, double w)
+    : this((float)x, (float)y, (float)z, (float)w)
+  {
+  }
+
   public static Vector4 operator+(Vector4 v) {
     return v;
   }

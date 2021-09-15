@@ -66,9 +66,9 @@ public class SkewTransform : Transform {
     }
   }
 
-  public float AngleX {
+  public double AngleX {
     set {
-      NoesisGUI_PINVOKE.SkewTransform_AngleX_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.SkewTransform_AngleX_set(swigCPtr, (float)value);
     } 
     get {
       float ret = NoesisGUI_PINVOKE.SkewTransform_AngleX_get(swigCPtr);
@@ -76,9 +76,9 @@ public class SkewTransform : Transform {
     } 
   }
 
-  public float AngleY {
+  public double AngleY {
     set {
-      NoesisGUI_PINVOKE.SkewTransform_AngleY_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.SkewTransform_AngleY_set(swigCPtr, (float)value);
     } 
     get {
       float ret = NoesisGUI_PINVOKE.SkewTransform_AngleY_get(swigCPtr);
@@ -86,9 +86,9 @@ public class SkewTransform : Transform {
     } 
   }
 
-  public float CenterX {
+  public double CenterX {
     set {
-      NoesisGUI_PINVOKE.SkewTransform_CenterX_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.SkewTransform_CenterX_set(swigCPtr, (float)value);
     } 
     get {
       float ret = NoesisGUI_PINVOKE.SkewTransform_CenterX_get(swigCPtr);
@@ -96,9 +96,9 @@ public class SkewTransform : Transform {
     } 
   }
 
-  public float CenterY {
+  public double CenterY {
     set {
-      NoesisGUI_PINVOKE.SkewTransform_CenterY_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.SkewTransform_CenterY_set(swigCPtr, (float)value);
     } 
     get {
       float ret = NoesisGUI_PINVOKE.SkewTransform_CenterY_get(swigCPtr);

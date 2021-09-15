@@ -241,9 +241,9 @@ public class Control : FrameworkElement {
     }
   }
 
-  public float FontSize {
+  public double FontSize {
     set {
-      NoesisGUI_PINVOKE.Control_FontSize_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.Control_FontSize_set(swigCPtr, (float)value);
     } 
     get {
       float ret = NoesisGUI_PINVOKE.Control_FontSize_get(swigCPtr);

@@ -30,14 +30,14 @@ public class ImageSource : Animatable {
   protected ImageSource() {
   }
 
-  public float Width {
+  public double Width {
     get {
       float ret = NoesisGUI_PINVOKE.ImageSource_Width_get(swigCPtr);
       return ret;
     } 
   }
 
-  public float Height {
+  public double Height {
     get {
       float ret = NoesisGUI_PINVOKE.ImageSource_Height_get(swigCPtr);
       return ret;

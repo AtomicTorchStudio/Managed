@@ -30,28 +30,38 @@ public struct Thickness {
   [MarshalAs(UnmanagedType.R4)]
   private float _b;
 
-  public float Left {
+  public double Left {
     get { return this._l; }
-    set { this._l = value; }
+    set { this._l = (float)value; }
   }
 
-  public float Top {
+  public double Top {
     get { return this._t; }
-    set { this._t = value; }
+    set { this._t = (float)value; }
   }
 
-  public float Right {
+  public double Right {
     get { return this._r; }
-    set { this._r = value; }
+    set { this._r = (float)value; }
   }
 
-  public float Bottom {
+  public double Bottom {
     get { return this._b; }
-    set { this._b = value; }
+    set { this._b = (float)value; }
   }
 
   public Size Size {
     get { return new Size(Left + Right, Top + Bottom); }
+  }
+
+  public Thickness(double size) : this(size, size, size, size) {
+  }
+
+  public Thickness(double left, double top, double right, double bottom) {
+    this._l = (float)left;
+    this._t = (float)top;
+    this._r = (float)right;
+    this._b = (float)bottom;
   }
 
   public Thickness(float size) : this(size, size, size, size) {

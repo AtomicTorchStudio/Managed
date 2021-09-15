@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace Noesis
 {
-    public partial class Texture
+   public partial class Texture
     {
         private class ManagedTexture
         {
@@ -55,14 +55,14 @@ namespace Noesis
             int numMipMaps, bool isInverted)
         {
             IntPtr texPtr = Noesis_WrapD3D11Texture(nativePointer, width, height, numMipMaps, isInverted);
-            return new Texture(texPtr, true);
+            return new NativeTexture(texPtr, true);
         }
 
         private static Texture WrapGL(IntPtr nativePointer, int width, int height, int numMipMaps,
             bool isInverted)
         {
             IntPtr texPtr = Noesis_WrapGLTexture(nativePointer, width, height, numMipMaps, isInverted);
-            return new Texture(texPtr, true);
+            return new NativeTexture(texPtr, true);
         }
 
         [DllImport(Library.Name)]

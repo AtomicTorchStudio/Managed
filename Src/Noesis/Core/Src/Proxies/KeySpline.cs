@@ -41,7 +41,7 @@ public class KeySpline : Freezable {
   public KeySpline(float controlPoint1X, float controlPoint1Y, float controlPoint2X, float controlPoint2Y) : this(NoesisGUI_PINVOKE.new_KeySpline__SWIG_2(controlPoint1X, controlPoint1Y, controlPoint2X, controlPoint2Y), true) {
   }
 
-  public float GetSplineProgress(float linearProgress) {
+  public double GetSplineProgress(float linearProgress) {
     float ret = NoesisGUI_PINVOKE.KeySpline_GetSplineProgress(swigCPtr, linearProgress);
     return ret;
   }

@@ -33,6 +33,11 @@ public static class VisualTreeHelper {
   }
 
   public static DependencyObject GetChild(DependencyObject reference, int childIndex) {
+    // workaround for NoesisGUI 3.0
+    if (reference is FrameworkElement) {
+        ((FrameworkElement)reference).ApplyTemplate();
+    }
+
     if (reference == null) throw new ArgumentNullException("reference");
     if (childIndex < 0) throw new ArgumentOutOfRangeException("childIndex");
     if (childIndex >= GetChildrenCount(reference)) throw new ArgumentOutOfRangeException("childIndex");

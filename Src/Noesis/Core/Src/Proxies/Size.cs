@@ -23,7 +23,7 @@ public struct Size {
 
   [MarshalAs(UnmanagedType.R4)]
   private float _height;
-
+  
   public Size(float width, float height) {
     if (width < 0 || height < 0) {
       throw new ArgumentException("Width and Height cannot be negative");
@@ -32,29 +32,34 @@ public struct Size {
     _height = height;
   }
 
-  public float Width {
+  public Size(double width, double height) 
+    : this((float)width, (float)height)
+  {
+  }
+
+  public double Width {
     get { return this._width; }
     set {
       if (IsEmpty) {
         throw new InvalidOperationException("Empty Size cannot be modified");
       }
-      if (value < 0.0f) {
+      if (value < 0.0) {
         throw new ArgumentException("Width cannot be negative");
       }
-      this._width = value;
+      this._width = (float)value;
     }
   }
 
-  public float Height {
+  public double Height {
     get { return this._height; }
     set {
       if (IsEmpty) {
         throw new InvalidOperationException("Empty Size cannot be modified");
       }
-      if (value < 0.0f) {
+      if (value < 0.0) {
         throw new ArgumentException("Height cannot be negative");
       }
-      this._height = value;
+      this._height = (float)value;
     }
   }
 
@@ -134,4 +139,3 @@ public struct Size {
 }
 
 }
-

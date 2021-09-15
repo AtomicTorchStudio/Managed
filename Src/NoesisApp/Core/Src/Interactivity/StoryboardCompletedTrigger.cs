@@ -2,6 +2,8 @@
 
 namespace NoesisApp
 {
+    using System;
+
     /// <summary>
     /// A trigger that listens for the completion of a Storyboard.
     /// </summary>
