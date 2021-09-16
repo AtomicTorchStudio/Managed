@@ -46,7 +46,7 @@ namespace Noesis
         }
 
         internal static void InvokeHandler(Delegate handler, IntPtr sender, IntPtr args) {
-            EventHandler handler_ = (EventHandler)handler;
+            NoesisEventHandler handler_ = (NoesisEventHandler)handler;
             if (handler_ != null) {
                 handler_(Extend.GetProxy(sender, false), new NoesisEventArgs(args, false));
             }

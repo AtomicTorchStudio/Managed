@@ -1912,6 +1912,7 @@ namespace Noesis
         [MonoPInvokeCallback(typeof(Callback_OnPostInit))]
         private static void OnPostInit(IntPtr cPtrType, IntPtr cPtr)
         {
+            return; // this method is deprecated in NoesisGUI v3.1
             try
             {
                 NativeTypeInfo info = GetNativeTypeInfo(cPtrType);
