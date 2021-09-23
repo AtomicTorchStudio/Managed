@@ -236,6 +236,7 @@ public class Storyboard : ParallelTimeline {
     }
   }
 
+  public new Storyboard Clone() => (Storyboard)base.Clone();
 }
 
 }
