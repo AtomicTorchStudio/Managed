@@ -63,42 +63,42 @@ public class Line : Shape {
     }
   }
 
-  public float X1 {
+  public double X1 {
     set {
-      NoesisGUI_PINVOKE.Line_X1_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.Line_X1_set(swigCPtr, (float)value);
     } 
     get {
-      float ret = NoesisGUI_PINVOKE.Line_X1_get(swigCPtr);
+      double ret = NoesisGUI_PINVOKE.Line_X1_get(swigCPtr);
       return ret;
     } 
   }
 
-  public float Y1 {
+  public double Y1 {
     set {
-      NoesisGUI_PINVOKE.Line_Y1_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.Line_Y1_set(swigCPtr, (float)value);
     } 
     get {
-      float ret = NoesisGUI_PINVOKE.Line_Y1_get(swigCPtr);
+      double ret = NoesisGUI_PINVOKE.Line_Y1_get(swigCPtr);
       return ret;
     } 
   }
 
-  public float X2 {
+  public double X2 {
     set {
-      NoesisGUI_PINVOKE.Line_X2_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.Line_X2_set(swigCPtr, (float)value);
     } 
     get {
-      float ret = NoesisGUI_PINVOKE.Line_X2_get(swigCPtr);
+      double ret = NoesisGUI_PINVOKE.Line_X2_get(swigCPtr);
       return ret;
     } 
   }
 
-  public float Y2 {
+  public double Y2 {
     set {
-      NoesisGUI_PINVOKE.Line_Y2_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.Line_Y2_set(swigCPtr, (float)value);
     } 
     get {
-      float ret = NoesisGUI_PINVOKE.Line_Y2_get(swigCPtr);
+      double ret = NoesisGUI_PINVOKE.Line_Y2_get(swigCPtr);
       return ret;
     } 
   }

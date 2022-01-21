@@ -73,7 +73,7 @@ public class Popup : FrameworkElement {
         if (!_Closed.TryGetValue(ptr, out handler)) {
           throw new InvalidOperationException("Delegate not registered for Closed event");
         }
-        handler?.Invoke(Noesis.Extend.GetProxy(sender, false), new EventArgs(e, false));
+        handler?.Invoke(Noesis.Extend.GetProxy(sender, false), new NoesisEventArgs(e, false));
       }
     }
     catch (Exception exception) {
@@ -129,7 +129,7 @@ public class Popup : FrameworkElement {
         if (!_Opened.TryGetValue(ptr, out handler)) {
           throw new InvalidOperationException("Delegate not registered for Opened event");
         }
-        handler?.Invoke(Noesis.Extend.GetProxy(sender, false), new EventArgs(e, false));
+        handler?.Invoke(Noesis.Extend.GetProxy(sender, false), new NoesisEventArgs(e, false));
       }
     }
     catch (Exception exception) {
@@ -263,9 +263,9 @@ public class Popup : FrameworkElement {
     } 
   }
 
-  public float HorizontalOffset {
+  public double HorizontalOffset {
     set {
-      NoesisGUI_PINVOKE.Popup_HorizontalOffset_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.Popup_HorizontalOffset_set(swigCPtr, (float)value);
     } 
     get {
       float ret = NoesisGUI_PINVOKE.Popup_HorizontalOffset_get(swigCPtr);
@@ -340,9 +340,9 @@ public class Popup : FrameworkElement {
     } 
   }
 
-  public float VerticalOffset {
+  public double VerticalOffset {
     set {
-      NoesisGUI_PINVOKE.Popup_VerticalOffset_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.Popup_VerticalOffset_set(swigCPtr, (float)value);
     } 
     get {
       float ret = NoesisGUI_PINVOKE.Popup_VerticalOffset_get(swigCPtr);

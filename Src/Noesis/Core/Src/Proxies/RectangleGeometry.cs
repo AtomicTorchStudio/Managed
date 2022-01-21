@@ -70,9 +70,9 @@ public class RectangleGeometry : Geometry {
     }
   }
 
-  public float RadiusX {
+  public double RadiusX {
     set {
-      NoesisGUI_PINVOKE.RectangleGeometry_RadiusX_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.RectangleGeometry_RadiusX_set(swigCPtr, (float)value);
     } 
     get {
       float ret = NoesisGUI_PINVOKE.RectangleGeometry_RadiusX_get(swigCPtr);
@@ -80,9 +80,9 @@ public class RectangleGeometry : Geometry {
     } 
   }
 
-  public float RadiusY {
+  public double RadiusY {
     set {
-      NoesisGUI_PINVOKE.RectangleGeometry_RadiusY_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.RectangleGeometry_RadiusY_set(swigCPtr, (float)value);
     } 
     get {
       float ret = NoesisGUI_PINVOKE.RectangleGeometry_RadiusY_get(swigCPtr);

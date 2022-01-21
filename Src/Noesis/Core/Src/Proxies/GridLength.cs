@@ -40,7 +40,7 @@ public struct GridLength {
     get { return this._type == GridUnitType.Star; }
   }
 
-  public float Value {
+  public double Value {
     get { return this._value; }
   }
 

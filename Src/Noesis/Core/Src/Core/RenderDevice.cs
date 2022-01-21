@@ -31,7 +31,7 @@ namespace Noesis
     /// A tile is a region of a render target. The origin is located at the lower left corner.
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    public struct Tile
+    public struct RenderTile
     {
         [MarshalAs(UnmanagedType.U4)]
         public uint X;
@@ -326,7 +326,7 @@ namespace Noesis
     /// <summary>
     /// Alpha blending mode.
     /// </summary>
-    public enum BlendMode
+    public enum NoesisBlendMode
     {
                                 //  ----------------------------------------------------
                                 //  COLOR                       ALPHA
@@ -343,7 +343,7 @@ namespace Noesis
     /// <summary>
     /// Stencil buffer mode.
     /// </summary>
-    public enum StencilMode
+    public enum NoesisStencilMode
     {
         /// <summary>Stencil testing disabled</summary>
         Disabled,
@@ -361,14 +361,14 @@ namespace Noesis
     /// Render state.
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    public struct RenderState
+    public struct NoesisRenderState
     {
         public bool ColorEnable { get { return (this.v & 1 << 0) != 0; } }
-        public BlendMode BlendMode { get { return (BlendMode)((this.v >> 1) & 7); } }
-        public StencilMode StencilMode { get { return (StencilMode)((this.v >> 4) & 7); } }
+        public NoesisBlendMode BlendMode { get { return (NoesisBlendMode)((this.v >> 1) & 7); } }
+        public NoesisStencilMode StencilMode { get { return (NoesisStencilMode)((this.v >> 4) & 7); } }
         public bool Wireframe { get { return (this.v & 1 << 7) != 0; } }
 
-        public override bool Equals(object obj) { return obj is RenderState && v == ((RenderState)obj).v; }
+        public override bool Equals(object obj) { return obj is NoesisRenderState && v == ((NoesisRenderState)obj).v; }
         public override int GetHashCode() { return 238427441 + v.GetHashCode(); }
 
         private readonly byte v;
@@ -377,7 +377,7 @@ namespace Noesis
     /// <summary>
     /// Texture wrapping mode.
     /// </summary>
-    public enum WrapMode
+    public enum NoesisWrapMode
     {
         /// <summary>Clamp between 0.0 and 1.0</summary>
         ClampToEdge,
@@ -396,7 +396,7 @@ namespace Noesis
     /// <summary>
     /// Texture minification and magnification filter
     /// </summary>
-    public enum MinMagFilter
+    public enum NoesisMinMagFilter
     {
         /// <summary>Select the single pixel nearest to the sample point</summary>
         Nearest,
@@ -407,7 +407,7 @@ namespace Noesis
     /// <summary>
     /// Texture Mipmap filter
     /// </summary>
-    public enum MipFilter
+    public enum NoesisMipFilter
     {
         /// <summary>Texture sampled from mipmap level 0</summary>
         Disabled,
@@ -421,13 +421,13 @@ namespace Noesis
     /// Texture sampler state.
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    public struct SamplerState
+    public struct NoesisSamplerState
     {
-        public WrapMode WrapMode { get { return (WrapMode)((this.v >> 0) & 7); } }
-        public MinMagFilter MinMagFilter { get { return (MinMagFilter)((this.v >> 3) & 1); } }
-        public MipFilter MipFilter { get { return (MipFilter)((this.v >> 4) & 3); } }
+        public NoesisWrapMode WrapMode { get { return (NoesisWrapMode)((this.v >> 0) & 7); } }
+        public NoesisMinMagFilter MinMagFilter { get { return (NoesisMinMagFilter)((this.v >> 3) & 1); } }
+        public NoesisMipFilter MipFilter { get { return (NoesisMipFilter)((this.v >> 4) & 3); } }
 
-        public override bool Equals(object obj) { return obj is SamplerState && v == ((SamplerState)obj).v; }
+        public override bool Equals(object obj) { return obj is NoesisSamplerState && v == ((NoesisSamplerState)obj).v; }
         public override int GetHashCode() { return 238427441 + v.GetHashCode(); }
 
         private readonly byte v;
@@ -438,7 +438,7 @@ namespace Noesis
     /// A hash for the content is given to avoid unnecessary constant buffer updates.
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    public struct UniformData
+    public struct NoesisUniformData
     {
         public IntPtr Values;
         public uint NumWords;
@@ -449,11 +449,11 @@ namespace Noesis
     /// Render batch information.
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    public struct Batch
+    public struct NoesisBatch
     {
         /// <summary>Render state</summary>
         public readonly Shader Shader;
-        public readonly RenderState RenderState;
+        public readonly NoesisRenderState RenderState;
         public readonly byte StencilRef;
 
         /// <summary>Draw parameters</summary>
@@ -476,17 +476,17 @@ namespace Noesis
         public Texture Shadow { get { return (Texture)Extend.GetProxy(shadow, false); } }
 
         /// <summary>Sampler states corresponding to each texture</summary>
-        public readonly SamplerState PatternSampler;
-        public readonly SamplerState RampsSampler;
-        public readonly SamplerState ImageSampler;
-        public readonly SamplerState GlyphsSampler;
-        public readonly SamplerState ShadowSampler;
+        public readonly NoesisSamplerState PatternSampler;
+        public readonly NoesisSamplerState RampsSampler;
+        public readonly NoesisSamplerState ImageSampler;
+        public readonly NoesisSamplerState GlyphsSampler;
+        public readonly NoesisSamplerState ShadowSampler;
 
         /// <summary>Vertex and pixel shader uniform buffers</summary>
-        public readonly UniformData VertexUniform0;
-        public readonly UniformData VertexUniform1;
-        public readonly UniformData PixelUniform0;
-        public readonly UniformData PixelUniform1;
+        public readonly NoesisUniformData VertexUniform0;
+        public readonly NoesisUniformData VertexUniform1;
+        public readonly NoesisUniformData PixelUniform0;
+        public readonly NoesisUniformData PixelUniform1;
 
         /// <summary>Custom data set in ShaderEffect.SetPixelShader() or BrushShader.SetPixelShader()</summary>
         public readonly IntPtr PixelShader;
@@ -586,7 +586,7 @@ namespace Noesis
         /// <summary>
         /// Resolves multisample render target.
         /// </summary>
-        public abstract void ResolveRenderTarget(RenderTarget surface, Tile[] tiles);
+        public abstract void ResolveRenderTarget(RenderTarget surface, RenderTile[] tiles);
 
         /// <summary>
         /// Creates a texture with given dimensions and format. For immutable textures, the content of
@@ -646,7 +646,7 @@ namespace Noesis
         /// <summary>
         /// Draws primitives for the given batch.
         /// </summary>
-        public abstract void DrawBatch(ref Batch batch);
+        public abstract void DrawBatch(ref NoesisBatch batch);
 
         #region Private members
         static RenderDevice()
@@ -775,11 +775,11 @@ namespace Noesis
         }
 
         private delegate void Callback_ResolveRenderTarget(IntPtr cPtr, IntPtr surface,
-            [In, MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 3)] Tile[] tiles, int numTiles);
+            [In, MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 3)] RenderTile[] tiles, int numTiles);
         private static Callback_ResolveRenderTarget _resolveRenderTarget = ResolveRenderTarget;
 
         [MonoPInvokeCallback(typeof(Callback_ResolveRenderTarget))]
-        private static void ResolveRenderTarget(IntPtr cPtr, IntPtr surfacePtr, Tile[] tiles, int numTiles)
+        private static void ResolveRenderTarget(IntPtr cPtr, IntPtr surfacePtr, RenderTile[] tiles, int numTiles)
         {
             try
             {
@@ -1011,11 +1011,11 @@ namespace Noesis
             }
         }
 
-        private delegate void Callback_DrawBatch(IntPtr cPtr, [In] ref Batch batch);
+        private delegate void Callback_DrawBatch(IntPtr cPtr, [In] ref NoesisBatch batch);
         private static Callback_DrawBatch _drawBatch = DrawBatch;
 
         [MonoPInvokeCallback(typeof(Callback_DrawBatch))]
-        private static void DrawBatch(IntPtr cPtr, ref Batch batch)
+        private static void DrawBatch(IntPtr cPtr, ref NoesisBatch batch)
         {
             try
             {
@@ -1142,7 +1142,7 @@ namespace Noesis
             Noesis_RenderDevice_SetRenderTarget(swigCPtr, BaseComponent.getCPtr(surface));
         }
 
-        public override void ResolveRenderTarget(RenderTarget surface, Tile[] tiles)
+        public override void ResolveRenderTarget(RenderTarget surface, RenderTile[] tiles)
         {
             if (surface == null)
             {
@@ -1218,7 +1218,7 @@ namespace Noesis
             Noesis_RenderDevice_UnmapIndices(swigCPtr);
         }
 
-        public override void DrawBatch(ref Batch batch)
+        public override void DrawBatch(ref NoesisBatch batch)
         {
             Noesis_RenderDevice_DrawBatch(swigCPtr, ref batch);
         }
@@ -1254,7 +1254,7 @@ namespace Noesis
 
         [DllImport(Library.Name)]
         static extern void Noesis_RenderDevice_ResolveRenderTarget(HandleRef device, HandleRef surface,
-            [In, Out] Tile[] tiles, int numTiles);
+            [In, Out] RenderTile[] tiles, int numTiles);
 
         [DllImport(Library.Name)]
         static extern IntPtr Noesis_RenderDevice_CreateTexture(HandleRef device,
@@ -1290,7 +1290,7 @@ namespace Noesis
         static extern void Noesis_RenderDevice_UnmapIndices(HandleRef device);
 
         [DllImport(Library.Name)]
-        static extern void Noesis_RenderDevice_DrawBatch(HandleRef device, ref Batch batch);
+        static extern void Noesis_RenderDevice_DrawBatch(HandleRef device, ref NoesisBatch batch);
         #endregion
     }
 

@@ -76,7 +76,7 @@ public class Timeline : Animatable {
         if (!_Completed.TryGetValue(ptr, out handler)) {
           throw new InvalidOperationException("Delegate not registered for Completed event");
         }
-        handler?.Invoke(Noesis.Extend.GetProxy(sender, false), new EventArgs(e, false));
+        handler?.Invoke(Noesis.Extend.GetProxy(sender, false), EventArgs.Empty);
       }
     }
     catch (Exception exception) {
@@ -169,9 +169,9 @@ public class Timeline : Animatable {
     }
   }
 
-  public float AccelerationRatio {
+  public double AccelerationRatio {
     set {
-      NoesisGUI_PINVOKE.Timeline_AccelerationRatio_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.Timeline_AccelerationRatio_set(swigCPtr, (float)value);
     } 
     get {
       float ret = NoesisGUI_PINVOKE.Timeline_AccelerationRatio_get(swigCPtr);
@@ -207,9 +207,9 @@ public class Timeline : Animatable {
 
   }
 
-  public float DecelerationRatio {
+  public double DecelerationRatio {
     set {
-      NoesisGUI_PINVOKE.Timeline_DecelerationRatio_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.Timeline_DecelerationRatio_set(swigCPtr, (float)value);
     } 
     get {
       float ret = NoesisGUI_PINVOKE.Timeline_DecelerationRatio_get(swigCPtr);
@@ -272,9 +272,9 @@ public class Timeline : Animatable {
 
   }
 
-  public float SpeedRatio {
+  public double SpeedRatio {
     set {
-      NoesisGUI_PINVOKE.Timeline_SpeedRatio_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.Timeline_SpeedRatio_set(swigCPtr, (float)value);
     } 
     get {
       float ret = NoesisGUI_PINVOKE.Timeline_SpeedRatio_get(swigCPtr);

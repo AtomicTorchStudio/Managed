@@ -35,7 +35,7 @@ public class ScaleTransform : Transform {
     return NoesisGUI_PINVOKE.new_ScaleTransform__SWIG_0();
   }
 
-  public ScaleTransform(float scaleX, float scaleY) : this(NoesisGUI_PINVOKE.new_ScaleTransform__SWIG_1(scaleX, scaleY), true) {
+  public ScaleTransform(double scaleX, double scaleY) : this(NoesisGUI_PINVOKE.new_ScaleTransform__SWIG_1((float)scaleX, (float)scaleY), true) {
   }
 
   public static DependencyProperty CenterXProperty {
@@ -66,42 +66,42 @@ public class ScaleTransform : Transform {
     }
   }
 
-  public float ScaleX {
+  public double ScaleX {
     set {
-      NoesisGUI_PINVOKE.ScaleTransform_ScaleX_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.ScaleTransform_ScaleX_set(swigCPtr, (float)value);
     } 
     get {
-      float ret = NoesisGUI_PINVOKE.ScaleTransform_ScaleX_get(swigCPtr);
+      double ret = NoesisGUI_PINVOKE.ScaleTransform_ScaleX_get(swigCPtr);
       return ret;
     } 
   }
 
-  public float ScaleY {
+  public double ScaleY {
     set {
-      NoesisGUI_PINVOKE.ScaleTransform_ScaleY_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.ScaleTransform_ScaleY_set(swigCPtr, (float)value);
     } 
     get {
-      float ret = NoesisGUI_PINVOKE.ScaleTransform_ScaleY_get(swigCPtr);
+      double ret = NoesisGUI_PINVOKE.ScaleTransform_ScaleY_get(swigCPtr);
       return ret;
     } 
   }
 
-  public float CenterX {
+  public double CenterX {
     set {
-      NoesisGUI_PINVOKE.ScaleTransform_CenterX_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.ScaleTransform_CenterX_set(swigCPtr, (float)value);
     } 
     get {
-      float ret = NoesisGUI_PINVOKE.ScaleTransform_CenterX_get(swigCPtr);
+      double ret = NoesisGUI_PINVOKE.ScaleTransform_CenterX_get(swigCPtr);
       return ret;
     } 
   }
 
-  public float CenterY {
+  public double CenterY {
     set {
-      NoesisGUI_PINVOKE.ScaleTransform_CenterY_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.ScaleTransform_CenterY_set(swigCPtr, (float)value);
     } 
     get {
-      float ret = NoesisGUI_PINVOKE.ScaleTransform_CenterY_get(swigCPtr);
+      double ret = NoesisGUI_PINVOKE.ScaleTransform_CenterY_get(swigCPtr);
       return ret;
     } 
   }

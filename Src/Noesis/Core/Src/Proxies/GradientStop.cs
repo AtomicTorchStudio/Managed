@@ -73,9 +73,9 @@ public class GradientStop : Animatable {
 
   }
 
-  public float Offset {
+  public double Offset {
     set {
-      NoesisGUI_PINVOKE.GradientStop_Offset_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.GradientStop_Offset_set(swigCPtr, (float)value);
     } 
     get {
       float ret = NoesisGUI_PINVOKE.GradientStop_Offset_get(swigCPtr);

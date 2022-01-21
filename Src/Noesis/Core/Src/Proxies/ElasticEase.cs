@@ -59,9 +59,9 @@ public class ElasticEase : EasingFunctionBase {
     } 
   }
 
-  public float Springiness {
+  public double Springiness {
     set {
-      NoesisGUI_PINVOKE.ElasticEase_Springiness_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.ElasticEase_Springiness_set(swigCPtr, (float)value);
     } 
     get {
       float ret = NoesisGUI_PINVOKE.ElasticEase_Springiness_get(swigCPtr);
