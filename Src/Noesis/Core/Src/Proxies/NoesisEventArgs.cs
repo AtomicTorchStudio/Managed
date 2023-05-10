@@ -53,8 +53,7 @@ namespace Noesis
         }
 
         private static NoesisEventArgs _empty = GetEmptyHelper();
-        public static NoesisEventArgs Empty { get { return _empty; } }
-
+        public new static NoesisEventArgs Empty { get { return _empty; } }
 
         private static NoesisEventArgs GetEmptyHelper() {
             IntPtr cPtr = NoesisGUI_PINVOKE.EventArgs_GetEmptyHelper();

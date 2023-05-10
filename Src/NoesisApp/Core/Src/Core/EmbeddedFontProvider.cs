@@ -7,25 +7,27 @@ namespace NoesisApp
 {
     public class EmbeddedFontProvider : FontProvider
     {
-        public EmbeddedFontProvider(Assembly assembly, string ns) : this(assembly, ns, null)
+        public EmbeddedFontProvider(Assembly assembly, string ns) :
+            this(assembly, assembly?.GetName().Name, ns, null)
         {
         }
 
-        public EmbeddedFontProvider(Assembly assembly, string ns, FontProvider provider)
+        public EmbeddedFontProvider(Assembly assembly, string ns, FontProvider provider) :
+             this(assembly, assembly?.GetName().Name, ns, provider)
+        {
+        }
+
+        internal EmbeddedFontProvider(Assembly assembly, string component, string ns, FontProvider provider)
         {
             _assembly = assembly;
             _namespace = ns;
             _provider = provider;
 
-            // Register application font resources
-            RegisterFontResources(_assembly, _namespace);
-
-            // Register Theme font resources
-            RegisterFontResources(Theme.Assembly, Theme.Namespace);
+            RegisterFontResources(component);
 
             if (_provider != null)
             {
-                _provider.FontChanged += (string baseUri, string familyName, FontWeight weight,
+                _provider.FontChanged += (Uri baseUri, string familyName, FontWeight weight,
                     FontStretch stretch, FontStyle style) =>
                 {
                     _provider.RaiseFontChanged(baseUri, familyName, weight, stretch, style);
@@ -33,61 +35,81 @@ namespace NoesisApp
             }
         }
 
-        private void RegisterFontResources(Assembly assembly, string ns)
+        private void RegisterFontResources(string component)
         {
-            if (assembly == null) return;
+            if (_assembly == null) return;
 
-            int skipNs = ns.Length + 1;
-            char[] pointSeparator = new char[] { '.' };
-
-            foreach (string resource in assembly.GetManifestResourceNames())
+            foreach (string name in _assembly.GetManifestResourceNames())
             {
-                if (resource.EndsWith(".ttf") || resource.EndsWith(".ttc") || resource.EndsWith(".otf"))
+                if (name.EndsWith(".ttf", StringComparison.OrdinalIgnoreCase) ||
+                    name.EndsWith(".ttc", StringComparison.OrdinalIgnoreCase) ||
+                    name.EndsWith(".otf", StringComparison.OrdinalIgnoreCase))
                 {
-                    string[] tokens = resource.Substring(skipNs).Split(pointSeparator);
+                    string resource = string.IsNullOrEmpty(_namespace) ? name : name.Substring(_namespace.Length + 1);
+                    int lastDot = resource.LastIndexOf('.', resource.Length - 5);
+                    string folder = lastDot != -1 ? resource.Substring(0, lastDot).Replace('.', '/') : string.Empty;
+                    string filename = lastDot != -1 ? resource.Substring(lastDot + 1) : resource;
 
-                    string path = tokens[0];
-                    for (int i = 1; i < tokens.Length - 1; ++i)
-                    {
-                        path += System.IO.Path.DirectorySeparatorChar;
-                        path += tokens[i];
-                    }
-                    path += ".";
-                    path += tokens[tokens.Length - 1];
+                    RegisterFont(new Uri(folder, UriKind.RelativeOrAbsolute), filename);
 
-                    string folder = System.IO.Path.GetDirectoryName(path);
-                    string id = System.IO.Path.GetFileName(path);
-                    RegisterFont(folder.Replace('\\', '/'), id);
+                    folder = $"/{component};component/{folder}";
+                    RegisterFont(new Uri(folder, UriKind.RelativeOrAbsolute), filename);
                 }
             }
         }
 
-        public override void ScanFolder(string folder)
+        public override FontSource MatchFont(Uri baseUri, string familyName,
+            ref FontWeight weight, ref FontStretch stretch, ref FontStyle style)
         {
+            if (_provider != null)
+            {
+                FontSource font = _provider.MatchFont(baseUri, familyName, ref weight, ref stretch, ref style);
+                if (font.file != null)
+                {
+                    return font;
+                }
+            }
+
+            return base.MatchFont(baseUri, familyName, ref weight, ref stretch, ref style);
         }
 
-        public override Stream OpenFont(string folder, string id)
+        public override bool FamilyExists(Uri baseUri, string familyName)
+        {
+            if (_provider != null)
+            {
+                if (_provider.FamilyExists(baseUri, familyName))
+                {
+                    return true;
+                }
+            }
+
+            return base.FamilyExists(baseUri, familyName);
+        }
+
+        public override void ScanFolder(Uri folder)
+        {
+            if (_provider != null)
+            {
+                _provider.ScanFolder(folder);
+            }
+        }
+
+        public override Stream OpenFont(Uri folder, string filename)
         {
             Stream stream = null;
 
-            // First try with user provider
             if (_provider != null)
             {
-                stream = _provider.OpenFont(folder, id);
+                stream = _provider.OpenFont(folder, filename);
             }
 
-            // Next try with application assembly resources
             if (stream == null)
             {
-                string filename = folder + (folder.Length > 0 ? "/" : "") + id;
-                stream = Application.GetAssemblyResource(_assembly, _namespace, filename);
-            }
+                string path = folder.GetPath();
+                if (path.Length > 0 && !path.EndsWith("/")) path += "/";
+                path += filename;
 
-            // Last try with Theme assembly resources
-            if (stream == null)
-            {
-                string filename = folder + (folder.Length > 0 ? "/" : "") + id;
-                stream = Application.GetAssemblyResource(Theme.Assembly, "NoesisApp", filename);
+                stream = Application.GetAssemblyResource(_assembly, _namespace, path);
             }
 
             return stream;

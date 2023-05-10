@@ -320,6 +320,31 @@ public class NoesisGUI_ {
     return ret;
   }
 
+  public static IntPtr Int32Rect_GetStaticType() {
+    IntPtr ret = NoesisGUI_PINVOKE.Int32Rect_GetStaticType();
+    return ret;
+  }
+
+  public static IntPtr Boxed_Int32Rect_GetStaticType() {
+    IntPtr ret = NoesisGUI_PINVOKE.Boxed_Int32Rect_GetStaticType();
+    return ret;
+  }
+
+  public static Int32Rect Unbox_Int32Rect(IntPtr val) {
+    IntPtr ret = NoesisGUI_PINVOKE.Unbox_Int32Rect(val);
+    if (ret != IntPtr.Zero) {
+      return Marshal.PtrToStructure<Int32Rect>(ret);
+    }
+    else {
+      return new Int32Rect();
+    }
+  }
+
+  public static IntPtr Box_Int32Rect(Int32Rect val) {
+    IntPtr ret = NoesisGUI_PINVOKE.Box_Int32Rect(ref val);
+    return ret;
+  }
+
   public static IntPtr Thickness_GetStaticType() {
     IntPtr ret = NoesisGUI_PINVOKE.Thickness_GetStaticType();
     return ret;
@@ -395,6 +420,31 @@ public class NoesisGUI_ {
     return ret;
   }
 
+  public static IntPtr Matrix_GetStaticType() {
+    IntPtr ret = NoesisGUI_PINVOKE.Matrix_GetStaticType();
+    return ret;
+  }
+
+  public static IntPtr Boxed_Matrix_GetStaticType() {
+    IntPtr ret = NoesisGUI_PINVOKE.Boxed_Matrix_GetStaticType();
+    return ret;
+  }
+
+  public static Matrix Unbox_Matrix(IntPtr val) {
+    IntPtr ret = NoesisGUI_PINVOKE.Unbox_Matrix(val);
+    if (ret != IntPtr.Zero) {
+      return Marshal.PtrToStructure<Matrix>(ret);
+    }
+    else {
+      return Matrix.Identity;
+    }
+  }
+
+  public static IntPtr Box_Matrix(Matrix val) {
+    IntPtr ret = NoesisGUI_PINVOKE.Box_Matrix(ref val);
+    return ret;
+  }
+
   public static IntPtr Vector4_GetStaticType() {
     IntPtr ret = NoesisGUI_PINVOKE.Vector4_GetStaticType();
     return ret;
@@ -442,6 +492,31 @@ public class NoesisGUI_ {
 
   public static IntPtr Box_Matrix4(Matrix4 val) {
     IntPtr ret = NoesisGUI_PINVOKE.Box_Matrix4(ref val);
+    return ret;
+  }
+
+  public static IntPtr Matrix3D_GetStaticType() {
+    IntPtr ret = NoesisGUI_PINVOKE.Matrix3D_GetStaticType();
+    return ret;
+  }
+
+  public static IntPtr Boxed_Matrix3D_GetStaticType() {
+    IntPtr ret = NoesisGUI_PINVOKE.Boxed_Matrix3D_GetStaticType();
+    return ret;
+  }
+
+  public static Matrix3D Unbox_Matrix3D(IntPtr val) {
+    IntPtr ret = NoesisGUI_PINVOKE.Unbox_Matrix3D(val);
+    if (ret != IntPtr.Zero) {
+      return Marshal.PtrToStructure<Matrix3D>(ret);
+    }
+    else {
+      return Matrix3D.Identity;
+    }
+  }
+
+  public static IntPtr Box_Matrix3D(Matrix3D val) {
+    IntPtr ret = NoesisGUI_PINVOKE.Box_Matrix3D(ref val);
     return ret;
   }
 
@@ -502,6 +577,11 @@ public class NoesisGUI_ {
 
   public static IntPtr NullableRect_GetStaticType() {
     IntPtr ret = NoesisGUI_PINVOKE.NullableRect_GetStaticType();
+    return ret;
+  }
+
+  public static IntPtr NullableInt32Rect_GetStaticType() {
+    IntPtr ret = NoesisGUI_PINVOKE.NullableInt32Rect_GetStaticType();
     return ret;
   }
 
@@ -635,16 +715,6 @@ public class NoesisGUI_ {
     return ret;
   }
 
-  public static Cursor Unbox_Cursor(IntPtr val) {
-    Cursor ret = (Cursor)NoesisGUI_PINVOKE.Unbox_Cursor(val);
-    return ret;
-  }
-
-  public static IntPtr Box_Cursor(Cursor val) {
-    IntPtr ret = NoesisGUI_PINVOKE.Box_Cursor((int)val);
-    return ret;
-  }
-
   public static Dock Unbox_Dock(IntPtr val) {
     Dock ret = (Dock)NoesisGUI_PINVOKE.Unbox_Dock(val);
     return ret;
@@ -752,6 +822,16 @@ public class NoesisGUI_ {
 
   public static IntPtr Box_InputScope(InputScope val) {
     IntPtr ret = NoesisGUI_PINVOKE.Box_InputScope((int)val);
+    return ret;
+  }
+
+  public static MouseAction Unbox_MouseAction(IntPtr val) {
+    MouseAction ret = (MouseAction)NoesisGUI_PINVOKE.Unbox_MouseAction(val);
+    return ret;
+  }
+
+  public static IntPtr Box_MouseAction(MouseAction val) {
+    IntPtr ret = NoesisGUI_PINVOKE.Box_MouseAction((int)val);
     return ret;
   }
 
@@ -1045,12 +1125,12 @@ public class NoesisGUI_ {
     return ret;
   }
 
-  public static IntPtr Box_CustomEnum(IntPtr type, int val) {
+  public static IntPtr Box_CustomEnum(IntPtr type, ulong val) {
     IntPtr ret = NoesisGUI_PINVOKE.Box_CustomEnum(type, val);
     return ret;
   }
 
-  public static IntPtr Unbox_CustomEnum(IntPtr val, ref int enumVal) {
+  public static IntPtr Unbox_CustomEnum(IntPtr val, ref ulong enumVal) {
     IntPtr ret = NoesisGUI_PINVOKE.Unbox_CustomEnum(val, ref enumVal);
     return ret;
   }
@@ -1068,11 +1148,11 @@ public class NoesisGUI_ {
   public static Uri Unbox_Uri(IntPtr val) {
     IntPtr uriPtr = NoesisGUI_PINVOKE.Unbox_Uri(val);
     string uri = Noesis.Extend.StringFromNativeUtf8(uriPtr);
-    return new Uri(uri, UriKind.Relative);
+    return new Uri(uri, UriKind.RelativeOrAbsolute);
   }
 
   public static IntPtr Box_Uri(Uri val) {
-    IntPtr ret = NoesisGUI_PINVOKE.Box_Uri(val != null ? UriHelper.GetPath(val) : string.Empty);
+    IntPtr ret = NoesisGUI_PINVOKE.Box_Uri(val != null ? val.OriginalString : string.Empty);
     return ret;
   }
 

@@ -30,82 +30,82 @@ public partial class FrameworkElement : UIElement {
   #region Events
   public event ContextMenuEventHandler ContextMenuClosing {
     add {
-      AddHandler(ContextMenuClosingEvent, value);
+      AddHandler(NoesisGUI_PINVOKE.FrameworkElement_ContextMenuClosingEvent_get(), value);
     }
     remove {
-      RemoveHandler(ContextMenuClosingEvent, value);
+      RemoveHandler(NoesisGUI_PINVOKE.FrameworkElement_ContextMenuClosingEvent_get(), value);
     }
   }
 
   public event ContextMenuEventHandler ContextMenuOpening {
     add {
-      AddHandler(ContextMenuOpeningEvent, value);
+      AddHandler(NoesisGUI_PINVOKE.FrameworkElement_ContextMenuOpeningEvent_get(), value);
     }
     remove {
-      RemoveHandler(ContextMenuOpeningEvent, value);
+      RemoveHandler(NoesisGUI_PINVOKE.FrameworkElement_ContextMenuOpeningEvent_get(), value);
     }
   }
 
   public event RoutedEventHandler Loaded {
     add {
-      AddHandler(LoadedEvent, value);
+      AddHandler(NoesisGUI_PINVOKE.FrameworkElement_LoadedEvent_get(), value);
     }
     remove {
-      RemoveHandler(LoadedEvent, value);
+      RemoveHandler(NoesisGUI_PINVOKE.FrameworkElement_LoadedEvent_get(), value);
     }
   }
 
   public event RoutedEventHandler Reloaded {
     add {
-      AddHandler(ReloadedEvent, value);
+      AddHandler(NoesisGUI_PINVOKE.FrameworkElement_ReloadedEvent_get(), value);
     }
     remove {
-      RemoveHandler(ReloadedEvent, value);
+      RemoveHandler(NoesisGUI_PINVOKE.FrameworkElement_ReloadedEvent_get(), value);
     }
   }
 
   public event RequestBringIntoViewEventHandler RequestBringIntoView {
     add {
-      AddHandler(RequestBringIntoViewEvent, value);
+      AddHandler(NoesisGUI_PINVOKE.FrameworkElement_RequestBringIntoViewEvent_get(), value);
     }
     remove {
-      RemoveHandler(RequestBringIntoViewEvent, value);
+      RemoveHandler(NoesisGUI_PINVOKE.FrameworkElement_RequestBringIntoViewEvent_get(), value);
     }
   }
 
   public event SizeChangedEventHandler SizeChanged {
     add {
-      AddHandler(SizeChangedEvent, value);
+      AddHandler(NoesisGUI_PINVOKE.FrameworkElement_SizeChangedEvent_get(), value);
     }
     remove {
-      RemoveHandler(SizeChangedEvent, value);
+      RemoveHandler(NoesisGUI_PINVOKE.FrameworkElement_SizeChangedEvent_get(), value);
     }
   }
 
   public event ToolTipEventHandler ToolTipClosing {
     add {
-      AddHandler(ToolTipClosingEvent, value);
+      AddHandler(NoesisGUI_PINVOKE.FrameworkElement_ToolTipClosingEvent_get(), value);
     }
     remove {
-      RemoveHandler(ToolTipClosingEvent, value);
+      RemoveHandler(NoesisGUI_PINVOKE.FrameworkElement_ToolTipClosingEvent_get(), value);
     }
   }
 
   public event ToolTipEventHandler ToolTipOpening {
     add {
-      AddHandler(ToolTipOpeningEvent, value);
+      AddHandler(NoesisGUI_PINVOKE.FrameworkElement_ToolTipOpeningEvent_get(), value);
     }
     remove {
-      RemoveHandler(ToolTipOpeningEvent, value);
+      RemoveHandler(NoesisGUI_PINVOKE.FrameworkElement_ToolTipOpeningEvent_get(), value);
     }
   }
 
   public event RoutedEventHandler Unloaded {
     add {
-      AddHandler(UnloadedEvent, value);
+      AddHandler(NoesisGUI_PINVOKE.FrameworkElement_UnloadedEvent_get(), value);
     }
     remove {
-      RemoveHandler(UnloadedEvent, value);
+      RemoveHandler(NoesisGUI_PINVOKE.FrameworkElement_UnloadedEvent_get(), value);
     }
   }
 
@@ -140,6 +140,15 @@ public partial class FrameworkElement : UIElement {
     else {
       return base.CreateExtendCPtr(type, out registerExtend);
     }
+  }
+
+  public static FlowDirection GetFlowDirection(DependencyObject d) {
+    FlowDirection ret = (FlowDirection)NoesisGUI_PINVOKE.FrameworkElement_GetFlowDirection(DependencyObject.getCPtr(d));
+    return ret;
+  }
+
+  public static void SetFlowDirection(DependencyObject d, FlowDirection flowDirection) {
+    NoesisGUI_PINVOKE.FrameworkElement_SetFlowDirection(DependencyObject.getCPtr(d), (int)flowDirection);
   }
 
   public BindingExpression GetBindingExpression(DependencyProperty dp) {
@@ -217,6 +226,13 @@ public partial class FrameworkElement : UIElement {
     }
   }
 
+  public static DependencyProperty BlendingModeProperty {
+    get {
+      IntPtr cPtr = NoesisGUI_PINVOKE.FrameworkElement_BlendingModeProperty_get();
+      return (DependencyProperty)Noesis.Extend.GetProxy(cPtr, false);
+    }
+  }
+
   public static DependencyProperty ContextMenuProperty {
     get {
       IntPtr cPtr = NoesisGUI_PINVOKE.FrameworkElement_ContextMenuProperty_get();
@@ -241,6 +257,13 @@ public partial class FrameworkElement : UIElement {
   public static DependencyProperty DefaultStyleKeyProperty {
     get {
       IntPtr cPtr = NoesisGUI_PINVOKE.FrameworkElement_DefaultStyleKeyProperty_get();
+      return (DependencyProperty)Noesis.Extend.GetProxy(cPtr, false);
+    }
+  }
+
+  public static DependencyProperty FlowDirectionProperty {
+    get {
+      IntPtr cPtr = NoesisGUI_PINVOKE.FrameworkElement_FlowDirectionProperty_get();
       return (DependencyProperty)Noesis.Extend.GetProxy(cPtr, false);
     }
   }
@@ -476,6 +499,16 @@ public partial class FrameworkElement : UIElement {
     } 
   }
 
+  public BlendingMode BlendingMode {
+    set {
+      NoesisGUI_PINVOKE.FrameworkElement_BlendingMode_set(swigCPtr, (int)value);
+    } 
+    get {
+      BlendingMode ret = (BlendingMode)NoesisGUI_PINVOKE.FrameworkElement_BlendingMode_get(swigCPtr);
+      return ret;
+    } 
+  }
+
   public ContextMenu ContextMenu {
     set {
       NoesisGUI_PINVOKE.FrameworkElement_ContextMenu_set(swigCPtr, ContextMenu.getCPtr(value));
@@ -488,12 +521,12 @@ public partial class FrameworkElement : UIElement {
 
   public Cursor Cursor {
     set {
-      NoesisGUI_PINVOKE.FrameworkElement_Cursor_set(swigCPtr, (int)value);
+      NoesisGUI_PINVOKE.FrameworkElement_Cursor_set(swigCPtr, Cursor.getCPtr(value));
     } 
     get {
-      Cursor ret = (Cursor)NoesisGUI_PINVOKE.FrameworkElement_Cursor_get(swigCPtr);
-      return ret;
-    } 
+      IntPtr cPtr = NoesisGUI_PINVOKE.FrameworkElement_Cursor_get(swigCPtr);
+      return (Cursor)Noesis.Extend.GetProxy(cPtr, false);
+    }
   }
 
   public object DataContext {
@@ -518,6 +551,16 @@ public partial class FrameworkElement : UIElement {
       }
       return null;
     }
+  }
+
+  public FlowDirection FlowDirection {
+    set {
+      NoesisGUI_PINVOKE.FrameworkElement_FlowDirection_set(swigCPtr, (int)value);
+    } 
+    get {
+      FlowDirection ret = (FlowDirection)NoesisGUI_PINVOKE.FrameworkElement_FlowDirection_get(swigCPtr);
+      return ret;
+    } 
   }
 
   public Style FocusVisualStyle {

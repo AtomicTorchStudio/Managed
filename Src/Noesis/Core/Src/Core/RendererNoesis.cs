@@ -16,7 +16,7 @@ namespace Noesis
                 throw new ArgumentNullException("device");
             }
 
-            Noesis_Renderer_Init(CPtr, device.CPtr);
+            Noesis_Renderer_Init(CPtr, BaseComponent.getCPtr(device));
         }
 
         /// <summary>
@@ -62,9 +62,9 @@ namespace Noesis
         /// <summary>
         /// Renders UI in the active render target and viewport dimensions
         /// </summary>
-        public void Render()
+        public void Render(bool flipY = false, bool clear = false)
         {
-            Noesis_Renderer_Render(CPtr);
+            Noesis_Renderer_Render(CPtr, flipY, clear);
         }
 
         #region Private members
@@ -77,7 +77,7 @@ namespace Noesis
             return new Renderer(cPtr, cMemoryOwn);
         }
 
-        private HandleRef CPtr { get { return BaseComponent.getCPtr(this); } }
+        internal HandleRef CPtr { get { return BaseComponent.getCPtr(this); } }
         #endregion
 
         #region Imports
@@ -100,7 +100,7 @@ namespace Noesis
         static extern bool Noesis_Renderer_RenderOffscreen(HandleRef renderer);
 
         [DllImport(Library.Name)]
-        static extern void Noesis_Renderer_Render(HandleRef renderer);
+        static extern void Noesis_Renderer_Render(HandleRef renderer, bool flipY, bool clear);
         #endregion
     }
 }

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 
 namespace Noesis
 {
+    public delegate void EnumDependencyPropertiesDelegate(DependencyProperty dp, object value);
 
     public partial class DependencyObject
     {
@@ -20,8 +21,8 @@ namespace Noesis
             GetDelegate getDelegate;
             if (dpType.GetTypeInfo().IsEnum)
             {
-                _getFunctions.TryGetValue(typeof(int), out getDelegate);
-                int value = (int)getDelegate(swigCPtr.Handle, DependencyProperty.getCPtr(dp).Handle);
+                _getFunctions.TryGetValue(typeof(ulong), out getDelegate);
+                ulong value = (ulong)getDelegate(swigCPtr.Handle, DependencyProperty.getCPtr(dp).Handle);
                 return Enum.ToObject(dpType, value);
             }
             else if (_getFunctions.TryGetValue(dpType, out getDelegate))
@@ -48,8 +49,8 @@ namespace Noesis
             SetDelegate setDelegate;
             if (dpType.GetTypeInfo().IsEnum)
             {
-                _setFunctions.TryGetValue(typeof(int), out setDelegate);
-                setDelegate(swigCPtr.Handle, DependencyProperty.getCPtr(dp).Handle, (int)Convert.ToInt64(value));
+                _setFunctions.TryGetValue(typeof(ulong), out setDelegate);
+                setDelegate(swigCPtr.Handle, DependencyProperty.getCPtr(dp).Handle, Convert.ToUInt64(value));
             }
             else if (_setFunctions.TryGetValue(dpType, out setDelegate))
             {
@@ -108,7 +109,7 @@ namespace Noesis
             {
                 CheckProperty(cPtr, dp, "get");
                 bool isNull;
-                return (long)Noesis_DependencyGet_Int(cPtr, dp, false, out isNull);
+                return Noesis_DependencyGet_Int64(cPtr, dp, false, out isNull);
             };
             getFunctions[typeof(uint)] = (cPtr, dp) =>
             {
@@ -120,7 +121,7 @@ namespace Noesis
             {
                 CheckProperty(cPtr, dp, "get");
                 bool isNull;
-                return (ulong)Noesis_DependencyGet_UInt(cPtr, dp, false, out isNull);
+                return Noesis_DependencyGet_UInt64(cPtr, dp, false, out isNull);
             };
             getFunctions[typeof(char)] = (cPtr, dp) =>
             {
@@ -163,7 +164,7 @@ namespace Noesis
                 CheckProperty(cPtr, dp, "get");
                 IntPtr ptr = Noesis_DependencyGet_Uri(cPtr, dp);
                 string uri = Noesis.Extend.StringFromNativeUtf8(ptr);
-                return new Uri(uri, UriKind.Relative);
+                return new Uri(uri, UriKind.RelativeOrAbsolute);
             };
             getFunctions[typeof(Noesis.Color)] = (cPtr, dp) =>
             {
@@ -185,6 +186,13 @@ namespace Noesis
                 bool isNull;
                 IntPtr ptr = Noesis_DependencyGet_Rect(cPtr, dp, false, out isNull);
                 return Marshal.PtrToStructure<Noesis.Rect>(ptr);
+            };
+            getFunctions[typeof(Noesis.Int32Rect)] = (cPtr, dp) =>
+            {
+                CheckProperty(cPtr, dp, "get");
+                bool isNull;
+                IntPtr ptr = Noesis_DependencyGet_Int32Rect(cPtr, dp, false, out isNull);
+                return Marshal.PtrToStructure<Noesis.Int32Rect>(ptr);
             };
             getFunctions[typeof(Noesis.Size)] = (cPtr, dp) =>
             {
@@ -268,8 +276,8 @@ namespace Noesis
             {
                 CheckProperty(cPtr, dp, "get");
                 bool isNull;
-                int val = Noesis_DependencyGet_Int(cPtr, dp, true, out isNull);
-                return isNull ? null : (long?)(long)val;
+                long val = Noesis_DependencyGet_Int64(cPtr, dp, true, out isNull);
+                return isNull ? null : (long?)val;
             };
             getFunctions[typeof(uint?)] = (cPtr, dp) =>
             {
@@ -282,8 +290,8 @@ namespace Noesis
             {
                 CheckProperty(cPtr, dp, "get");
                 bool isNull;
-                uint val = Noesis_DependencyGet_UInt(cPtr, dp, true, out isNull);
-                return isNull ? null : (ulong?)(ulong)val;
+                ulong val = Noesis_DependencyGet_UInt64(cPtr, dp, true, out isNull);
+                return isNull ? null : (ulong?)val;
             };
             getFunctions[typeof(char?)] = (cPtr, dp) =>
             {
@@ -341,6 +349,13 @@ namespace Noesis
                 IntPtr ptr = Noesis_DependencyGet_Rect(cPtr, dp, true, out isNull);
                 return isNull ? null : (Noesis.Rect?)Marshal.PtrToStructure<Noesis.Rect>(ptr);
             };
+            getFunctions[typeof(Noesis.Int32Rect?)] = (cPtr, dp) =>
+            {
+                CheckProperty(cPtr, dp, "get");
+                bool isNull;
+                IntPtr ptr = Noesis_DependencyGet_Int32Rect(cPtr, dp, true, out isNull);
+                return isNull ? null : (Noesis.Int32Rect?)Marshal.PtrToStructure<Noesis.Int32Rect>(ptr);
+            };
             getFunctions[typeof(Noesis.Size?)] = (cPtr, dp) =>
             {
                 CheckProperty(cPtr, dp, "get");
@@ -389,7 +404,7 @@ namespace Noesis
                 IntPtr ptr = Noesis_DependencyGet_Type(cPtr, dp);
                 if (ptr != IntPtr.Zero)
                 {
-                    Noesis.Extend.NativeTypeInfo info = Noesis.Extend.GetNativeTypeInfo(cPtr);
+                    Noesis.Extend.NativeTypeInfo info = Noesis.Extend.GetNativeTypeInfo(ptr);
                     return info.Type;
                 }
                 return null;
@@ -430,7 +445,7 @@ namespace Noesis
             setFunctions[typeof(long)] = (cPtr, dp, value) =>
             {
                 CheckProperty(cPtr, dp, "set");
-                Noesis_DependencySet_Int(cPtr, dp, (int)(long)value, false, false);
+                Noesis_DependencySet_Int64(cPtr, dp, (long)value, false, false);
             };
             setFunctions[typeof(uint)] = (cPtr, dp, value) =>
             {
@@ -440,7 +455,7 @@ namespace Noesis
             setFunctions[typeof(ulong)] = (cPtr, dp, value) =>
             {
                 CheckProperty(cPtr, dp, "set");
-                Noesis_DependencySet_UInt(cPtr, dp, (uint)(ulong)value, false, false);
+                Noesis_DependencySet_UInt64(cPtr, dp, (ulong)value, false, false);
             };
             setFunctions[typeof(char)] = (cPtr, dp, value) =>
             {
@@ -494,6 +509,12 @@ namespace Noesis
                 CheckProperty(cPtr, dp, "set");
                 Noesis.Rect value_ = (Noesis.Rect)value;
                 Noesis_DependencySet_Rect(cPtr, dp, ref value_, false, false);
+            };
+            setFunctions[typeof(Noesis.Int32Rect)] = (cPtr, dp, value) =>
+            {
+                CheckProperty(cPtr, dp, "set");
+                Noesis.Int32Rect value_ = (Noesis.Int32Rect)value;
+                Noesis_DependencySet_Int32Rect(cPtr, dp, ref value_, false, false);
             };
             setFunctions[typeof(Noesis.Size)] = (cPtr, dp, value) =>
             {
@@ -596,11 +617,11 @@ namespace Noesis
                 CheckProperty(cPtr, dp, "set");
                 if (value == null)
                 {
-                    Noesis_DependencySet_Int(cPtr, dp, default(int), true, true);
+                    Noesis_DependencySet_Int64(cPtr, dp, default(long), true, true);
                 }
                 else
                 {
-                    Noesis_DependencySet_Int(cPtr, dp, (int)(long)value, true, false);
+                    Noesis_DependencySet_Int64(cPtr, dp, (long)value, true, false);
                 }
             };
             setFunctions[typeof(uint?)] = (cPtr, dp, value) =>
@@ -620,11 +641,11 @@ namespace Noesis
                 CheckProperty(cPtr, dp, "set");
                 if (value == null)
                 {
-                    Noesis_DependencySet_UInt(cPtr, dp, default(uint), true, true);
+                    Noesis_DependencySet_UInt64(cPtr, dp, default(ulong), true, true);
                 }
                 else
                 {
-                    Noesis_DependencySet_UInt(cPtr, dp, (uint)(ulong)value, true, false);
+                    Noesis_DependencySet_UInt64(cPtr, dp, (ulong)value, true, false);
                 }
             };
             setFunctions[typeof(char?)] = (cPtr, dp, value) =>
@@ -729,6 +750,20 @@ namespace Noesis
                     Noesis_DependencySet_Rect(cPtr, dp, ref value_, true, false);
                 }
             };
+            setFunctions[typeof(Noesis.Int32Rect?)] = (cPtr, dp, value) =>
+            {
+                CheckProperty(cPtr, dp, "set");
+                if (value == null)
+                {
+                    Noesis.Int32Rect value_ = default(Noesis.Int32Rect);
+                    Noesis_DependencySet_Int32Rect(cPtr, dp, ref value_, true, true);
+                }
+                else
+                {
+                    Noesis.Int32Rect value_ = (Noesis.Int32Rect)value;
+                    Noesis_DependencySet_Int32Rect(cPtr, dp, ref value_, true, false);
+                }
+            };
             setFunctions[typeof(Noesis.Size?)] = (cPtr, dp, value) =>
             {
                 CheckProperty(cPtr, dp, "set");
@@ -824,10 +859,6 @@ namespace Noesis
             return setFunctions;
         }
 
-        #endregion
-
-        #region Imports
-
         private static void CheckProperty(IntPtr dependencyObject, IntPtr dependencyProperty, string msg)
         {
             if (dependencyObject == IntPtr.Zero)
@@ -840,6 +871,110 @@ namespace Noesis
                 throw new Exception("Can't " + msg + " value, DependencyProperty is null");
             }
         }
+
+        #endregion
+
+        #region Enum properties
+        public void EnumProperties(EnumDependencyPropertiesDelegate callback)
+        {
+            EnumPropsInfo info = new EnumPropsInfo { Callback = callback };
+            int id = info.GetHashCode();
+            _enumPropsInfo[id] = info;
+            Noesis_Dependency_EnumProps(swigCPtr.Handle, id, _enumProps);
+            _enumPropsInfo.Remove(id);
+        }
+
+        private delegate void NoesisEnumPropertiesCallback(int id, IntPtr dpPtr, IntPtr valPtr);
+        private static NoesisEnumPropertiesCallback _enumProps = OnEnumProperties;
+        [MonoPInvokeCallback(typeof(NoesisEnumPropertiesCallback))]
+        private static void OnEnumProperties(int id, IntPtr dpPtr, IntPtr valPtr)
+        {
+            try
+            {
+                EnumPropsInfo info = _enumPropsInfo[id];
+                DependencyProperty dp = (DependencyProperty)Noesis.Extend.GetProxy(dpPtr, false);
+                object val = Noesis.Extend.GetProxy(valPtr, true);
+                info.Callback(dp, val);
+            }
+            catch (Exception e)
+            {
+                Error.UnhandledException(e);
+            }
+        }
+
+        private struct EnumPropsInfo
+        {
+            public EnumDependencyPropertiesDelegate Callback;
+        }
+
+        private static Dictionary<int, EnumPropsInfo> _enumPropsInfo = new Dictionary<int, EnumPropsInfo>();
+
+        #endregion
+
+        #region Destroyed event
+        public delegate void DestroyedHandler(IntPtr d);
+        public event DestroyedHandler Destroyed
+        {
+            add
+            {
+                long ptr = swigCPtr.Handle.ToInt64();
+                if (!_Destroyed.ContainsKey(ptr))
+                {
+                    _Destroyed.Add(ptr, null);
+
+                    Noesis_Dependency_Destroyed_Bind(_raiseDestroyed, swigCPtr);
+                }
+
+                _Destroyed[ptr] += value;
+            }
+            remove
+            {
+                long ptr = swigCPtr.Handle.ToInt64();
+                if (_Destroyed.ContainsKey(ptr))
+                {
+
+                    _Destroyed[ptr] -= value;
+
+                    if (_Destroyed[ptr] == null)
+                    {
+                        Noesis_Dependency_Destroyed_Unbind(_raiseDestroyed, swigCPtr);
+
+                        _Destroyed.Remove(ptr);
+                    }
+                }
+            }
+        }
+
+        internal delegate void RaiseDestroyedCallback(IntPtr cPtr);
+        private static RaiseDestroyedCallback _raiseDestroyed = RaiseDestroyed;
+
+        [MonoPInvokeCallback(typeof(RaiseDestroyedCallback))]
+        private static void RaiseDestroyed(IntPtr cPtr)
+        {
+            try
+            {
+                if (Noesis.Extend.Initialized)
+                {
+                    long ptr = cPtr.ToInt64();
+                    DestroyedHandler handler = null;
+                    if (_Destroyed.TryGetValue(ptr, out handler))
+                    {
+                        handler?.Invoke(cPtr);
+                        _Destroyed.Remove(ptr);
+                    }
+                }
+            }
+            catch (Exception exception)
+            {
+                Noesis.Error.UnhandledException(exception);
+            }
+        }
+
+        internal static Dictionary<long, DestroyedHandler> _Destroyed =
+            new Dictionary<long, DestroyedHandler>();
+        #endregion
+
+        #region Imports
 
         ////////////////////////////////////////////////////////////////////////////////////////////////
         [DllImport(Library.Name)]
@@ -854,6 +989,14 @@ namespace Noesis
         [DllImport(Library.Name)]
         private static extern double Noesis_DependencyGet_Double(IntPtr dependencyObject, IntPtr dependencyProperty,
             bool isNullable, [MarshalAs(UnmanagedType.U1)]out bool isNull);
+
+        [DllImport(Library.Name)]
+        private static extern long Noesis_DependencyGet_Int64(IntPtr dependencyObject, IntPtr dependencyProperty,
+            bool isNullable, [MarshalAs(UnmanagedType.U1)] out bool isNull);
+
+        [DllImport(Library.Name)]
+        private static extern ulong Noesis_DependencyGet_UInt64(IntPtr dependencyObject, IntPtr dependencyProperty,
+            bool isNullable, [MarshalAs(UnmanagedType.U1)] out bool isNull);
 
         [DllImport(Library.Name)]
         private static extern int Noesis_DependencyGet_Int(IntPtr dependencyObject, IntPtr dependencyProperty,
@@ -888,6 +1031,10 @@ namespace Noesis
         [DllImport(Library.Name)]
         private static extern IntPtr Noesis_DependencyGet_Rect(IntPtr dependencyObject, IntPtr dependencyProperty,
             bool isNullable, [MarshalAs(UnmanagedType.U1)]out bool isNull);
+
+        [DllImport(Library.Name)]
+        private static extern IntPtr Noesis_DependencyGet_Int32Rect(IntPtr dependencyObject, IntPtr dependencyProperty,
+            bool isNullable, [MarshalAs(UnmanagedType.U1)] out bool isNull);
 
         [DllImport(Library.Name)]
         private static extern IntPtr Noesis_DependencyGet_Size(IntPtr dependencyObject, IntPtr dependencyProperty,
@@ -933,6 +1080,14 @@ namespace Noesis
             double val, bool isNullable, bool isNull);
 
         [DllImport(Library.Name)]
+        private static extern void Noesis_DependencySet_Int64(IntPtr dependencyObject, IntPtr dependencyProperty,
+            long val, bool isNullable, bool isNull);
+
+        [DllImport(Library.Name)]
+        private static extern void Noesis_DependencySet_UInt64(IntPtr dependencyObject, IntPtr dependencyProperty,
+            ulong val, bool isNullable, bool isNull);
+
+        [DllImport(Library.Name)]
         private static extern void Noesis_DependencySet_Int(IntPtr dependencyObject, IntPtr dependencyProperty,
             int val, bool isNullable, bool isNull);
 
@@ -969,6 +1124,10 @@ namespace Noesis
             ref Noesis.Rect val, bool isNullable, bool isNull);
 
         [DllImport(Library.Name)]
+        private static extern void Noesis_DependencySet_Int32Rect(IntPtr dependencyObject, IntPtr dependencyProperty,
+            ref Noesis.Int32Rect val, bool isNullable, bool isNull);
+
+        [DllImport(Library.Name)]
         private static extern void Noesis_DependencySet_Size(IntPtr dependencyObject, IntPtr dependencyProperty,
             ref Noesis.Size val, bool isNullable, bool isNull);
 
@@ -999,6 +1158,18 @@ namespace Noesis
         [DllImport(Library.Name)]
         private static extern void Noesis_DependencySet_BaseComponent(IntPtr dependencyObject, IntPtr dependencyProperty,
             IntPtr val);
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////
+        [DllImport(Library.Name)]
+        private static extern void Noesis_Dependency_EnumProps(IntPtr dependencyObject, int id,
+            NoesisEnumPropertiesCallback callback);
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////
+        [DllImport(Library.Name)]
+        private static extern void Noesis_Dependency_Destroyed_Bind(RaiseDestroyedCallback callback, HandleRef instance);
+
+        [DllImport(Library.Name)]
+        private static extern void Noesis_Dependency_Destroyed_Unbind(RaiseDestroyedCallback callback, HandleRef instance);
 
         #endregion
     }

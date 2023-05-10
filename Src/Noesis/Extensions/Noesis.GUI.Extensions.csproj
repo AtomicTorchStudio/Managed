@@ -1,13 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net45</TargetFramework>
-    <Version>3.0.0</Version>
+    <TargetFrameworks>net45;netcoreapp3.1;net5.0-windows</TargetFrameworks>
+    <Version>3.0.19</Version>
+    <AssemblyVersion>3.0.19.12270</AssemblyVersion>
+    <FileVersion>3.0.19.12270</FileVersion>
     <Authors>Noesis Technologies</Authors>
     <Description>Extends Blend with new attached properties and types that expose features included in NoesisGUI.</Description>
     <Copyright>Copyright (c) 2013 Noesis Technologies S.L.</Copyright>
     <PackageProjectUrl>https://www.noesisengine.com</PackageProjectUrl>
     <PackageIconUrl>https://www.noesisengine.com/images/logos/Icon-256.png</PackageIconUrl>
+    <PackageIcon>Icon-256.png</PackageIcon>
     <RepositoryUrl>https://github.com/Noesis/Managed/tree/master/Src/Noesis/Extensions</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>NoesisGUI XAML Blend GUI C#</PackageTags>
@@ -18,15 +21,17 @@
     <PackageOutputPath>$(SolutionDir)NuGet\</PackageOutputPath>
   </PropertyGroup>
 
-  <PropertyGroup Condition="Exists('$(SolutionDir)LICENSE.txt')">
+  <PropertyGroup>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
   </PropertyGroup>
-  <ItemGroup Condition="Exists('$(SolutionDir)LICENSE.txt')">
+
+  <ItemGroup>
     <Content Include="$(SolutionDir)LICENSE.txt" PackagePath="" Pack="true" />
-  </ItemGroup>
-  <ItemGroup Condition="Exists('$(SolutionDir)THIRD_PARTY.txt')">
     <Content Include="$(SolutionDir)THIRD_PARTY.txt" PackagePath="" Pack="true" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="$(SolutionDir)Icon-256.png" Pack="true" PackagePath="\" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="Theme\*.xaml" />
@@ -39,14 +44,10 @@
   <ItemGroup>
     <Resource Include="Theme\Fonts\*.otf" />
   </ItemGroup>
+
   <ItemGroup>
-    <PackageReference Include="Expression.Blend.Sdk.WPF" Version="1.0.1" />
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="PresentationCore" />
-    <Reference Include="PresentationFramework" />
-    <Reference Include="System.Xaml" />
-    <Reference Include="WindowsBase" />
+    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.37" />
+    <PackageReference Include="System.Memory" Version="4.5.5" />
   </ItemGroup>
 
 </Project>

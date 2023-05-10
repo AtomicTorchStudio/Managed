@@ -30,10 +30,10 @@ public class PasswordBox : Control {
   #region Events
   public event RoutedEventHandler PasswordChanged {
     add {
-      AddHandler(PasswordChangedEvent, value);
+      AddHandler(NoesisGUI_PINVOKE.PasswordBox_PasswordChangedEvent_get(), value);
     }
     remove {
-      RemoveHandler(PasswordChangedEvent, value);
+      RemoveHandler(NoesisGUI_PINVOKE.PasswordBox_PasswordChangedEvent_get(), value);
     }
   }
 
@@ -81,6 +81,13 @@ public class PasswordBox : Control {
     }
   }
 
+  public static DependencyProperty PlaceholderProperty {
+    get {
+      IntPtr cPtr = NoesisGUI_PINVOKE.PasswordBox_PlaceholderProperty_get();
+      return (DependencyProperty)Noesis.Extend.GetProxy(cPtr, false);
+    }
+  }
+
   public static DependencyProperty SelectionBrushProperty {
     get {
       IntPtr cPtr = NoesisGUI_PINVOKE.PasswordBox_SelectionBrushProperty_get();
@@ -91,6 +98,13 @@ public class PasswordBox : Control {
   public static DependencyProperty SelectionOpacityProperty {
     get {
       IntPtr cPtr = NoesisGUI_PINVOKE.PasswordBox_SelectionOpacityProperty_get();
+      return (DependencyProperty)Noesis.Extend.GetProxy(cPtr, false);
+    }
+  }
+
+  public static DependencyProperty ShowLastCharacterDurationProperty {
+    get {
+      IntPtr cPtr = NoesisGUI_PINVOKE.PasswordBox_ShowLastCharacterDurationProperty_get();
       return (DependencyProperty)Noesis.Extend.GetProxy(cPtr, false);
     }
   }
@@ -159,6 +173,27 @@ public class PasswordBox : Control {
     } 
     get {
       float ret = NoesisGUI_PINVOKE.PasswordBox_SelectionOpacity_get(swigCPtr);
+      return ret;
+    } 
+  }
+
+  public string Placeholder {
+    set {
+      NoesisGUI_PINVOKE.PasswordBox_Placeholder_set(swigCPtr, value != null ? value : string.Empty);
+    }
+    get {
+      IntPtr strPtr = NoesisGUI_PINVOKE.PasswordBox_Placeholder_get(swigCPtr);
+      string str = Noesis.Extend.StringFromNativeUtf8(strPtr);
+      return str;
+    }
+  }
+
+  public int ShowLastCharacterDuration {
+    set {
+      NoesisGUI_PINVOKE.PasswordBox_ShowLastCharacterDuration_set(swigCPtr, value);
+    } 
+    get {
+      int ret = NoesisGUI_PINVOKE.PasswordBox_ShowLastCharacterDuration_get(swigCPtr);
       return ret;
     } 
   }

@@ -128,6 +128,11 @@ public class ContentControl : Control {
   }
 
   private string ToStringHelper() {
+    if (this.IsDisposed)
+    { 
+      return "Disposed " + this.GetType().Name;
+    }
+
     IntPtr strPtr = NoesisGUI_PINVOKE.ContentControl_ToStringHelper(swigCPtr);
     string str = Noesis.Extend.StringFromNativeUtf8(strPtr);
     NoesisGUI_PINVOKE.FreeString(strPtr);

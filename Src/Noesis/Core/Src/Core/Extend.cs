@@ -7,7 +7,6 @@ using System.Runtime.CompilerServices;
 using System.Reflection;
 using System.Globalization;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Windows.Input;
 
 namespace Noesis
@@ -52,11 +51,7 @@ namespace Noesis
                 {
                     Initialized = false;
 
-                    EventHandlerStore.Clear(_extends
-                        .Where(kv => kv.Value.weak.Target is EventHandlerStore)
-                        .Select(kv => kv.Value.weak.Target)
-                        .Cast<EventHandlerStore>()
-                        .ToArray());
+                    EventHandlerStore.Clear();
 
                     Noesis.GUI.SetApplicationResources(null);
 
@@ -120,16 +115,28 @@ namespace Noesis
 
                 _registerType,
 
-                _onPostInit,
-                _dependencyPropertyChanged,
-                _frameworkElementMeasure,
-                _frameworkElementArrange,
-                _frameworkElementConnectEvent,
-                _freezableClone,
-
                 _toString,
                 _equals,
-                _getHashCode,
+
+                _visualChildrenCount,
+                _visualGetChild,
+
+                _uiElementRender,
+
+                _frameworkElementConnectEvent,
+                _frameworkElementConnectField,
+                _frameworkElementMeasure,
+                _frameworkElementArrange,
+                _frameworkElementApplyTemplate,
+
+                _itemsControlGetContainer,
+                _itemsControlIsContainer,
+
+                _adornerGetTransform,
+
+                _freezableClone,
+
+                _shapeGetGeometry,
 
                 _commandCanExecute,
                 _commandExecute,
@@ -143,11 +150,15 @@ namespace Noesis
                 _listGet,
                 _listSet,
                 _listAdd,
+                _listInsert,
                 _listIndexOf,
+                _listRemoveAt,
+                _listClear,
 
                 _dictionaryFind,
                 _dictionarySet,
                 _dictionaryAdd,
+                _dictionaryRemove,
 
                 _listIndexerTryGet,
                 _listIndexerTrySet,
@@ -167,6 +178,8 @@ namespace Noesis
                 _providerTextureInfo,
                 _providerTextureLoad,
                 _providerTextureOpen,
+                _providerMatchFont,
+                _providerFamilyExists,
                 _providerScanFolder,
                 _providerOpenFont,
 
@@ -201,9 +214,27 @@ namespace Noesis
 
                 _markupExtensionProvideValue,
 
+                _animationTimelineGetType,
+                _animationTimelineGetValue,
+                _booleanAnimationGetValue,
+                _int16AnimationGetValue,
+                _int32AnimationGetValue,
+                _int64AnimationGetValue,
+                _doubleAnimationGetValue,
+                _colorAnimationGetValue,
+                _pointAnimationGetValue,
+                _rectAnimationGetValue,
+                _sizeAnimationGetValue,
+                _thicknessAnimationGetValue,
+                _objectAnimationGetValue,
+                _stringAnimationGetValue,
+                _matrixAnimationGetValue,
+
                 _getPropertyValue_Bool,
                 _getPropertyValue_Float,
                 _getPropertyValue_Double,
+                _getPropertyValue_Int64,
+                _getPropertyValue_UInt64,
                 _getPropertyValue_Int,
                 _getPropertyValue_UInt,
                 _getPropertyValue_Short,
@@ -213,6 +244,7 @@ namespace Noesis
                 _getPropertyValue_Color,
                 _getPropertyValue_Point,
                 _getPropertyValue_Rect,
+                _getPropertyValue_Int32Rect,
                 _getPropertyValue_Size,
                 _getPropertyValue_Thickness,
                 _getPropertyValue_CornerRadius,
@@ -225,6 +257,8 @@ namespace Noesis
                 _setPropertyValue_Bool,
                 _setPropertyValue_Float,
                 _setPropertyValue_Double,
+                _setPropertyValue_Int64,
+                _setPropertyValue_UInt64,
                 _setPropertyValue_Int,
                 _setPropertyValue_UInt,
                 _setPropertyValue_Short,
@@ -234,6 +268,7 @@ namespace Noesis
                 _setPropertyValue_Color,
                 _setPropertyValue_Point,
                 _setPropertyValue_Rect,
+                _setPropertyValue_Int32Rect,
                 _setPropertyValue_Size,
                 _setPropertyValue_Thickness,
                 _setPropertyValue_CornerRadius,
@@ -255,21 +290,28 @@ namespace Noesis
             Noesis_RegisterReflectionCallbacks(
                 null,
                 null,
-                null, null, null, null, null, null,
-                null, null, null,
+                null, null,
+                null, null,
+                null,
+                null, null, null, null, null,
+                null, null,
+                null,
+                null,
+                null,
                 null, null,
                 null, null, null, null,
-                null, null, null, null, null,
-                null, null, null,
+                null, null, null, null, null, null, null, null,
+                null, null, null, null,
                 null, null,
                 null, null,
                 null,
                 null, null, null, null, null,
-                null, null, null, null, null, null,
+                null, null, null, null, null, null, null, null,
                 null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
                 null,
-                null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
-                null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
+                null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
+                null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
+                null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
                 null, null, null);
         }
 
@@ -367,90 +409,10 @@ namespace Noesis
             }
         }
 
-        public class PropertyChangedInfo
-        {
-            public Action<object, DependencyProperty> OnPropertyChanged { get; private set; }
-
-            object[] _dp = new object[1];
-            private object[] DP(DependencyProperty dp)
-            {
-                _dp[0] = dp;
-                return _dp;
-            }
-
-            public PropertyChangedInfo(System.Type type, MethodInfo propChanged)
-            {
-#if !ENABLE_IL2CPP && !UNITY_IOS
-                if (Platform.ID != PlatformID.iPhone)
-                {
-                    var obj = System.Linq.Expressions.Expression.Parameter(typeof(object), "obj");
-                    var instance = System.Linq.Expressions.Expression.Convert(obj, type);
-                    var dp = System.Linq.Expressions.Expression.Parameter(typeof(DependencyProperty), "dp");
-                    var call = System.Linq.Expressions.Expression.Call(instance, propChanged,
-                        new ParameterExpression[] { dp });
-                    var lambda = System.Linq.Expressions.Expression.Lambda<Action<object, DependencyProperty>>(
-                        call, new ParameterExpression[] { obj, dp });
-
-                    OnPropertyChanged = lambda.Compile();
-                }
-                else
-#endif
-                {
-                    OnPropertyChanged = (instance, dp) => propChanged.Invoke(instance, DP(dp));
-                }
-            }
-        }
-
-        public interface INativeTypeDO
-        {
-            PropertyChangedInfo PropertyChangedInfo { get; }
-        }
-
-        public class NativeTypeDOExtendedInfo: NativeTypeExtendedInfo, INativeTypeDO
-        {
-            public PropertyChangedInfo PropertyChangedInfo { get; private set; }
-
-            public NativeTypeDOExtendedInfo(NativeTypeKind kind, System.Type type, Func<object> creator,
-                MethodInfo propChanged): base(kind, type, creator)
-            {
-                if (propChanged != null)
-                {
-                    PropertyChangedInfo = new PropertyChangedInfo(type, propChanged);
-                }
-            }
-        }
-
-        public class NativeTypeDOPropsInfo: NativeTypePropsInfo, INativeTypeDO
-        {
-            public PropertyChangedInfo PropertyChangedInfo { get; private set; }
-
-            public NativeTypeDOPropsInfo(NativeTypeKind kind, System.Type type, Func<object> creator,
-                MethodInfo propChanged): base(kind, type, creator)
-            {
-                if (propChanged != null)
-                {
-                    PropertyChangedInfo = new PropertyChangedInfo(type, propChanged);
-                }
-            }
-        }
-
-        public class NativeTypeDOIndexerInfo: NativeTypeIndexerInfo, INativeTypeDO
-        {
-            public PropertyChangedInfo PropertyChangedInfo { get; private set; }
-
-            public NativeTypeDOIndexerInfo(NativeTypeKind kind, System.Type type, Func<object> creator,
-                IndexerAccessor indexer, MethodInfo propChanged): base(kind, type, creator, indexer)
-            {
-                if (propChanged != null)
-                {
-                    PropertyChangedInfo = new PropertyChangedInfo(type, propChanged);
-                }
-            }
-        }
-
         ////////////////////////////////////////////////////////////////////////////////////////////////
-        static Dictionary<long, NativeTypeInfo> _nativeTypes = new Dictionary<long, NativeTypeInfo>(512);
-        static Dictionary<Type, IntPtr> _managedTypes = new Dictionary<Type, IntPtr>(512);
+        const int TypesCapacity = 650;
+        static Dictionary<long, NativeTypeInfo> _nativeTypes = new Dictionary<long, NativeTypeInfo>(TypesCapacity);
+        static Dictionary<Type, IntPtr> _managedTypes = new Dictionary<Type, IntPtr>(TypesCapacity);
 
         #endregion
 
@@ -498,7 +460,7 @@ namespace Noesis
             IntPtr nativeType;
             if (!_managedTypes.TryGetValue(type, out nativeType))
             {
-                throw new InvalidOperationException("Native type is not registered: " + type.Name);
+                throw new InvalidOperationException($"Native type is not registered for '{type.Name}'");
             }
             return nativeType;
         }
@@ -516,7 +478,8 @@ namespace Noesis
                     return GetNativeTypeInfo(baseType);
                 }
 
-                throw new InvalidOperationException("Native type is not registered");
+                string typeName = StringFromNativeUtf8(Noesis_GetTypeName(nativeType));
+                throw new InvalidOperationException($"Native type '{typeName}' is not registered");
             }
             return info;
         }
@@ -593,7 +556,6 @@ namespace Noesis
         ////////////////////////////////////////////////////////////////////////////////////////////////
         public static void RegisterNativeTypes()
         {
-            const int TypesCapacity = 600;
             IntPtr[] types = new IntPtr[TypesCapacity];
             for (int t = 0; t < TypesCapacity; ++t) types[t] = IntPtr.Zero;
 
@@ -617,6 +579,7 @@ namespace Noesis
             AddNativeType(types[i++], new NativeTypeInfo(NativeTypeKind.Basic, typeof(Color)));
             AddNativeType(types[i++], new NativeTypeInfo(NativeTypeKind.Basic, typeof(Point)));
             AddNativeType(types[i++], new NativeTypeInfo(NativeTypeKind.Basic, typeof(Rect)));
+            AddNativeType(types[i++], new NativeTypeInfo(NativeTypeKind.Basic, typeof(Int32Rect)));
             AddNativeType(types[i++], new NativeTypeInfo(NativeTypeKind.Basic, typeof(Size)));
             AddNativeType(types[i++], new NativeTypeInfo(NativeTypeKind.Basic, typeof(Thickness)));
             AddNativeType(types[i++], new NativeTypeInfo(NativeTypeKind.Basic, typeof(CornerRadius)));
@@ -625,6 +588,9 @@ namespace Noesis
             AddNativeType(types[i++], new NativeTypeInfo(NativeTypeKind.Basic, typeof(KeyTime)));
             AddNativeType(types[i++], new NativeTypeInfo(NativeTypeKind.Basic, typeof(TimeSpan)));
             AddNativeType(types[i++], new NativeTypeInfo(NativeTypeKind.Basic, typeof(VirtualizationCacheLength)));
+            AddNativeType(types[i++], new NativeTypeInfo(NativeTypeKind.Basic, typeof(Matrix)));
+            AddNativeType(types[i++], new NativeTypeInfo(NativeTypeKind.Basic, typeof(Matrix3D)));
+            AddNativeType(types[i++], new NativeTypeInfo(NativeTypeKind.Basic, typeof(Matrix4)));
 
             AddNativeType(types[i++], new NativeTypeInfo(NativeTypeKind.Basic, typeof(bool?)));
             AddNativeType(types[i++], new NativeTypeInfo(NativeTypeKind.Basic, typeof(float?)));
@@ -638,6 +604,7 @@ namespace Noesis
             AddNativeType(types[i++], new NativeTypeInfo(NativeTypeKind.Basic, typeof(Color?)));
             AddNativeType(types[i++], new NativeTypeInfo(NativeTypeKind.Basic, typeof(Point?)));
             AddNativeType(types[i++], new NativeTypeInfo(NativeTypeKind.Basic, typeof(Rect?)));
+            AddNativeType(types[i++], new NativeTypeInfo(NativeTypeKind.Basic, typeof(Int32Rect?)));
             AddNativeType(types[i++], new NativeTypeInfo(NativeTypeKind.Basic, typeof(Size?)));
             AddNativeType(types[i++], new NativeTypeInfo(NativeTypeKind.Basic, typeof(Thickness?)));
             AddNativeType(types[i++], new NativeTypeInfo(NativeTypeKind.Basic, typeof(CornerRadius?)));
@@ -654,7 +621,6 @@ namespace Noesis
             AddNativeType(types[i++], new NativeTypeInfo(NativeTypeKind.Basic, typeof(CharacterCasing)));
             AddNativeType(types[i++], new NativeTypeInfo(NativeTypeKind.Basic, typeof(ClickMode)));
             AddNativeType(types[i++], new NativeTypeInfo(NativeTypeKind.Basic, typeof(ColorInterpolationMode)));
-            AddNativeType(types[i++], new NativeTypeInfo(NativeTypeKind.Basic, typeof(Cursor)));
             AddNativeType(types[i++], new NativeTypeInfo(NativeTypeKind.Basic, typeof(Dock)));
             AddNativeType(types[i++], new NativeTypeInfo(NativeTypeKind.Basic, typeof(ExpandDirection)));
             AddNativeType(types[i++], new NativeTypeInfo(NativeTypeKind.Basic, typeof(FillRule)));
@@ -665,6 +631,7 @@ namespace Noesis
             AddNativeType(types[i++], new NativeTypeInfo(NativeTypeKind.Basic, typeof(GeometryCombineMode)));
             AddNativeType(types[i++], new NativeTypeInfo(NativeTypeKind.Basic, typeof(GradientSpreadMethod)));
             AddNativeType(types[i++], new NativeTypeInfo(NativeTypeKind.Basic, typeof(HorizontalAlignment)));
+            AddNativeType(types[i++], new NativeTypeInfo(NativeTypeKind.Basic, typeof(MouseAction)));
             AddNativeType(types[i++], new NativeTypeInfo(NativeTypeKind.Basic, typeof(Key)));
             AddNativeType(types[i++], new NativeTypeInfo(NativeTypeKind.Basic, typeof(ModifierKeys)));
             AddNativeType(types[i++], new NativeTypeInfo(NativeTypeKind.Basic, typeof(KeyboardNavigationMode)));
@@ -718,6 +685,7 @@ namespace Noesis
             AddNativeType(types[i++], new NativeTypeInfo(NativeTypeKind.Boxed, typeof(Boxed<Color>)));
             AddNativeType(types[i++], new NativeTypeInfo(NativeTypeKind.Boxed, typeof(Boxed<Point>)));
             AddNativeType(types[i++], new NativeTypeInfo(NativeTypeKind.Boxed, typeof(Boxed<Rect>)));
+            AddNativeType(types[i++], new NativeTypeInfo(NativeTypeKind.Boxed, typeof(Boxed<Int32Rect>)));
             AddNativeType(types[i++], new NativeTypeInfo(NativeTypeKind.Boxed, typeof(Boxed<Size>)));
             AddNativeType(types[i++], new NativeTypeInfo(NativeTypeKind.Boxed, typeof(Boxed<Thickness>)));
             AddNativeType(types[i++], new NativeTypeInfo(NativeTypeKind.Boxed, typeof(Boxed<CornerRadius>)));
@@ -726,6 +694,9 @@ namespace Noesis
             AddNativeType(types[i++], new NativeTypeInfo(NativeTypeKind.Boxed, typeof(Boxed<KeyTime>)));
             AddNativeType(types[i++], new NativeTypeInfo(NativeTypeKind.Boxed, typeof(Boxed<System.TimeSpan>)));
             AddNativeType(types[i++], new NativeTypeInfo(NativeTypeKind.Boxed, typeof(Boxed<VirtualizationCacheLength>)));
+            AddNativeType(types[i++], new NativeTypeInfo(NativeTypeKind.Basic, typeof(Boxed<Matrix>)));
+            AddNativeType(types[i++], new NativeTypeInfo(NativeTypeKind.Basic, typeof(Boxed<Matrix3D>)));
+            AddNativeType(types[i++], new NativeTypeInfo(NativeTypeKind.Basic, typeof(Boxed<Matrix4>)));
 
             AddNativeType(types[i++], new NativeTypeInfo(NativeTypeKind.Boxed, typeof(Boxed<Enum>)));
             AddNativeType(types[i++], new NativeTypeInfo(NativeTypeKind.Boxed, typeof(Boxed<AlignmentX>)));
@@ -737,7 +708,6 @@ namespace Noesis
             AddNativeType(types[i++], new NativeTypeInfo(NativeTypeKind.Boxed, typeof(Boxed<CharacterCasing>)));
             AddNativeType(types[i++], new NativeTypeInfo(NativeTypeKind.Boxed, typeof(Boxed<ClickMode>)));
             AddNativeType(types[i++], new NativeTypeInfo(NativeTypeKind.Boxed, typeof(Boxed<ColorInterpolationMode>)));
-            AddNativeType(types[i++], new NativeTypeInfo(NativeTypeKind.Boxed, typeof(Boxed<Cursor>)));
             AddNativeType(types[i++], new NativeTypeInfo(NativeTypeKind.Boxed, typeof(Boxed<Dock>)));
             AddNativeType(types[i++], new NativeTypeInfo(NativeTypeKind.Boxed, typeof(Boxed<ExpandDirection>)));
             AddNativeType(types[i++], new NativeTypeInfo(NativeTypeKind.Boxed, typeof(Boxed<FillRule>)));
@@ -748,6 +718,7 @@ namespace Noesis
             AddNativeType(types[i++], new NativeTypeInfo(NativeTypeKind.Boxed, typeof(Boxed<GeometryCombineMode>)));
             AddNativeType(types[i++], new NativeTypeInfo(NativeTypeKind.Boxed, typeof(Boxed<GradientSpreadMethod>)));
             AddNativeType(types[i++], new NativeTypeInfo(NativeTypeKind.Boxed, typeof(Boxed<HorizontalAlignment>)));
+            AddNativeType(types[i++], new NativeTypeInfo(NativeTypeKind.Boxed, typeof(Boxed<MouseAction>)));
             AddNativeType(types[i++], new NativeTypeInfo(NativeTypeKind.Boxed, typeof(Boxed<Key>)));
             AddNativeType(types[i++], new NativeTypeInfo(NativeTypeKind.Boxed, typeof(Boxed<ModifierKeys>)));
             AddNativeType(types[i++], new NativeTypeInfo(NativeTypeKind.Boxed, typeof(Boxed<KeyboardNavigationMode>)));
@@ -798,10 +769,12 @@ namespace Noesis
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(View), View.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(Renderer), Renderer.CreateProxy));
 
+            AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(Adorner), Adorner.CreateProxy));
+            AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(AdornerLayer), AdornerLayer.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(AdornerDecorator), AdornerDecorator.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(Animatable), Animatable.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(ArcSegment), ArcSegment.CreateProxy));
-            AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(BindingBase), BindingBase.CreateProxy));
+            AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(BindingBase), null));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(BindingExpressionBase), BindingExpressionBase.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(BindingExpression), BindingExpression.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(Bold), Bold.CreateProxy));
@@ -819,6 +792,7 @@ namespace Noesis
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(BitmapSource), BitmapSource.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(Border), Border.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(Brush), Brush.CreateProxy));
+            AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(BrushShader), null));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(BulletDecorator), BulletDecorator.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(Button), Button.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(Canvas), Canvas.CreateProxy));
@@ -840,8 +814,11 @@ namespace Noesis
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(ContentControl), ContentControl.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(ContentPresenter), ContentPresenter.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(ContextMenu), ContextMenu.CreateProxy));
+            AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(ContextMenuService), null));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(Control), Control.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(ControlTemplate), ControlTemplate.CreateProxy));
+            AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(CroppedBitmap), CroppedBitmap.CreateProxy));
+            AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(Cursor), Cursor.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(DashStyle), DashStyle.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(DataTemplate), DataTemplate.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(DataTemplateSelector), DataTemplateSelector.CreateProxy));
@@ -849,6 +826,11 @@ namespace Noesis
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(HierarchicalDataTemplate), HierarchicalDataTemplate.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(Decorator), Decorator.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(DockPanel), DockPanel.CreateProxy));
+            AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(DrawingContext), DrawingContext.CreateProxy));
+            AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(Effect), Effect.CreateProxy));
+            AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(BlurEffect), BlurEffect.CreateProxy));
+            AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(DropShadowEffect), DropShadowEffect.CreateProxy));
+            AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(ShaderEffect), null));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(Ellipse), Ellipse.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(EllipseGeometry), EllipseGeometry.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(EventTrigger), EventTrigger.CreateProxy));
@@ -866,6 +848,7 @@ namespace Noesis
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(GradientStop), GradientStop.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(GradientStopCollection), GradientStopCollection.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(Grid), Grid.CreateProxy));
+            AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(GridSplitter), GridSplitter.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(GroupBox), GroupBox.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(HeaderedContentControl), HeaderedContentControl.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(HeaderedItemsControl), HeaderedItemsControl.CreateProxy));
@@ -898,11 +881,13 @@ namespace Noesis
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(LineSegment), LineSegment.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(ListBox), ListBox.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(ListBoxItem), ListBoxItem.CreateProxy));
-            AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(MarkupExtension), MarkupExtension.CreateProxy));
+            AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(MarkupExtension), null));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(MatrixTransform), MatrixTransform.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(MatrixTransform3D), MatrixTransform3D.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(Menu), Menu.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(MenuItem), MenuItem.CreateProxy));
+            AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(MouseBinding), MouseBinding.CreateProxy));
+            AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(MouseGesture), MouseGesture.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(MultiBinding), MultiBinding.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(MultiBindingExpression), MultiBindingExpression.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(MultiDataTrigger), MultiDataTrigger.CreateProxy));
@@ -932,6 +917,7 @@ namespace Noesis
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(Rectangle), Rectangle.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(RectangleGeometry), RectangleGeometry.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(RelativeSource), RelativeSource.CreateProxy));
+            AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(RenderOptions), null));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(RepeatButton), RepeatButton.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(ResourceDictionary), ResourceDictionary.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(ResourceDictionaryCollection), ResourceDictionaryCollection.CreateProxy));
@@ -968,6 +954,7 @@ namespace Noesis
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(TextBox), TextBox.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(TextElement), TextElement.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(TextureSource), TextureSource.CreateProxy));
+            AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(DynamicTextureSource), DynamicTextureSource.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(Thumb), Thumb.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(TickBar), TickBar.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(TileBrush), TileBrush.CreateProxy));
@@ -977,6 +964,7 @@ namespace Noesis
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(ToolBarPanel), ToolBarPanel.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(ToolBarTray), ToolBarTray.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(ToolTip), ToolTip.CreateProxy));
+            AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(ToolTipService), null));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(Track), Track.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(TransformGroup), TransformGroup.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(TranslateTransform), TranslateTransform.CreateProxy));
@@ -986,6 +974,7 @@ namespace Noesis
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(TreeView), TreeView.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(TreeViewItem), TreeViewItem.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(TriggerAction), TriggerAction.CreateProxy));
+            AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(TriggerActionCollection), TriggerActionCollection.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(Trigger), Trigger.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(TriggerCollection), TriggerCollection.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(UIElement), UIElement.CreateProxy));
@@ -1001,7 +990,6 @@ namespace Noesis
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(VisualBrush), VisualBrush.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(VisualCollection), VisualCollection.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(WrapPanel), WrapPanel.CreateProxy));
-            AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(Texture), Texture.CreateProxy));
 
 
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(Clock), Clock.CreateProxy));
@@ -1015,8 +1003,23 @@ namespace Noesis
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(AnimationTimeline), AnimationTimeline.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(Storyboard), Storyboard.CreateProxy));
 
+            AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(BooleanAnimationBase), BooleanAnimationBase.CreateProxy));
+            AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(Int16AnimationBase), Int16AnimationBase.CreateProxy));
+            AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(Int32AnimationBase), Int32AnimationBase.CreateProxy));
+            AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(Int64AnimationBase), Int64AnimationBase.CreateProxy));
+            AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(DoubleAnimationBase), DoubleAnimationBase.CreateProxy));
+            AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(ColorAnimationBase), ColorAnimationBase.CreateProxy));
+            AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(PointAnimationBase), PointAnimationBase.CreateProxy));
+            AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(RectAnimationBase), RectAnimationBase.CreateProxy));
+            AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(SizeAnimationBase), SizeAnimationBase.CreateProxy));
+            AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(ThicknessAnimationBase), ThicknessAnimationBase.CreateProxy));
+            AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(ObjectAnimationBase), ObjectAnimationBase.CreateProxy));
+            AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(StringAnimationBase), StringAnimationBase.CreateProxy));
+            AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(MatrixAnimationBase), MatrixAnimationBase.CreateProxy));
+
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(Int16Animation), Int16Animation.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(Int32Animation), Int32Animation.CreateProxy));
+            AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(Int64Animation), Int64Animation.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(DoubleAnimation), DoubleAnimation.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(ColorAnimation), ColorAnimation.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(PointAnimation), PointAnimation.CreateProxy));
@@ -1027,6 +1030,7 @@ namespace Noesis
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(BooleanAnimationUsingKeyFrames), BooleanAnimationUsingKeyFrames.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(Int16AnimationUsingKeyFrames), Int16AnimationUsingKeyFrames.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(Int32AnimationUsingKeyFrames), Int32AnimationUsingKeyFrames.CreateProxy));
+            AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(Int64AnimationUsingKeyFrames), Int64AnimationUsingKeyFrames.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(DoubleAnimationUsingKeyFrames), DoubleAnimationUsingKeyFrames.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(ColorAnimationUsingKeyFrames), ColorAnimationUsingKeyFrames.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(PointAnimationUsingKeyFrames), PointAnimationUsingKeyFrames.CreateProxy));
@@ -1040,6 +1044,7 @@ namespace Noesis
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(BooleanKeyFrameCollection), BooleanKeyFrameCollection.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(Int16KeyFrameCollection), Int16KeyFrameCollection.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(Int32KeyFrameCollection), Int32KeyFrameCollection.CreateProxy));
+            AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(Int64KeyFrameCollection), Int64KeyFrameCollection.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(DoubleKeyFrameCollection), DoubleKeyFrameCollection.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(ColorKeyFrameCollection), ColorKeyFrameCollection.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(PointKeyFrameCollection), PointKeyFrameCollection.CreateProxy));
@@ -1051,9 +1056,10 @@ namespace Noesis
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(MatrixKeyFrameCollection), MatrixKeyFrameCollection.CreateProxy));
 
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(BooleanKeyFrame), BooleanKeyFrame.CreateProxy));
-            AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(DoubleKeyFrame), DoubleKeyFrame.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(Int16KeyFrame), Int16KeyFrame.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(Int32KeyFrame), Int32KeyFrame.CreateProxy));
+            AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(Int64KeyFrame), Int64KeyFrame.CreateProxy));
+            AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(DoubleKeyFrame), DoubleKeyFrame.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(ColorKeyFrame), ColorKeyFrame.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(PointKeyFrame), PointKeyFrame.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(RectKeyFrame), RectKeyFrame.CreateProxy));
@@ -1065,6 +1071,7 @@ namespace Noesis
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(DiscreteBooleanKeyFrame), DiscreteBooleanKeyFrame.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(DiscreteInt16KeyFrame), DiscreteInt16KeyFrame.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(DiscreteInt32KeyFrame), DiscreteInt32KeyFrame.CreateProxy));
+            AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(DiscreteInt64KeyFrame), DiscreteInt64KeyFrame.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(DiscreteDoubleKeyFrame), DiscreteDoubleKeyFrame.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(DiscreteColorKeyFrame), DiscreteColorKeyFrame.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(DiscretePointKeyFrame), DiscretePointKeyFrame.CreateProxy));
@@ -1077,6 +1084,7 @@ namespace Noesis
 
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(LinearInt16KeyFrame), LinearInt16KeyFrame.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(LinearInt32KeyFrame), LinearInt32KeyFrame.CreateProxy));
+            AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(LinearInt64KeyFrame), LinearInt64KeyFrame.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(LinearDoubleKeyFrame), LinearDoubleKeyFrame.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(LinearColorKeyFrame), LinearColorKeyFrame.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(LinearPointKeyFrame), LinearPointKeyFrame.CreateProxy));
@@ -1086,6 +1094,7 @@ namespace Noesis
 
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(SplineInt16KeyFrame), SplineInt16KeyFrame.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(SplineInt32KeyFrame), SplineInt32KeyFrame.CreateProxy));
+            AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(SplineInt64KeyFrame), SplineInt64KeyFrame.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(SplineDoubleKeyFrame), SplineDoubleKeyFrame.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(SplineColorKeyFrame), SplineColorKeyFrame.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(SplinePointKeyFrame), SplinePointKeyFrame.CreateProxy));
@@ -1097,6 +1106,7 @@ namespace Noesis
 
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(EasingInt16KeyFrame), EasingInt16KeyFrame.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(EasingInt32KeyFrame), EasingInt32KeyFrame.CreateProxy));
+            AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(EasingInt64KeyFrame), EasingInt64KeyFrame.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(EasingDoubleKeyFrame), EasingDoubleKeyFrame.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(EasingColorKeyFrame), EasingColorKeyFrame.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(EasingPointKeyFrame), EasingPointKeyFrame.CreateProxy));
@@ -1142,6 +1152,17 @@ namespace Noesis
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(GridViewHeaderRowPresenter), GridViewHeaderRowPresenter.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(ListView), ListView.CreateProxy));
             AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(ListViewItem), ListViewItem.CreateProxy));
+
+            AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(RiveInput), RiveInput.CreateProxy));
+            AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(RiveInputCollection), RiveInputCollection.CreateProxy));
+            AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(RiveControl), RiveControl.CreateProxy));
+
+            _managedTypes[typeof(NativeRenderDevice)] = types[i];
+            AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(RenderDevice), NativeRenderDevice.CreateProxy));
+            _managedTypes[typeof(NativeRenderTarget)] = types[i];
+            AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(RenderTarget), NativeRenderTarget.CreateProxy));
+            _managedTypes[typeof(NativeTexture)] = types[i];
+            AddNativeType(types[i++], new NativeTypeComponentInfo(NativeTypeKind.Component, typeof(Texture), NativeTexture.CreateProxy));
 
             _managedTypes[typeof(object)] = BaseComponent.GetStaticType();
 
@@ -1230,6 +1251,29 @@ namespace Noesis
             public long typeConverter;
             [MarshalAs(UnmanagedType.U8)]
             public long contentProperty;
+            [MarshalAs(UnmanagedType.U4)]
+            public int overrides;
+        }
+
+        [Flags]
+        private enum ExtendTypeOverrides
+        {
+            None                            = 0,
+            Object_ToString                 = 1,
+            Object_Equals                   = 2,
+            Visual_GetChildrenCount         = 4,
+            Visual_GetChild                 = 8,
+            UIElement_OnRender              = 16,
+            FrameworkElement_ConnectEvent   = 32,
+            FrameworkElement_ConnectField   = 64,
+            FrameworkElement_Measure        = 128,
+            FrameworkElement_Arrange        = 256,
+            FrameworkElement_ApplyTemplate  = 512,
+            ItemsControl_GetContainer       = 1024,
+            ItemsControl_IsContainer        = 2048,
+            Adorner_GetTransform            = 4096,
+            Freezable_Clone                 = 8192,
+            Animation_GetValueCore          = 16384
         }
 
         private struct ExtendPropertyData
@@ -1273,7 +1317,8 @@ namespace Noesis
                     _managedTypes[type] = nativeType;
                     return nativeType;
                 }
-                else if (type.GetTypeInfo().IsEnum)
+
+                if (type.GetTypeInfo().IsEnum)
                 {
                     int numEnums;
                     IntPtr enumsData = CreateNativeEnumsData(type, out numEnums);
@@ -1298,6 +1343,10 @@ namespace Noesis
                 if (typeof(UnityEngine.Texture).GetTypeInfo().IsAssignableFrom(type.GetTypeInfo()))
                 {
                     nativeType = Noesis.TextureSource.Extend(TypeFullName(type));
+                }
+                else if (typeof(UnityEngine.Sprite).GetTypeInfo().IsAssignableFrom(type.GetTypeInfo()))
+                {
+                    nativeType = Noesis.CroppedBitmap.Extend(TypeFullName(type));
                 }
                 else
                 #endif
@@ -1447,42 +1496,63 @@ namespace Noesis
         private static NativeTypeInfo CreateNativeTypeInfo(System.Type type, IndexerAccessor indexer,
             PropertyInfo[] props)
         {
-            if (typeof(Noesis.DependencyObject).GetTypeInfo().IsAssignableFrom(type.GetTypeInfo()))
+            if (indexer != null)
             {
-                #if NETFX_CORE
-                MethodInfo propChanged = type.GetRuntimeMethod("DependencyPropertyChanged", new Type[] { typeof(DependencyProperty) });
-                #else
-                MethodInfo propChanged = type.GetMethod("DependencyPropertyChanged", new Type[] { typeof(DependencyProperty) });
-                #endif
-
-                if (indexer != null)
-                {
-                    return new NativeTypeDOIndexerInfo(NativeTypeKind.Extended, type, TypeCreator(type), indexer, propChanged);
-                }
-                else if (props.Length > 0)
-                {
-                    return new NativeTypeDOPropsInfo(NativeTypeKind.Extended, type, TypeCreator(type), propChanged);
-                }
-                else
-                {
-                    return new NativeTypeDOExtendedInfo(NativeTypeKind.Extended, type, TypeCreator(type), propChanged);
-                }
+                return new NativeTypeIndexerInfo(NativeTypeKind.Extended, type, TypeCreator(type), indexer);
+            }
+            else if (props.Length > 0)
+            {
+                return new NativeTypePropsInfo(NativeTypeKind.Extended, type, TypeCreator(type));
             }
             else
             {
-                if (indexer != null)
+                return new NativeTypeExtendedInfo(NativeTypeKind.Extended, type, TypeCreator(type));
+            }
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////
+        private static bool IsOverride(MethodInfo m)
+        {
+            return m != null && m.GetBaseDefinition().DeclaringType != m.DeclaringType;
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////
+        private static bool ParametersMatch(MethodInfo m, Type[] types)
+        {
+            ParameterInfo[] parameters = m.GetParameters();
+            if (parameters.Length == types.Length)
+            {
+                for (int i = 0; i < parameters.Length; ++i)
                 {
-                    return new NativeTypeIndexerInfo(NativeTypeKind.Extended, type, TypeCreator(type), indexer);
-                }
-                else if (props.Length > 0)
-                {
-                    return new NativeTypePropsInfo(NativeTypeKind.Extended, type, TypeCreator(type));
-                }
-                else
-                {
-                    return new NativeTypeExtendedInfo(NativeTypeKind.Extended, type, TypeCreator(type));
+                    if (parameters[i].ParameterType != types[i]) return false;
                 }
             }
+
+            return true;
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////
+        public static MethodInfo FindMethod(Type type, string name, Type[] types)
+        {
+            #if NETFX_CORE
+            return type.GetRuntimeMethods()
+                .Where(m => m.Name == name && !m.IsStatic && ParametersMatch(m, types)).FirstOrDefault();
+            #else
+            return type.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+                .Where(m => m.Name == name && ParametersMatch(m, types)).FirstOrDefault();
+            #endif
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////
+        public static PropertyInfo FindProperty(Type type, string name)
+        {
+            #if NETFX_CORE
+            return type.GetRuntimeProperties()
+                .Where(p => p.Name == name && !p.GetMethod.IsStatic).FirstOrDefault;
+            #else
+            return type.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+                .Where(p => p.Name == name).FirstOrDefault();
+            #endif
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1490,12 +1560,22 @@ namespace Noesis
         {
             ExtendTypeData typeData = new ExtendTypeData();
             typeData.type = nativeType.ToInt64();
-            typeData.baseType =
             #if UNITY_5_3_OR_NEWER
-                typeof(UnityEngine.Texture).GetTypeInfo().IsAssignableFrom(type.GetTypeInfo()) ?
-                    TryGetNativeType(typeof(Noesis.TextureSource)).ToInt64() :
+            if (typeof(UnityEngine.Texture).GetTypeInfo().IsAssignableFrom(type.GetTypeInfo()))
+            {
+                typeData.baseType = TryGetNativeType(typeof(TextureSource)).ToInt64();
+            }
+            else if (typeof(UnityEngine.Sprite).GetTypeInfo().IsAssignableFrom(type.GetTypeInfo()))
+            {
+                typeData.baseType = TryGetNativeType(typeof(CroppedBitmap)).ToInt64();
+            }
+            else
+            {
+                typeData.baseType = EnsureNativeType(type.GetTypeInfo().BaseType).ToInt64();
+            }
+            #else
+                typeData.baseType = EnsureNativeType(type.GetTypeInfo().BaseType).ToInt64();
             #endif
-                    EnsureNativeType(type.GetTypeInfo().BaseType).ToInt64();
 
             var typeConverter = type.GetTypeInfo().GetCustomAttribute<System.ComponentModel.TypeConverterAttribute>();
             if (typeConverter != null)
@@ -1508,6 +1588,129 @@ namespace Noesis
             {
                 typeData.contentProperty = Marshal.StringToHGlobalAnsi(contentProperty.Name).ToInt64();
             }
+
+            // overrides
+            ExtendTypeOverrides overrides = ExtendTypeOverrides.None;
+
+            MethodInfo toStringMethod = FindMethod(type, "ToString", new Type[] { });
+            if (IsOverride(toStringMethod)) overrides |= ExtendTypeOverrides.Object_ToString;
+
+            MethodInfo equalsMethod = FindMethod(type, "Equals", new Type[] { typeof(object) });
+            if (IsOverride(equalsMethod)) overrides |= ExtendTypeOverrides.Object_Equals;
+
+            if (typeof(Visual).GetTypeInfo().IsAssignableFrom(type.GetTypeInfo()))
+            {
+                PropertyInfo childrenCountProp = FindProperty(type, "VisualChildrenCount");
+                if (IsOverride(childrenCountProp?.GetMethod)) overrides |= ExtendTypeOverrides.Visual_GetChildrenCount;
+
+                MethodInfo getChildMethod = FindMethod(type, "GetVisualChild", new Type[] { typeof(int) });
+                if (IsOverride(getChildMethod)) overrides |= ExtendTypeOverrides.Visual_GetChild;
+            }
+
+            if (typeof(UIElement).GetTypeInfo().IsAssignableFrom(type.GetTypeInfo()))
+            {
+                MethodInfo renderMethod = FindMethod(type, "OnRender", new Type[] { typeof(DrawingContext) });
+                if (IsOverride(renderMethod)) overrides |= ExtendTypeOverrides.UIElement_OnRender;
+            }
+
+            if (typeof(FrameworkElement).GetTypeInfo().IsAssignableFrom(type.GetTypeInfo()))
+            {
+                MethodInfo eventMethod = FindMethod(type, "ConnectEvent", new Type[] { typeof(object), typeof(string), typeof(string) });
+                if (IsOverride(eventMethod)) overrides |= ExtendTypeOverrides.FrameworkElement_ConnectEvent;
+
+                MethodInfo fieldMethod = FindMethod(type, "ConnectField", new Type[] { typeof(object), typeof(string) });
+                if (IsOverride(fieldMethod)) overrides |= ExtendTypeOverrides.FrameworkElement_ConnectField;
+
+                MethodInfo measureMethod = FindMethod(type, "MeasureOverride", new Type[] { typeof(Size) });
+                if (IsOverride(measureMethod)) overrides |= ExtendTypeOverrides.FrameworkElement_Measure;
+
+                MethodInfo arrangeMethod = FindMethod(type, "ArrangeOverride", new Type[] { typeof(Size) });
+                if (IsOverride(arrangeMethod)) overrides |= ExtendTypeOverrides.FrameworkElement_Arrange;
+
+                MethodInfo templateMethod = FindMethod(type, "OnApplyTemplate", new Type[] { });
+                if (IsOverride(templateMethod)) overrides |= ExtendTypeOverrides.FrameworkElement_ApplyTemplate;
+            }
+
+            if (typeof(ItemsControl).GetTypeInfo().IsAssignableFrom(type.GetTypeInfo()))
+            {
+                MethodInfo getContainerMethod = FindMethod(type, "GetContainerForItemOverride", new Type[] { });
+                if (IsOverride(getContainerMethod)) overrides |= ExtendTypeOverrides.ItemsControl_GetContainer;
+
+                MethodInfo isContainerMethod = FindMethod(type, "IsItemItsOwnContainerOverride", new Type[] { typeof(object) });
+                if (IsOverride(isContainerMethod)) overrides |= ExtendTypeOverrides.ItemsControl_IsContainer;
+            }
+
+            if (typeof(Adorner).GetTypeInfo().IsAssignableFrom(type.GetTypeInfo()))
+            {
+                MethodInfo getTransformMethod = FindMethod(type, "GetDesiredTransform", new Type[] { typeof(Matrix4) });
+                if (IsOverride(getTransformMethod)) overrides |= ExtendTypeOverrides.Adorner_GetTransform;
+            }
+
+            if (typeof(Freezable).GetTypeInfo().IsAssignableFrom(type.GetTypeInfo()))
+            {
+                MethodInfo cloneMethod = FindMethod(type, "CloneCommonCore", new Type[] { typeof(Freezable) });
+                if (IsOverride(cloneMethod)) overrides |= ExtendTypeOverrides.Freezable_Clone;
+            }
+
+            if (typeof(AnimationTimeline).GetTypeInfo().IsAssignableFrom(type.GetTypeInfo()))
+            {
+                if (typeof(Int16Animation).GetTypeInfo().IsAssignableFrom(type.GetTypeInfo()))
+                {
+                    MethodInfo getValueMethod = FindMethod(type, "GetCurrentValueCore", new Type[] { typeof(short), typeof(short), typeof(AnimationClock) });
+                    if (IsOverride(getValueMethod) && getValueMethod.DeclaringType != typeof(Int16Animation))
+                        overrides |= ExtendTypeOverrides.Animation_GetValueCore;
+                }
+                if (typeof(Int32Animation).GetTypeInfo().IsAssignableFrom(type.GetTypeInfo()))
+                {
+                    MethodInfo getValueMethod = FindMethod(type, "GetCurrentValueCore", new Type[] { typeof(int), typeof(int), typeof(AnimationClock) });
+                    if (IsOverride(getValueMethod) && getValueMethod.DeclaringType != typeof(Int32Animation))
+                        overrides |= ExtendTypeOverrides.Animation_GetValueCore;
+                }
+                if (typeof(Int64Animation).GetTypeInfo().IsAssignableFrom(type.GetTypeInfo()))
+                {
+                    MethodInfo getValueMethod = FindMethod(type, "GetCurrentValueCore", new Type[] { typeof(long), typeof(long), typeof(AnimationClock) });
+                    if (IsOverride(getValueMethod) && getValueMethod.DeclaringType != typeof(Int64Animation))
+                        overrides |= ExtendTypeOverrides.Animation_GetValueCore;
+                }
+                if (typeof(DoubleAnimation).GetTypeInfo().IsAssignableFrom(type.GetTypeInfo()))
+                {
+                    MethodInfo getValueMethod = FindMethod(type, "GetCurrentValueCore", new Type[] { typeof(float), typeof(float), typeof(AnimationClock) });
+                    if (IsOverride(getValueMethod) && getValueMethod.DeclaringType != typeof(DoubleAnimation))
+                        overrides |= ExtendTypeOverrides.Animation_GetValueCore;
+                }
+                if (typeof(ColorAnimation).GetTypeInfo().IsAssignableFrom(type.GetTypeInfo()))
+                {
+                    MethodInfo getValueMethod = FindMethod(type, "GetCurrentValueCore", new Type[] { typeof(Color), typeof(Color), typeof(AnimationClock) });
+                    if (IsOverride(getValueMethod) && getValueMethod.DeclaringType != typeof(ColorAnimation))
+                        overrides |= ExtendTypeOverrides.Animation_GetValueCore;
+                }
+                if (typeof(PointAnimation).GetTypeInfo().IsAssignableFrom(type.GetTypeInfo()))
+                {
+                    MethodInfo getValueMethod = FindMethod(type, "GetCurrentValueCore", new Type[] { typeof(Point), typeof(Point), typeof(AnimationClock) });
+                    if (IsOverride(getValueMethod) && getValueMethod.DeclaringType != typeof(PointAnimation))
+                        overrides |= ExtendTypeOverrides.Animation_GetValueCore;
+                }
+                if (typeof(RectAnimation).GetTypeInfo().IsAssignableFrom(type.GetTypeInfo()))
+                {
+                    MethodInfo getValueMethod = FindMethod(type, "GetCurrentValueCore", new Type[] { typeof(Rect), typeof(Rect), typeof(AnimationClock) });
+                    if (IsOverride(getValueMethod) && getValueMethod.DeclaringType != typeof(RectAnimation))
+                        overrides |= ExtendTypeOverrides.Animation_GetValueCore;
+                }
+                if (typeof(SizeAnimation).GetTypeInfo().IsAssignableFrom(type.GetTypeInfo()))
+                {
+                    MethodInfo getValueMethod = FindMethod(type, "GetCurrentValueCore", new Type[] { typeof(Size), typeof(Size), typeof(AnimationClock) });
+                    if (IsOverride(getValueMethod) && getValueMethod.DeclaringType != typeof(SizeAnimation))
+                        overrides |= ExtendTypeOverrides.Animation_GetValueCore;
+                }
+                if (typeof(ThicknessAnimation).GetTypeInfo().IsAssignableFrom(type.GetTypeInfo()))
+                {
+                    MethodInfo getValueMethod = FindMethod(type, "GetCurrentValueCore", new Type[] { typeof(Thickness), typeof(Thickness), typeof(AnimationClock) });
+                    if (IsOverride(getValueMethod) && getValueMethod.DeclaringType != typeof(ThicknessAnimation))
+                        overrides |= ExtendTypeOverrides.Animation_GetValueCore;
+                }
+            }
+
+            typeData.overrides = (int)overrides;
 
             return typeData;
         }
@@ -1560,7 +1763,7 @@ namespace Noesis
                 for (int i = 0; i < propsLen; ++i)
                 {
                     var p = props[i];
-                    if (p.GetGetMethod() != null && !p.PropertyType.IsPointer &&
+                    if (p.GetGetMethod() != null && !p.PropertyType.IsPointer && !p.PropertyType.IsByRef &&
                         (HasTypeConverter(p) || (!IsIndexerProperty(p) && !IsDependencyProperty(type, p))))
                     {
                         ExtendPropertyData propData = AddProperty(propsInfo, p, usePropertyInfo);
@@ -1794,6 +1997,18 @@ namespace Noesis
         {
             try
             {
+#if UNITY_5_3_OR_NEWER
+                if (typeName == "NoesisApp.Application")
+                {
+                    UnityEngine.Debug.LogError("Application not supported in Unity, please set Application Resources in NoesisGUI settings.");
+                    return;
+                }
+                if (typeName == "NoesisApp.Window")
+                {
+                    UnityEngine.Debug.LogError("Window not supported in Unity, please use Page or UserControl instead.");
+                    return;
+                }
+#endif
                 Type type = FindType(typeName);
 
                 if (type != null)
@@ -1887,127 +2102,84 @@ namespace Noesis
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////
-        private delegate uint Callback_GetHashCode(IntPtr cPtr);
-        private static Callback_GetHashCode _getHashCode = GetHashCodeEx;
+        private delegate int Callback_VisualChildrenCount(IntPtr cPtr,
+            Visual.ChildrenCountBaseCallback callback);
+        private static Callback_VisualChildrenCount _visualChildrenCount = VisualChildrenCount;
 
-        [MonoPInvokeCallback(typeof(Callback_GetHashCode))]
-        private static uint GetHashCodeEx(IntPtr cPtr)
+        [MonoPInvokeCallback(typeof(Callback_VisualChildrenCount))]
+        private static int VisualChildrenCount(IntPtr cPtr,
+            Visual.ChildrenCountBaseCallback callback)
         {
             try
             {
-                object proxy = GetExtendInstance(cPtr);
-                return proxy != null ? (uint)proxy.GetHashCode() : 0;
-            }
-            catch (Exception e)
-            {
-                Error.UnhandledException(e);
-                return 0;
-            }
-        }
-
-        ////////////////////////////////////////////////////////////////////////////////////////////////
-        private delegate void Callback_OnPostInit(IntPtr cPtrType, IntPtr cPtr);
-        private static Callback_OnPostInit _onPostInit = OnPostInit;
-
-        [MonoPInvokeCallback(typeof(Callback_OnPostInit))]
-        private static void OnPostInit(IntPtr cPtrType, IntPtr cPtr)
-        {
-            return; // this method is deprecated in NoesisGUI v3.1
-            try
-            {
-                NativeTypeInfo info = GetNativeTypeInfo(cPtrType);
-#if NETFX_CORE
-                MethodInfo methodInfo = info.Type.GetRuntimeMethod("OnPostInit", new Type[] { });
-#else
-                MethodInfo methodInfo = info.Type.GetMethod("OnPostInit", new Type[] { });
-#endif
-                if (methodInfo != null)
+                Visual visual = (Visual)GetExtendInstance(cPtr);
+                if (visual != null)
                 {
-                    object instance = GetExtendInstance(cPtr);
-                    if (instance != null)
-                    {
-                        methodInfo.Invoke(instance, null);
-                    }
+                    visual.ChildrenCountBase = callback;
+                    int count = visual.VisualChildrenCount;
+                    visual.ChildrenCountBase = null;
+
+                    return count;
                 }
             }
             catch (Exception e)
             {
                 Error.UnhandledException(e);
             }
+
+            return 0;
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////
-        private delegate void Callback_DependencyPropertyChanged(IntPtr cPtrType, IntPtr cPtr, IntPtr dpPtr);
-        private static Callback_DependencyPropertyChanged _dependencyPropertyChanged = DependencyPropertyChanged;
+        private delegate IntPtr Callback_VisualGetChild(IntPtr cPtr, int index,
+                                                        Visual.ChildrenCountBaseCallback countCallback, Visual.GetChildBaseCallback childCallback);
+        private static Callback_VisualGetChild _visualGetChild  = VisualGetChild;
 
-        [MonoPInvokeCallback(typeof(Callback_DependencyPropertyChanged))]
-        private static void DependencyPropertyChanged(IntPtr cPtrType, IntPtr cPtr, IntPtr dpPtr)
-        {
-            // We don't want to raise more property change notifications after shutdown is called,
-            // dependency properties created in Unity are already deleted
-            if (Initialized)
-            {
-                try
-                {
-                    NativeTypeInfo info = GetNativeTypeInfo(cPtrType);
-                    INativeTypeDO dob = (INativeTypeDO)info;
-                    if (dob.PropertyChangedInfo != null)
-                    {
-                        object instance = GetExtendInstance(cPtr);
-                        if (instance != null)
-                        {
-                            DependencyProperty dp = new DependencyProperty(dpPtr, false);
-                            dob.PropertyChangedInfo.OnPropertyChanged(instance, dp);
-                        }
-                    }
-                }
-                catch (Exception e)
-                {
-                    Error.UnhandledException(e);
-                }
-            }
-        }
-
-        ////////////////////////////////////////////////////////////////////////////////////////////////
-        private delegate void Callback_FrameworkElementMeasure(IntPtr cPtr,
-            ref Size availableSize, ref Size desiredSize, FrameworkElement.MeasureBaseCallback callback);
-        private static Callback_FrameworkElementMeasure _frameworkElementMeasure = FrameworkElementMeasure;
-
-        [MonoPInvokeCallback(typeof(Callback_FrameworkElementMeasure))]
-        private static void FrameworkElementMeasure(IntPtr cPtr,
-            ref Size availableSize, ref Size desiredSize, FrameworkElement.MeasureBaseCallback callback)
+        [MonoPInvokeCallback(typeof(Callback_VisualGetChild))]
+        private static IntPtr VisualGetChild(IntPtr cPtr, int index,
+                                             Visual.ChildrenCountBaseCallback countCallback, Visual.GetChildBaseCallback childCallback)
         {
             try
             {
-                FrameworkElement element = (FrameworkElement)GetExtendInstance(cPtr);
+                Visual visual = (Visual)GetExtendInstance(cPtr);
+                if (visual != null)
+                {
+                    visual.ChildrenCountBase = countCallback;
+                    visual.GetChildBase = childCallback;
+                    Visual child = visual.GetVisualChild(index);
+                    visual.GetChildBase = null;
+                    visual.ChildrenCountBase = null;
+
+                    HandleRef childPtr = GetInstanceHandle(child);
+                    BaseComponent.AddReference(childPtr.Handle); // released by native bindings
+                    return childPtr.Handle;
+                }
+            }
+            catch (Exception e)
+            {
+                Error.UnhandledException(e);
+            }
+
+            return IntPtr.Zero;
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////
+        private delegate void Callback_UIElementRender(IntPtr cPtr, IntPtr contextType, IntPtr context,
+            UIElement.RenderBaseCallback callback);
+        private static Callback_UIElementRender _uiElementRender = UIElementRender;
+
+        [MonoPInvokeCallback(typeof(Callback_UIElementRender))]
+        private static void UIElementRender(IntPtr cPtr, IntPtr contextType, IntPtr context,
+            UIElement.RenderBaseCallback callback)
+        {
+            try
+            {
+                UIElement element = (UIElement)GetExtendInstance(cPtr);
                 if (element != null)
                 {
-                    desiredSize = element.CallMeasureOverride(availableSize, callback);
-                    if (desiredSize.IsEmpty) desiredSize = new Size(0, 0);
-                }
-            }
-            catch (Exception e)
-            {
-                Error.UnhandledException(e);
-            }
-        }
-
-        ////////////////////////////////////////////////////////////////////////////////////////////////
-        private delegate void Callback_FrameworkElementArrange(IntPtr cPtr,
-            ref Size finalSize, ref Size renderSize, FrameworkElement.MeasureBaseCallback callback);
-        private static Callback_FrameworkElementArrange _frameworkElementArrange = FrameworkElementArrange;
-
-        [MonoPInvokeCallback(typeof(Callback_FrameworkElementArrange))]
-        private static void FrameworkElementArrange(IntPtr cPtr,
-            ref Size finalSize, ref Size renderSize, FrameworkElement.MeasureBaseCallback callback)
-        {
-            try
-            {
-                FrameworkElement element = (FrameworkElement)GetExtendInstance(cPtr);
-                if (element != null)
-                {
-                    renderSize = element.CallArrangeOverride(finalSize, callback);
-                    if (renderSize.IsEmpty) renderSize = new Size(0, 0);
+                    element.OnRenderBase = callback;
+                    element.OnRender((DrawingContext)GetProxy(contextType, context, false));
+                    element.OnRenderBase = null;
                 }
             }
             catch (Exception e)
@@ -2031,7 +2203,7 @@ namespace Noesis
                 if (element != null)
                 {
                     object source = GetProxy(cPtrSourceType, cPtrSource, false);
-                    return element.CallConnectEvent(source, eventName, handlerName);
+                    return element.ConnectEvent(source, eventName, handlerName);
                 }
             }
             catch (Exception e)
@@ -2040,6 +2212,188 @@ namespace Noesis
             }
 
             return false;
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////
+        private delegate void Callback_FrameworkElementConnectField(IntPtr cPtr,
+            IntPtr cPtrSourceType, IntPtr cPtrSource, string fieldName);
+        private static Callback_FrameworkElementConnectField _frameworkElementConnectField = FrameworkElementConnectField;
+
+        [MonoPInvokeCallback(typeof(Callback_FrameworkElementConnectField))]
+        private static void FrameworkElementConnectField(IntPtr cPtr,
+            IntPtr cPtrSourceType, IntPtr cPtrSource, string fieldName)
+        {
+            try
+            {
+                FrameworkElement element = (FrameworkElement)GetExtendInstance(cPtr);
+                if (element != null)
+                {
+                    object source = GetProxy(cPtrSourceType, cPtrSource, false);
+                    element.ConnectField(source, fieldName);
+                }
+            }
+            catch (Exception e)
+            {
+                Error.UnhandledException(e);
+            }
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////
+        private delegate void Callback_FrameworkElementMeasure(IntPtr cPtr,
+            ref Size availableSize, ref Size desiredSize, FrameworkElement.LayoutBaseCallback callback);
+        private static Callback_FrameworkElementMeasure _frameworkElementMeasure = FrameworkElementMeasure;
+
+        [MonoPInvokeCallback(typeof(Callback_FrameworkElementMeasure))]
+        private static void FrameworkElementMeasure(IntPtr cPtr,
+            ref Size availableSize, ref Size desiredSize, FrameworkElement.LayoutBaseCallback callback)
+        {
+            try
+            {
+                FrameworkElement element = (FrameworkElement)GetExtendInstance(cPtr);
+                if (element != null)
+                {
+                    element.MeasureBase = callback;
+                    desiredSize = element.MeasureOverride(availableSize);
+                    element.MeasureBase = null;
+
+                    if (desiredSize.IsEmpty) desiredSize = new Size(0, 0);
+                }
+            }
+            catch (Exception e)
+            {
+                Error.UnhandledException(e);
+            }
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////
+        private delegate void Callback_FrameworkElementArrange(IntPtr cPtr,
+            ref Size finalSize, ref Size renderSize, FrameworkElement.LayoutBaseCallback callback);
+        private static Callback_FrameworkElementArrange _frameworkElementArrange = FrameworkElementArrange;
+
+        [MonoPInvokeCallback(typeof(Callback_FrameworkElementArrange))]
+        private static void FrameworkElementArrange(IntPtr cPtr,
+            ref Size finalSize, ref Size renderSize, FrameworkElement.LayoutBaseCallback callback)
+        {
+            try
+            {
+                FrameworkElement element = (FrameworkElement)GetExtendInstance(cPtr);
+                if (element != null)
+                {
+                    element.ArrangeBase = callback;
+                    renderSize = element.ArrangeOverride(finalSize);
+                    element.ArrangeBase = callback;
+
+                    if (renderSize.IsEmpty) renderSize = new Size(0, 0);
+                }
+            }
+            catch (Exception e)
+            {
+                Error.UnhandledException(e);
+            }
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////
+        private delegate void Callback_FrameworkElementApplyTemplate(IntPtr cPtr);
+        private static Callback_FrameworkElementApplyTemplate _frameworkElementApplyTemplate = FrameworkElementApplyTemplate;
+
+        [MonoPInvokeCallback(typeof(Callback_FrameworkElementApplyTemplate))]
+        private static void FrameworkElementApplyTemplate(IntPtr cPtr)
+        {
+            try
+            {
+                FrameworkElement element = (FrameworkElement)GetExtendInstance(cPtr);
+                if (element != null)
+                {
+                    element.OnApplyTemplate();
+                }
+            }
+            catch (Exception e)
+            {
+                Error.UnhandledException(e);
+            }
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////
+        private delegate IntPtr Callback_ItemsControlGetContainer(IntPtr cPtr,
+            ItemsControl.GetContainerForItemBaseCallback callback);
+        private static Callback_ItemsControlGetContainer _itemsControlGetContainer = ItemsControlGetContainer;
+
+        [MonoPInvokeCallback(typeof(Callback_ItemsControlGetContainer))]
+        private static IntPtr ItemsControlGetContainer(IntPtr cPtr,
+            ItemsControl.GetContainerForItemBaseCallback callback)
+        {
+            try
+            {
+                ItemsControl itemsControl = (ItemsControl)GetExtendInstance(cPtr);
+                if (itemsControl != null)
+                {
+                    itemsControl.GetContainerForItemBase = callback;
+                    DependencyObject container = itemsControl.GetContainerForItemOverride();
+                    itemsControl.GetContainerForItemBase = null;
+
+                    HandleRef containerPtr = GetInstanceHandle(container);
+                    BaseComponent.AddReference(containerPtr.Handle); // released by native bindings
+                    return containerPtr.Handle;
+                }
+            }
+            catch (Exception e)
+            {
+                Error.UnhandledException(e);
+            }
+
+            return IntPtr.Zero;
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////
+        private delegate bool Callback_ItemsControlIsContainer(IntPtr cPtr, IntPtr itemTypePtr,
+            IntPtr itemPtr, ItemsControl.IsItemItsOwnContainerBaseCallback callback);
+        private static Callback_ItemsControlIsContainer _itemsControlIsContainer = ItemsControlIsContainer;
+
+        [MonoPInvokeCallback(typeof(Callback_ItemsControlIsContainer))]
+        private static bool ItemsControlIsContainer(IntPtr cPtr, IntPtr itemTypePtr, IntPtr itemPtr,
+            ItemsControl.IsItemItsOwnContainerBaseCallback callback)
+        {
+            try
+            {
+                ItemsControl itemsControl = (ItemsControl)GetExtendInstance(cPtr);
+                if (itemsControl != null)
+                {
+                    itemsControl.IsItemItsOwnContainerBase = callback;
+                    bool isContainer = itemsControl.IsItemItsOwnContainerOverride(GetProxy(itemTypePtr, itemPtr, false));
+                    itemsControl.IsItemItsOwnContainerBase = null;
+
+                    return isContainer;
+                }
+            }
+            catch (Exception e)
+            {
+                Error.UnhandledException(e);
+            }
+
+            return false;
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////
+        private delegate void Callback_AdornerGetTransform(IntPtr cPtr,
+            ref Matrix4 transform, ref Matrix4 desiredTransform);
+        private static Callback_AdornerGetTransform _adornerGetTransform = AdornerGetTransform;
+
+        [MonoPInvokeCallback(typeof(Callback_AdornerGetTransform))]
+        private static void AdornerGetTransform(IntPtr cPtr,
+            ref Matrix4 transform, ref Matrix4 desiredTransform)
+        {
+            try
+            {
+                Adorner adorner = (Adorner)GetExtendInstance(cPtr);
+                if (adorner != null)
+                {
+                    desiredTransform = adorner.GetDesiredTransform(transform);
+                }
+            }
+            catch (Exception e)
+            {
+                Error.UnhandledException(e);
+            }
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2062,6 +2416,27 @@ namespace Noesis
             catch (Exception e)
             {
                 Error.UnhandledException(e);
+            }
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////
+        private delegate IntPtr Callback_ShapeGetGeometry(IntPtr cPtr);
+        private static Callback_ShapeGetGeometry _shapeGetGeometry = ShapeGetGeometry;
+
+        [MonoPInvokeCallback(typeof(Callback_ShapeGetGeometry))]
+        private static IntPtr ShapeGetGeometry(IntPtr cPtr)
+        {
+            try
+            {
+                var shape = (Shape)GetExtendInstance(cPtr);
+                Geometry geometry = shape.DefiningGeometry;
+                HandleRef geometryPtr = GetInstanceHandle(geometry);
+                return geometryPtr.Handle;
+            }
+            catch (Exception e)
+            {
+                Error.UnhandledException(e);
+                return IntPtr.Zero;
             }
         }
 
@@ -2422,6 +2797,27 @@ namespace Noesis
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////
+        private delegate void Callback_ListInsert(IntPtr cPtr, uint index, IntPtr itemType, IntPtr item);
+        private static Callback_ListInsert _listInsert = ListInsert;
+
+        [MonoPInvokeCallback(typeof(Callback_ListInsert))]
+        private static void ListInsert(IntPtr cPtr, uint index, IntPtr itemType, IntPtr item)
+        {
+            try
+            {
+                var list = (System.Collections.IList)GetExtendInstance(cPtr);
+                if (list != null)
+                {
+                    list.Insert((int)index, GetProxy(itemType, item, false));
+                }
+            }
+            catch (Exception e)
+            {
+                Error.UnhandledException(e);
+            }
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////
         private delegate int Callback_ListIndexOf(IntPtr cPtr, IntPtr itemType, IntPtr item);
         private static Callback_ListIndexOf _listIndexOf = ListIndexOf;
 
@@ -2437,6 +2833,48 @@ namespace Noesis
             {
                 Error.UnhandledException(e);
                 return -1;
+            }
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////
+        private delegate void Callback_ListRemoveAt(IntPtr cPtr, uint index);
+        private static Callback_ListRemoveAt _listRemoveAt = ListRemoveAt;
+
+        [MonoPInvokeCallback(typeof(Callback_ListRemoveAt))]
+        private static void ListRemoveAt(IntPtr cPtr, uint index)
+        {
+            try
+            {
+                var list = (System.Collections.IList)GetExtendInstance(cPtr);
+                if (list != null)
+                {
+                    list.RemoveAt((int)index);
+                }
+            }
+            catch (Exception e)
+            {
+                Error.UnhandledException(e);
+            }
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////
+        private delegate void Callback_ListClear(IntPtr cPtr);
+        private static Callback_ListClear _listClear = ListClear;
+
+        [MonoPInvokeCallback(typeof(Callback_ListClear))]
+        private static void ListClear(IntPtr cPtr)
+        {
+            try
+            {
+                var list = (System.Collections.IList)GetExtendInstance(cPtr);
+                if (list != null)
+                {
+                    list.Clear();
+                }
+            }
+            catch (Exception e)
+            {
+                Error.UnhandledException(e);
             }
         }
 
@@ -2501,6 +2939,27 @@ namespace Noesis
                 if (dictionary != null)
                 {
                     dictionary.Add(key, GetProxy(itemType, item, false));
+                }
+            }
+            catch (Exception e)
+            {
+                Error.UnhandledException(e);
+            }
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////
+        private delegate void Callback_DictionaryRemove(IntPtr cPtr, string key);
+        private static Callback_DictionaryRemove _dictionaryRemove = DictionaryRemove;
+
+        [MonoPInvokeCallback(typeof(Callback_DictionaryRemove))]
+        private static void DictionaryRemove(IntPtr cPtr, string key)
+        {
+            try
+            {
+                var dictionary = (System.Collections.IDictionary)GetExtendInstance(cPtr);
+                if (dictionary != null)
+                {
+                    dictionary.Remove(key);
                 }
             }
             catch (Exception e)
@@ -2799,7 +3258,8 @@ namespace Noesis
                 if (provider != null)
                 {
                     string filename_ = StringFromNativeUtf8(filename);
-                    System.IO.Stream stream = provider.LoadXaml(filename_);
+                    Uri uri = new Uri(filename_, UriKind.RelativeOrAbsolute);
+                    System.IO.Stream stream = provider.LoadXaml(uri);
                     HandleRef handle = GetInstanceHandle(stream);
                     BaseComponent.AddReference(handle.Handle); // released by C++
                     return handle.Handle;
@@ -2815,12 +3275,12 @@ namespace Noesis
 
         ////////////////////////////////////////////////////////////////////////////////////////////////
         private delegate void Callback_ProviderTextureInfo(IntPtr cPtr, IntPtr filename,
-            ref uint width, ref uint height);
+            ref uint x, ref uint y, ref uint width, ref uint height, ref float dpiScale);
         private static Callback_ProviderTextureInfo _providerTextureInfo = ProviderTextureInfo;
 
         [MonoPInvokeCallback(typeof(Callback_ProviderTextureInfo))]
         private static void ProviderTextureInfo(IntPtr cPtr, IntPtr filename,
-            ref uint width, ref uint height)
+            ref uint x, ref uint y, ref uint width, ref uint height, ref float dpiScale)
         {
             width = height = 0;
 
@@ -2830,7 +3290,14 @@ namespace Noesis
                 if (provider != null)
                 {
                     string filename_ = StringFromNativeUtf8(filename);
-                    provider.GetTextureInfo(filename_, out width, out height);
+                    Uri uri = new Uri(filename_, UriKind.RelativeOrAbsolute);
+                    TextureProvider.TextureInfo info = provider.GetTextureInfo(uri);
+
+                    x = (uint)info.Rect.X;
+                    y = (uint)info.Rect.Y;
+                    width = (uint)info.Rect.Width;
+                    height = (uint)info.Rect.Height;
+                    dpiScale = info.DpiScale;
                 }
             }
             catch (Exception e)
@@ -2852,7 +3319,8 @@ namespace Noesis
                 if (provider != null)
                 {
                     string filename_ = StringFromNativeUtf8(filename);
-                    Texture texture = provider.LoadTexture(filename_);
+                    Uri uri = new Uri(filename_, UriKind.RelativeOrAbsolute);
+                    Texture texture = provider.LoadTexture(uri);
                     HandleRef handle = GetInstanceHandle(texture);
                     BaseComponent.AddReference(handle.Handle); // released by C++
                     return handle.Handle;
@@ -2879,7 +3347,8 @@ namespace Noesis
                 if (provider != null)
                 {
                     string filename_ = StringFromNativeUtf8(filename);
-                    System.IO.Stream stream = provider.OpenStream(filename_);
+                    Uri uri = new Uri(filename_, UriKind.RelativeOrAbsolute);
+                    System.IO.Stream stream = provider.OpenStream(uri);
                     HandleRef handle = GetInstanceHandle(stream);
                     BaseComponent.AddReference(handle.Handle); // released by C++
                     return handle.Handle;
@@ -2891,6 +3360,74 @@ namespace Noesis
             }
 
             return IntPtr.Zero;
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////
+        private delegate IntPtr Callback_ProviderMatchFont(IntPtr cPtr, IntPtr baseUri, IntPtr familyName,
+            ref int weight, ref int stretch, ref int style, ref uint index);
+        private static Callback_ProviderMatchFont _providerMatchFont = ProviderMatchFont;
+
+        [MonoPInvokeCallback(typeof(Callback_ProviderMatchFont))]
+        private static IntPtr ProviderMatchFont(IntPtr cPtr, IntPtr baseUri, IntPtr familyName,
+            ref int weight, ref int stretch, ref int style, ref uint index)
+        {
+            try
+            {
+                FontProvider provider = (FontProvider)GetExtendInstance(cPtr);
+                if (provider != null)
+                {
+                    Uri baseUri_ = new Uri(StringFromNativeUtf8(baseUri), UriKind.RelativeOrAbsolute);
+                    string familyName_ = StringFromNativeUtf8(familyName);
+
+                    FontWeight weight_ = (FontWeight)weight;
+                    FontStretch stretch_ = (FontStretch)stretch;
+                    FontStyle style_ = (FontStyle)style;
+                    FontProvider.FontSource font = provider.MatchFont(baseUri_, familyName_,
+                        ref weight_, ref stretch_, ref style_);
+
+                    weight = (int)weight_;
+                    stretch = (int)stretch_;
+                    style = (int)style_;
+                    index = font.faceIndex;
+
+                    HandleRef handle = GetInstanceHandle(font.file);
+                    BaseComponent.AddReference(handle.Handle); // released by C++
+                    return handle.Handle;
+                }
+            }
+            catch (Exception e)
+            {
+                Error.UnhandledException(e);
+            }
+
+            return IntPtr.Zero;
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////
+        private delegate bool Callback_ProviderFamilyExists(IntPtr cPtr, IntPtr baseUri, IntPtr familyName);
+        private static Callback_ProviderFamilyExists _providerFamilyExists = ProviderFamilyExists;
+
+        [MonoPInvokeCallback(typeof(Callback_ProviderFamilyExists))]
+        [return: MarshalAs(UnmanagedType.U1)]
+        private static bool ProviderFamilyExists(IntPtr cPtr, IntPtr baseUri, IntPtr familyName)
+        {
+            try
+            {
+                FontProvider provider = (FontProvider)GetExtendInstance(cPtr);
+                if (provider != null)
+                {
+                    Uri baseUri_ = new Uri(StringFromNativeUtf8(baseUri), UriKind.RelativeOrAbsolute);
+                    string familyName_ = StringFromNativeUtf8(familyName);
+
+                    return provider.FamilyExists(baseUri_, familyName_);
+                }
+            }
+            catch (Exception e)
+            {
+                Error.UnhandledException(e);
+            }
+
+            return false;
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2906,7 +3443,8 @@ namespace Noesis
                 if (provider != null)
                 {
                     string folder_ = StringFromNativeUtf8(folder);
-                    provider.ScanFolder(folder_);
+                    Uri uri = new Uri(folder_, UriKind.RelativeOrAbsolute);
+                    provider.ScanFolder(uri);
                 }
             }
             catch (Exception e)
@@ -2920,7 +3458,7 @@ namespace Noesis
         private static Callback_ProviderOpenFont _providerOpenFont = ProviderOpenFont;
 
         [MonoPInvokeCallback(typeof(Callback_ProviderOpenFont))]
-        private static IntPtr ProviderOpenFont(IntPtr cPtr, IntPtr folder, IntPtr id)
+        private static IntPtr ProviderOpenFont(IntPtr cPtr, IntPtr folder, IntPtr filename)
         {
             try
             {
@@ -2928,8 +3466,9 @@ namespace Noesis
                 if (provider != null)
                 {
                     string folder_ = StringFromNativeUtf8(folder);
-                    string id_ = StringFromNativeUtf8(id);
-                    System.IO.Stream stream = provider.OpenFont(folder_, id_);
+                    string filename_ = StringFromNativeUtf8(filename);
+                    Uri uri = new Uri(folder_, UriKind.RelativeOrAbsolute);
+                    System.IO.Stream stream = provider.OpenFont(uri, filename_);
                     HandleRef handle = GetInstanceHandle(stream);
                     BaseComponent.AddReference(handle.Handle); // released by C++
                     return handle.Handle;
@@ -3583,11 +4122,355 @@ namespace Noesis
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////
+        private delegate IntPtr Callback_AnimationTimelineGetType(IntPtr cPtr);
+        private static Callback_AnimationTimelineGetType _animationTimelineGetType = AnimationTimelineGetType;
+
+        [MonoPInvokeCallback(typeof(Callback_AnimationTimelineGetType))]
+        private static IntPtr AnimationTimelineGetType(IntPtr cPtr)
+        {
+            try
+            {
+                var animation = (AnimationTimeline)GetExtendInstance(cPtr);
+                Type type = animation.TargetPropertyType;
+                return EnsureNativeType(type);
+            }
+            catch (Exception e)
+            {
+                Error.UnhandledException(e);
+                return IntPtr.Zero;
+            }
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////
+        private delegate IntPtr Callback_AnimationTimelineGetValue(IntPtr cPtr,
+            IntPtr srcType, IntPtr srcPtr, IntPtr dstType, IntPtr dstPtr,
+            IntPtr clockType, IntPtr clockPtr);
+        private static Callback_AnimationTimelineGetValue _animationTimelineGetValue = AnimationTimelineGetValue;
+
+        [MonoPInvokeCallback(typeof(Callback_AnimationTimelineGetValue))]
+        private static IntPtr AnimationTimelineGetValue(IntPtr cPtr,
+            IntPtr srcType, IntPtr srcPtr, IntPtr dstType, IntPtr dstPtr,
+            IntPtr clockType, IntPtr clockPtr)
+        {
+            try
+            {
+                var animation = (AnimationTimeline)GetExtendInstance(cPtr);
+                object src = GetProxy(srcType, srcPtr, false);
+                object dst = GetProxy(dstType, dstPtr, false);
+                AnimationClock clock = (AnimationClock)GetProxy(clockType, clockPtr, false);
+                object value = animation.GetCurrentValue(src, dst, clock);
+                HandleRef valuePtr = GetInstanceHandle(value);
+                BaseComponent.AddReference(valuePtr.Handle); // released by native bindings
+                return valuePtr.Handle;
+            }
+            catch (Exception e)
+            {
+                Error.UnhandledException(e);
+                return IntPtr.Zero;
+            }
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////
+        private delegate bool Callback_BooleanAnimationGetValue(IntPtr cPtr,
+            bool src, bool dst, IntPtr clockType, IntPtr clockPtr);
+        private static Callback_BooleanAnimationGetValue _booleanAnimationGetValue = BooleanAnimationGetValue;
+
+        [MonoPInvokeCallback(typeof(Callback_BooleanAnimationGetValue))]
+        [return: MarshalAs(UnmanagedType.U1)]
+        private static bool BooleanAnimationGetValue(IntPtr cPtr,
+            bool src, bool dst, IntPtr clockType, IntPtr clockPtr)
+        {
+            try
+            {
+                var animation = (BooleanAnimationBase)GetExtendInstance(cPtr);
+                AnimationClock clock = (AnimationClock)GetProxy(clockType, clockPtr, false);
+                return animation.GetCurrentValueCore(src, dst, clock);
+            }
+            catch (Exception e)
+            {
+                Error.UnhandledException(e);
+                return false;
+            }
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////
+        private delegate short Callback_Int16AnimationGetValue(IntPtr cPtr,
+            short src, short dst, IntPtr clockType, IntPtr clockPtr);
+        private static Callback_Int16AnimationGetValue _int16AnimationGetValue = Int16AnimationGetValue;
+
+        [MonoPInvokeCallback(typeof(Callback_Int16AnimationGetValue))]
+        private static short Int16AnimationGetValue(IntPtr cPtr,
+            short src, short dst, IntPtr clockType, IntPtr clockPtr)
+        {
+            try
+            {
+                var animation = (Int16AnimationBase)GetExtendInstance(cPtr);
+                AnimationClock clock = (AnimationClock)GetProxy(clockType, clockPtr, false);
+                return animation.GetCurrentValueCore(src, dst, clock);
+            }
+            catch (Exception e)
+            {
+                Error.UnhandledException(e);
+                return 0;
+            }
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////
+        private delegate int Callback_Int32AnimationGetValue(IntPtr cPtr,
+            int src, int dst, IntPtr clockType, IntPtr clockPtr);
+        private static Callback_Int32AnimationGetValue _int32AnimationGetValue = Int32AnimationGetValue;
+
+        [MonoPInvokeCallback(typeof(Callback_Int32AnimationGetValue))]
+        private static int Int32AnimationGetValue(IntPtr cPtr,
+            int src, int dst, IntPtr clockType, IntPtr clockPtr)
+        {
+            try
+            {
+                var animation = (Int32AnimationBase)GetExtendInstance(cPtr);
+                AnimationClock clock = (AnimationClock)GetProxy(clockType, clockPtr, false);
+                return animation.GetCurrentValueCore(src, dst, clock);
+            }
+            catch (Exception e)
+            {
+                Error.UnhandledException(e);
+                return 0;
+            }
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////
+        private delegate long Callback_Int64AnimationGetValue(IntPtr cPtr,
+            long src, long dst, IntPtr clockType, IntPtr clockPtr);
+        private static Callback_Int64AnimationGetValue _int64AnimationGetValue = Int64AnimationGetValue;
+
+        [MonoPInvokeCallback(typeof(Callback_Int64AnimationGetValue))]
+        private static long Int64AnimationGetValue(IntPtr cPtr,
+            long src, long dst, IntPtr clockType, IntPtr clockPtr)
+        {
+            try
+            {
+                var animation = (Int64AnimationBase)GetExtendInstance(cPtr);
+                AnimationClock clock = (AnimationClock)GetProxy(clockType, clockPtr, false);
+                return animation.GetCurrentValueCore(src, dst, clock);
+            }
+            catch (Exception e)
+            {
+                Error.UnhandledException(e);
+                return 0;
+            }
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////
+        private delegate float Callback_DoubleAnimationGetValue(IntPtr cPtr,
+            float src, float dst, IntPtr clockType, IntPtr clockPtr);
+        private static Callback_DoubleAnimationGetValue _doubleAnimationGetValue = DoubleAnimationGetValue;
+
+        [MonoPInvokeCallback(typeof(Callback_DoubleAnimationGetValue))]
+        private static float DoubleAnimationGetValue(IntPtr cPtr,
+            float src, float dst, IntPtr clockType, IntPtr clockPtr)
+        {
+            try
+            {
+                var animation = (DoubleAnimationBase)GetExtendInstance(cPtr);
+                AnimationClock clock = (AnimationClock)GetProxy(clockType, clockPtr, false);
+                return animation.GetCurrentValueCore(src, dst, clock);
+            }
+            catch (Exception e)
+            {
+                Error.UnhandledException(e);
+                return 0;
+            }
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////
+        private delegate void Callback_ColorAnimationGetValue(IntPtr cPtr,
+            ref Color src, ref Color dst, IntPtr clockType, IntPtr clockPtr, ref Color value);
+        private static Callback_ColorAnimationGetValue _colorAnimationGetValue = ColorAnimationGetValue;
+
+        [MonoPInvokeCallback(typeof(Callback_ColorAnimationGetValue))]
+        private static void ColorAnimationGetValue(IntPtr cPtr,
+            ref Color src, ref Color dst, IntPtr clockType, IntPtr clockPtr, ref Color value)
+        {
+            try
+            {
+                var animation = (ColorAnimationBase)GetExtendInstance(cPtr);
+                AnimationClock clock = (AnimationClock)GetProxy(clockType, clockPtr, false);
+                value = animation.GetCurrentValueCore(src, dst, clock);
+            }
+            catch (Exception e)
+            {
+                Error.UnhandledException(e);
+            }
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////
+        private delegate void Callback_PointAnimationGetValue(IntPtr cPtr,
+            ref Point src, ref Point dst, IntPtr clockType, IntPtr clockPtr, ref Point value);
+        private static Callback_PointAnimationGetValue _pointAnimationGetValue = PointAnimationGetValue;
+
+        [MonoPInvokeCallback(typeof(Callback_PointAnimationGetValue))]
+        private static void PointAnimationGetValue(IntPtr cPtr,
+            ref Point src, ref Point dst, IntPtr clockType, IntPtr clockPtr, ref Point value)
+        {
+            try
+            {
+                var animation = (PointAnimationBase)GetExtendInstance(cPtr);
+                AnimationClock clock = (AnimationClock)GetProxy(clockType, clockPtr, false);
+                value = animation.GetCurrentValueCore(src, dst, clock);
+            }
+            catch (Exception e)
+            {
+                Error.UnhandledException(e);
+            }
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////
+        private delegate void Callback_RectAnimationGetValue(IntPtr cPtr,
+            ref Rect src, ref Rect dst, IntPtr clockType, IntPtr clockPtr, ref Rect value);
+        private static Callback_RectAnimationGetValue _rectAnimationGetValue = RectAnimationGetValue;
+
+        [MonoPInvokeCallback(typeof(Callback_RectAnimationGetValue))]
+        private static void RectAnimationGetValue(IntPtr cPtr,
+            ref Rect src, ref Rect dst, IntPtr clockType, IntPtr clockPtr, ref Rect value)
+        {
+            try
+            {
+                var animation = (RectAnimationBase)GetExtendInstance(cPtr);
+                AnimationClock clock = (AnimationClock)GetProxy(clockType, clockPtr, false);
+                value = animation.GetCurrentValueCore(src, dst, clock);
+            }
+            catch (Exception e)
+            {
+                Error.UnhandledException(e);
+            }
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////
+        private delegate void Callback_SizeAnimationGetValue(IntPtr cPtr,
+            ref Size src, ref Size dst, IntPtr clockType, IntPtr clockPtr, ref Size value);
+        private static Callback_SizeAnimationGetValue _sizeAnimationGetValue = SizeAnimationGetValue;
+
+        [MonoPInvokeCallback(typeof(Callback_SizeAnimationGetValue))]
+        private static void SizeAnimationGetValue(IntPtr cPtr,
+            ref Size src, ref Size dst, IntPtr clockType, IntPtr clockPtr, ref Size value)
+        {
+            try
+            {
+                var animation = (SizeAnimationBase)GetExtendInstance(cPtr);
+                AnimationClock clock = (AnimationClock)GetProxy(clockType, clockPtr, false);
+                value = animation.GetCurrentValueCore(src, dst, clock);
+            }
+            catch (Exception e)
+            {
+                Error.UnhandledException(e);
+            }
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////
+        private delegate void Callback_ThicknessAnimationGetValue(IntPtr cPtr,
+            ref Thickness src, ref Thickness dst, IntPtr clockType, IntPtr clockPtr, ref Thickness value);
+        private static Callback_ThicknessAnimationGetValue _thicknessAnimationGetValue = ThicknessAnimationGetValue;
+
+        [MonoPInvokeCallback(typeof(Callback_ThicknessAnimationGetValue))]
+        private static void ThicknessAnimationGetValue(IntPtr cPtr,
+            ref Thickness src, ref Thickness dst, IntPtr clockType, IntPtr clockPtr, ref Thickness value)
+        {
+            try
+            {
+                var animation = (ThicknessAnimationBase)GetExtendInstance(cPtr);
+                AnimationClock clock = (AnimationClock)GetProxy(clockType, clockPtr, false);
+                value = animation.GetCurrentValueCore(src, dst, clock);
+            }
+            catch (Exception e)
+            {
+                Error.UnhandledException(e);
+            }
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////
+        private delegate IntPtr Callback_ObjectAnimationGetValue(IntPtr cPtr,
+            IntPtr srcType, IntPtr srcPtr, IntPtr dstType, IntPtr dstPtr,
+            IntPtr clockType, IntPtr clockPtr);
+        private static Callback_ObjectAnimationGetValue _objectAnimationGetValue = ObjectAnimationGetValue;
+
+        [MonoPInvokeCallback(typeof(Callback_ObjectAnimationGetValue))]
+        private static IntPtr ObjectAnimationGetValue(IntPtr cPtr,
+            IntPtr srcType, IntPtr srcPtr, IntPtr dstType, IntPtr dstPtr,
+            IntPtr clockType, IntPtr clockPtr)
+        {
+            try
+            {
+                var animation = (ObjectAnimationBase)GetExtendInstance(cPtr);
+                object src = GetProxy(srcType, srcPtr, false);
+                object dst = GetProxy(dstType, dstPtr, false);
+                AnimationClock clock = (AnimationClock)GetProxy(clockType, clockPtr, false);
+                object value = animation.GetCurrentValueCore(src, dst, clock);
+                HandleRef valuePtr = GetInstanceHandle(value);
+                BaseComponent.AddReference(valuePtr.Handle); // released by native bindings
+                return valuePtr.Handle;
+            }
+            catch (Exception e)
+            {
+                Error.UnhandledException(e);
+                return IntPtr.Zero;
+            }
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////
+        private delegate IntPtr Callback_StringAnimationGetValue(IntPtr cPtr,
+            IntPtr srcPtr, IntPtr dstPtr,
+            IntPtr clockType, IntPtr clockPtr);
+        private static Callback_StringAnimationGetValue _stringAnimationGetValue = StringAnimationGetValue;
+
+        [MonoPInvokeCallback(typeof(Callback_StringAnimationGetValue))]
+        private static IntPtr StringAnimationGetValue(IntPtr cPtr,
+            IntPtr srcPtr, IntPtr dstPtr,
+            IntPtr clockType, IntPtr clockPtr)
+        {
+            try
+            {
+                var animation = (StringAnimationBase)GetExtendInstance(cPtr);
+                string src = StringFromNativeUtf8(srcPtr);
+                string dst = StringFromNativeUtf8(dstPtr);
+                AnimationClock clock = (AnimationClock)GetProxy(clockType, clockPtr, false);
+                string value = animation.GetCurrentValueCore(src, dst, clock);
+                return Marshal.StringToHGlobalUni(value != null ? value : string.Empty);
+            }
+            catch (Exception e)
+            {
+                Error.UnhandledException(e);
+                return IntPtr.Zero;
+            }
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////
+        private delegate void Callback_MatrixAnimationGetValue(IntPtr cPtr,
+            ref Matrix src, ref Matrix dst, IntPtr clockType, IntPtr clockPtr, ref Matrix value);
+        private static Callback_MatrixAnimationGetValue _matrixAnimationGetValue = MatrixAnimationGetValue;
+
+        [MonoPInvokeCallback(typeof(Callback_MatrixAnimationGetValue))]
+        private static void MatrixAnimationGetValue(IntPtr cPtr,
+            ref Matrix src, ref Matrix dst, IntPtr clockType, IntPtr clockPtr, ref Matrix value)
+        {
+            try
+            {
+                var animation = (MatrixAnimationBase)GetExtendInstance(cPtr);
+                AnimationClock clock = (AnimationClock)GetProxy(clockType, clockPtr, false);
+                value = animation.GetCurrentValueCore(src, dst, clock);
+            }
+            catch (Exception e)
+            {
+                Error.UnhandledException(e);
+            }
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////
         private enum NativePropertyType
         {
             Bool,
             Float,
             Double,
+            Long,
+            ULong,
             Int,
             UInt,
             Short,
@@ -3595,6 +4478,7 @@ namespace Noesis
             Color,
             Point,
             Rect,
+            Int32Rect,
             Size,
             Thickness,
             CornerRadius,
@@ -3604,6 +4488,8 @@ namespace Noesis
             NullableBool,
             NullableFloat,
             NullableDouble,
+            NullableLong,
+            NullableULong,
             NullableInt,
             NullableUInt,
             NullableShort,
@@ -3611,6 +4497,7 @@ namespace Noesis
             NullableColor,
             NullablePoint,
             NullableRect,
+            NullableInt32Rect,
             NullableSize,
             NullableThickness,
             NullableCornerRadius,
@@ -3687,6 +4574,11 @@ namespace Noesis
             if (type.Equals(typeof(Rect)))
             {
                 return (int)NativePropertyType.Rect;
+            }
+
+            if (type.Equals(typeof(Int32Rect)))
+            {
+                return (int)NativePropertyType.Int32Rect;
             }
 
             if (type.Equals(typeof(Size)))
@@ -3773,6 +4665,11 @@ namespace Noesis
             if (type.Equals(typeof(Rect?)))
             {
                 return (int)NativePropertyType.NullableRect;
+            }
+
+            if (type.Equals(typeof(Int32Rect?)))
+            {
+                return (int)NativePropertyType.NullableInt32Rect;
             }
 
             if (type.Equals(typeof(Size?)))
@@ -3905,6 +4802,46 @@ namespace Noesis
             }
         }
 
+        private delegate long Callback_GetPropertyValue_Int64(IntPtr nativeType, int propertyIndex,
+            IntPtr cPtr, [MarshalAs(UnmanagedType.U1)]ref bool isNull);
+        private static Callback_GetPropertyValue_Int64 _getPropertyValue_Int64 = GetPropertyValue_Int64;
+
+        [MonoPInvokeCallback(typeof(Callback_GetPropertyValue_Int64))]
+        private static long GetPropertyValue_Int64(IntPtr nativeType, int propertyIndex,
+            IntPtr cPtr, ref bool isNull)
+        {
+            try
+            {
+                return GetPropertyValueNullable<long>(GetProperty(nativeType, propertyIndex),
+                    GetExtendInstance(cPtr), out isNull);
+            }
+            catch (Exception e)
+            {
+                Error.UnhandledException(e);
+                return 0;
+            }
+        }
+
+        private delegate ulong Callback_GetPropertyValue_UInt64(IntPtr nativeType, int propertyIndex,
+            IntPtr cPtr, [MarshalAs(UnmanagedType.U1)]ref bool isNull);
+        private static Callback_GetPropertyValue_UInt64 _getPropertyValue_UInt64 = GetPropertyValue_UInt64;
+
+        [MonoPInvokeCallback(typeof(Callback_GetPropertyValue_UInt64))]
+        private static ulong GetPropertyValue_UInt64(IntPtr nativeType, int propertyIndex,
+            IntPtr cPtr, ref bool isNull)
+        {
+            try
+            {
+                return GetPropertyValueNullable<ulong>(GetProperty(nativeType, propertyIndex),
+                    GetExtendInstance(cPtr), out isNull);
+            }
+            catch (Exception e)
+            {
+                Error.UnhandledException(e);
+                return 0;
+            }
+        }
+
         private delegate int Callback_GetPropertyValue_Int(IntPtr nativeType, int propertyIndex,
             IntPtr cPtr, [MarshalAs(UnmanagedType.U1)]ref bool isNull);
         private static Callback_GetPropertyValue_Int _getPropertyValue_Int = GetPropertyValue_Int;
@@ -4016,7 +4953,7 @@ namespace Noesis
             try
             {
                 Uri uri = GetPropertyValue<Uri>(GetProperty(nativeType, propertyIndex), GetExtendInstance(cPtr));
-                return Marshal.StringToHGlobalUni(uri != null ? UriHelper.GetPath(uri) : string.Empty);
+                return Marshal.StringToHGlobalUni(uri != null ? uri.OriginalString : string.Empty);
             }
             catch (Exception e)
             {
@@ -4074,6 +5011,25 @@ namespace Noesis
             try
             {
                 value = GetPropertyValueNullable<Rect>(GetProperty(nativeType, propertyIndex),
+                    GetExtendInstance(cPtr), out isNull);
+            }
+            catch (Exception e)
+            {
+                Error.UnhandledException(e);
+            }
+        }
+
+        private delegate void Callback_GetPropertyValue_Int32Rect(IntPtr nativeType, int propertyIndex,
+            IntPtr cPtr, ref Int32Rect value, [MarshalAs(UnmanagedType.U1)] ref bool isNull);
+        private static Callback_GetPropertyValue_Int32Rect _getPropertyValue_Int32Rect = GetPropertyValue_Int32Rect;
+
+        [MonoPInvokeCallback(typeof(Callback_GetPropertyValue_Int32Rect))]
+        private static void GetPropertyValue_Int32Rect(IntPtr nativeType, int propertyIndex,
+            IntPtr cPtr, ref Int32Rect value, ref bool isNull)
+        {
+            try
+            {
+                value = GetPropertyValueNullable<Int32Rect>(GetProperty(nativeType, propertyIndex),
                     GetExtendInstance(cPtr), out isNull);
             }
             catch (Exception e)
@@ -4321,6 +5277,46 @@ namespace Noesis
             }
         }
 
+        private delegate void Callback_SetPropertyValue_Int64(IntPtr nativeType, int propertyIndex,
+            IntPtr cPtr, long val,
+            [MarshalAs(UnmanagedType.U1)] bool isNull);
+        private static Callback_SetPropertyValue_Int64 _setPropertyValue_Int64 = SetPropertyValue_Int64;
+
+        [MonoPInvokeCallback(typeof(Callback_SetPropertyValue_Int64))]
+        private static void SetPropertyValue_Int64(IntPtr nativeType, int propertyIndex,
+            IntPtr cPtr, long val, bool isNull)
+        {
+            try
+            {
+                SetPropertyValueNullable<long>(GetProperty(nativeType, propertyIndex),
+                    GetExtendInstance(cPtr), val, isNull);
+            }
+            catch (Exception e)
+            {
+                Error.UnhandledException(e);
+            }
+        }
+
+        private delegate void Callback_SetPropertyValue_UInt64(IntPtr nativeType, int propertyIndex,
+            IntPtr cPtr, ulong val,
+            [MarshalAs(UnmanagedType.U1)] bool isNull);
+        private static Callback_SetPropertyValue_UInt64 _setPropertyValue_UInt64 = SetPropertyValue_UInt64;
+
+        [MonoPInvokeCallback(typeof(Callback_SetPropertyValue_UInt64))]
+        private static void SetPropertyValue_UInt64(IntPtr nativeType, int propertyIndex,
+            IntPtr cPtr, ulong val, bool isNull)
+        {
+            try
+            {
+                SetPropertyValueNullable<ulong>(GetProperty(nativeType, propertyIndex),
+                    GetExtendInstance(cPtr), val, isNull);
+            }
+            catch (Exception e)
+            {
+                Error.UnhandledException(e);
+            }
+        }
+
         private delegate void Callback_SetPropertyValue_Int(IntPtr nativeType, int propertyIndex,
             IntPtr cPtr, int val,
             [MarshalAs(UnmanagedType.U1)] bool isNull);
@@ -4430,7 +5426,7 @@ namespace Noesis
         {
             try
             {
-                Uri uri = new Uri(StringFromNativeUtf8(val), UriKind.Relative);
+                Uri uri = new Uri(StringFromNativeUtf8(val), UriKind.RelativeOrAbsolute);
                 SetPropertyValue<Uri>(GetProperty(nativeType, propertyIndex),
                     GetExtendInstance(cPtr), uri);
             }
@@ -4489,6 +5485,25 @@ namespace Noesis
             try
             {
                 SetPropertyValueNullable<Rect>(GetProperty(nativeType, propertyIndex),
+                    GetExtendInstance(cPtr), val, isNull);
+            }
+            catch (Exception e)
+            {
+                Error.UnhandledException(e);
+            }
+        }
+
+        private delegate void Callback_SetPropertyValue_Int32Rect(IntPtr nativeType, int propertyIndex,
+            IntPtr cPtr, ref Int32Rect val, [MarshalAs(UnmanagedType.U1)] bool isNull);
+        private static Callback_SetPropertyValue_Int32Rect _setPropertyValue_Int32Rect = SetPropertyValue_Int32Rect;
+
+        [MonoPInvokeCallback(typeof(Callback_SetPropertyValue_Int32Rect))]
+        private static void SetPropertyValue_Int32Rect(IntPtr nativeType, int propertyIndex,
+            IntPtr cPtr, ref Int32Rect val, bool isNull)
+        {
+            try
+            {
+                SetPropertyValueNullable<Int32Rect>(GetProperty(nativeType, propertyIndex),
                     GetExtendInstance(cPtr), val, isNull);
             }
             catch (Exception e)
@@ -5002,10 +6017,19 @@ namespace Noesis
         ////////////////////////////////////////////////////////////////////////////////////////////////
         private static BaseComponent GetProxyInstance(IntPtr cPtr, bool ownMemory, NativeTypeInfo info)
         {
-            long ptr = cPtr.ToInt64();
+            if (cPtr == DependencyProperty.UnsetValuePtr)
+            {
+                return (BaseComponent)DependencyProperty.UnsetValue;
+            }
+            if (cPtr == Binding.DoNothingPtr)
+            {
+                return (BaseComponent)Binding.DoNothing;
+            }
+
             lock (_proxies)
             {
                 WeakReference wr;
+                long ptr = cPtr.ToInt64();
                 if (_proxies.TryGetValue(ptr, out wr))
                 {
                     if (wr != null)
@@ -5028,7 +6052,12 @@ namespace Noesis
                 }
             }
 
-            return ((NativeTypeComponentInfo)info).Creator(cPtr, ownMemory);
+            if (BaseComponent.GetNumReferences(cPtr) > 0)
+            {
+                return ((NativeTypeComponentInfo)info).Creator(cPtr, ownMemory);
+            }
+
+            return null;
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -5092,9 +6121,25 @@ namespace Noesis
 
                         #if UNITY_5_3_OR_NEWER
                         // Automatic conversion from Unity's Texture to a TextureSource proxy
-                        if (instance is UnityEngine.Texture)
+                        if (instance is UnityEngine.Texture texture)
                         {
-                            Noesis.TextureSource.SetTexture(cPtr, (UnityEngine.Texture)instance);
+                            Noesis.TextureSource.SetTexture(cPtr, texture);
+                        }
+                        // Automatic conversion from Unity's Sprite to a CroppedBitmap proxy
+                        else if (instance is UnityEngine.Sprite sprite && sprite != null)
+                        {
+                            UnityEngine.Rect spriteRect = sprite.packed && sprite.packingMode == UnityEngine.SpritePackingMode.Rectangle ?
+                                sprite.textureRect : sprite.rect;
+
+                            Int32Rect rect = new Int32Rect(
+                                (int)spriteRect.x,
+                                (int)(sprite.texture.height - spriteRect.height - spriteRect.y),
+                                (int)spriteRect.width,
+                                (int)spriteRect.height);
+
+                            HandleRef bmp = new HandleRef(instance, cPtr);
+                            NoesisGUI_PINVOKE.CroppedBitmap_Source_set(bmp, GetInstanceHandle(sprite.texture));
+                            NoesisGUI_PINVOKE.CroppedBitmap_SourceRect_set(bmp, ref rect);
                         }
                         #endif
                     }
@@ -5235,7 +6280,8 @@ namespace Noesis
             {
                 IntPtr nativeType = EnsureNativeType(sender.GetType());
 
-                Noesis_LaunchPropertyChangedEvent(nativeType, GetInstanceHandle(sender).Handle, e.PropertyName);
+                Noesis_LaunchPropertyChangedEvent(nativeType, GetInstanceHandle(sender).Handle,
+                    e.PropertyName != null ? e.PropertyName : string.Empty);
             }
         }
 

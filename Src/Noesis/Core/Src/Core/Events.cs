@@ -164,42 +164,37 @@ namespace Noesis
 
     internal class EventHandlerStore
     {
+        public UIElement Element { get => (UIElement)Extend.GetProxy(_element, false); }
+
         #region Routed Events
-        public static void AddHandler(UIElement element, RoutedEvent routedEvent, Delegate handler)
+        public static void AddHandler(UIElement element, IntPtr routedEventPtr, Delegate handler)
         {
             if (element == null)
             {
                 throw new ArgumentNullException("element");
             }
-            if (routedEvent == null)
+            if (!EventManager.IsLegalHandler(routedEventPtr, handler))
             {
-                throw new ArgumentNullException("routedEvent");
-            }
-            if (handler == null)
-            {
-                throw new ArgumentNullException("handler");
-            }
-            if (!EventManager.IsLegalHandler(routedEvent, handler))
-            {
+                RoutedEvent routedEvent = (RoutedEvent)Extend.GetProxy(routedEventPtr, false);
                 throw new ArgumentException("Illegal Handler type for " + routedEvent.Name + " event");
             }
 
-            EnsureEventsProperty();
-            EventHandlerStore events = (EventHandlerStore)element.GetValue(EventsProperty);
-            if (events == null)
+            EventHandlerStore events;
+            IntPtr cPtr = BaseComponent.getCPtr(element).Handle;
+            long ptr = cPtr.ToInt64();
+            if (!_elements.TryGetValue(ptr, out events))
             {
                 events = new EventHandlerStore(element);
-                element.SetValue(EventsProperty, events);
+                _elements.Add(ptr, events);
+                element.Destroyed += OnElementDestroyed;
             }
 
-            IntPtr routedEventPtr = BaseComponent.getCPtr(routedEvent).Handle;
             long routedEventKey = routedEventPtr.ToInt64();
 
             Delegate eventHandler;
             if (!events._binds.TryGetValue(routedEventKey, out eventHandler))
             {
                 events._binds.Add(routedEventKey, null);
-
                 Noesis_RoutedEvent_Bind(_raiseRoutedEvent, events._element, routedEventPtr);
             }
 
@@ -207,33 +202,26 @@ namespace Noesis
             events._binds[routedEventKey] = eventHandler;
         }
 
-        public static void RemoveHandler(UIElement element, RoutedEvent routedEvent, Delegate handler)
+        public static void RemoveHandler(UIElement element, IntPtr routedEventPtr, Delegate handler)
         {
             if (element == null)
             {
                 throw new ArgumentNullException("element");
             }
-            if (routedEvent == null)
+            if (!EventManager.IsLegalHandler(routedEventPtr, handler))
             {
-                throw new ArgumentNullException("routedEvent");
-            }
-            if (handler == null)
-            {
-                throw new ArgumentNullException("handler");
-            }
-            if (!EventManager.IsLegalHandler(routedEvent, handler))
-            {
+                RoutedEvent routedEvent = (RoutedEvent)Extend.GetProxy(routedEventPtr, false);
                 throw new ArgumentException("Illegal Handler type for " + routedEvent.Name + " event");
             }
 
-            EnsureEventsProperty();
-            EventHandlerStore events = (EventHandlerStore)element.GetValue(EventsProperty);
-            if (events == null)
+            EventHandlerStore events;
+            IntPtr cPtr = BaseComponent.getCPtr(element).Handle;
+            long ptr = cPtr.ToInt64();
+            if (!_elements.TryGetValue(ptr, out events))
             {
                 return;
             }
 
-            IntPtr routedEventPtr = BaseComponent.getCPtr(routedEvent).Handle;
             long routedEventKey = routedEventPtr.ToInt64();
 
             Delegate eventHandler;
@@ -248,8 +236,13 @@ namespace Noesis
             if (eventHandler == null)
             {
                 Noesis_RoutedEvent_Unbind(_raiseRoutedEvent, events._element, routedEventPtr);
-
                 events._binds.Remove(routedEventKey);
+
+                if (events._binds.Count == 0)
+                {
+                    element.Destroyed -= OnElementDestroyed;
+                    _elements.Remove(ptr);
+                }
             }
         }
 
@@ -266,14 +259,13 @@ namespace Noesis
             {
                 if (Extend.Initialized)
                 {
-                    UIElement element = (UIElement)Extend.GetProxy(cPtrType, cPtr, false);
-                    if (element == null)
+                    EventHandlerStore events;
+                    long ptr = cPtr.ToInt64();
+                    if (!_elements.TryGetValue(ptr, out events))
                     {
                         return;
                     }
 
-                    EnsureEventsProperty();
-                    EventHandlerStore events = (EventHandlerStore)element.GetValue(EventsProperty);
                     long routedEventKey = routedEvent.ToInt64();
 
                     // check if we are called to unbind the event
@@ -321,12 +313,14 @@ namespace Noesis
                 throw new ArgumentException("Illegal Handler type for " + eventId + " event");
             }
 
-            EnsureEventsProperty();
-            EventHandlerStore events = (EventHandlerStore)element.GetValue(EventsProperty);
-            if (events == null)
+            EventHandlerStore events;
+            IntPtr cPtr = BaseComponent.getCPtr(element).Handle;
+            long ptr = cPtr.ToInt64();
+            if (!_elements.TryGetValue(ptr, out events))
             {
                 events = new EventHandlerStore(element);
-                element.SetValue(EventsProperty, events);
+                _elements.Add(ptr, events);
+                element.Destroyed += OnElementDestroyed;
             }
 
             long eventKey = eventId.GetHashCode();
@@ -335,7 +329,6 @@ namespace Noesis
             if (!events._binds.TryGetValue(eventKey, out eventHandler))
             {
                 events._binds.Add(eventKey, null);
-
                 Noesis_Event_Bind(_raiseEvent, events._element, eventId);
             }
 
@@ -362,9 +355,10 @@ namespace Noesis
                 throw new ArgumentException("Illegal Handler type for " + eventId + " event");
             }
 
-            EnsureEventsProperty();
-            EventHandlerStore events = (EventHandlerStore)element.GetValue(EventsProperty);
-            if (events == null)
+            EventHandlerStore events;
+            IntPtr cPtr = BaseComponent.getCPtr(element).Handle;
+            long ptr = cPtr.ToInt64();
+            if (!_elements.TryGetValue(ptr, out events))
             {
                 return;
             }
@@ -382,8 +376,13 @@ namespace Noesis
             if (eventHandler == null)
             {
                 Noesis_Event_Unbind(_raiseEvent, events._element, eventId);
-
                 events._binds.Remove(eventKey);
+
+                if (events._binds.Count == 0)
+                {
+                    element.Destroyed -= OnElementDestroyed;
+                    _elements.Remove(ptr);
+                }
             }
         }
 
@@ -400,14 +399,13 @@ namespace Noesis
             {
                 if (Extend.Initialized)
                 {
-                    UIElement element = (UIElement)Extend.GetProxy(cPtrType, cPtr, false);
-                    if (element == null)
+                    EventHandlerStore events;
+                    long ptr = cPtr.ToInt64();
+                    if (!_elements.TryGetValue(ptr, out events))
                     {
                         return;
                     }
 
-                    EnsureEventsProperty();
-                    EventHandlerStore events = (EventHandlerStore)element.GetValue(EventsProperty);
                     long eventKey = eventId.GetHashCode();
 
                     // check if we are called to unbind the event
@@ -441,14 +439,15 @@ namespace Noesis
             _element = BaseComponent.getCPtr(element).Handle;
         }
 
-
-        internal static void Clear(EventHandlerStore[] events)
+        internal static void Clear()
         {
-            foreach (EventHandlerStore ehs in events)
+            foreach (var entry in _elements)
             {
-                ehs._binds.Clear();
+                entry.Value._binds.Clear();
             }
+            _elements.Clear();
 
+            DependencyObject._Destroyed.Clear();
             Clock._Completed.Clear();
             CommandBinding._PreviewCanExecute.Clear();
             CommandBinding._PreviewExecuted.Clear();
@@ -459,24 +458,23 @@ namespace Noesis
             Popup._Closed.Clear();
             Popup._Opened.Clear();
             Timeline._Completed.Clear();
+            VisualStateGroup._CurrentStateChanging.Clear();
+            VisualStateGroup._CurrentStateChanged.Clear();
             View._Rendering.Clear();
         }
 
-        private static void EnsureEventsProperty()
+        private static void OnElementDestroyed(IntPtr d)
         {
-            lock (EventsPropertyLock)
+            EventHandlerStore events;
+            long ptr = d.ToInt64();
+            if (_elements.TryGetValue(ptr, out events))
             {
-                if (BaseComponent.getCPtr(EventsProperty).Handle == IntPtr.Zero)
-                {
-                    EventsProperty = DependencyProperty.Register(
-                       "Events", typeof(EventHandlerStore), typeof(EventHandlerStore),
-                        new PropertyMetadata(null));
-                }
+                events._binds.Clear();
+                _elements.Remove(ptr);
             }
         }
 
-        private static object EventsPropertyLock = new object();
-        private static DependencyProperty EventsProperty = null;
+        private static Dictionary<long, EventHandlerStore> _elements = new Dictionary<long, EventHandlerStore>();
 
         private IntPtr _element;
         private Dictionary<long, Delegate> _binds = new Dictionary<long, Delegate>();
@@ -547,24 +545,17 @@ namespace Noesis
             {
                 throw new ArgumentNullException("classType");
             }
-            if (routedEvent == null)
-            {
-                throw new ArgumentNullException("routedEvent");
-            }
-            if (handler == null)
-            {
-                throw new ArgumentNullException("handler");
-            }
             if (!typeof(UIElement).IsAssignableFrom(classType))
             {
                 throw new ArgumentException("Illegal class type " + classType.FullName);
             }
-            if (!IsLegalHandler(routedEvent, handler))
+            IntPtr routedEventPtr = BaseComponent.getCPtr(routedEvent).Handle;
+            if (!IsLegalHandler(routedEventPtr, handler))
             {
                 throw new ArgumentException("Illegal Handler type for " + routedEvent.Name + " event");
             }
 
-            ClassHandlerInfo c = AddClassHandler(routedEvent, handler);
+            ClassHandlerInfo c = AddClassHandler(routedEventPtr, handler);
 
             Noesis_EventManager_RegisterClassHandler(Extend.GetNativeType(classType),
                 BaseComponent.getCPtr(routedEvent).Handle, handledEventsToo,
@@ -572,9 +563,9 @@ namespace Noesis
         }
 
         #region Routed Events
-        internal static bool IsLegalHandler(RoutedEvent routedEvent, Delegate handler)
+        internal static bool IsLegalHandler(IntPtr routedEventPtr, Delegate handler)
         {
-            if (routedEvent == null)
+            if (routedEventPtr == IntPtr.Zero)
             {
                 throw new ArgumentNullException("routedEvent");
             }
@@ -584,19 +575,20 @@ namespace Noesis
             }
 
             HandlerInfo info;
-            if (!_handlerTypes.TryGetValue(Key(routedEvent), out info))
+            if (!_handlerTypes.TryGetValue(Key(routedEventPtr), out info))
             {
+                RoutedEvent routedEvent = (RoutedEvent)Extend.GetProxy(routedEventPtr, false);
                 throw new InvalidOperationException("Routed event " + routedEvent.Name + " not registered");
             }
 
             return info.Type == handler.GetType();
         }
 
-        internal static void InvokeHandler(IntPtr routedEvent, Delegate handler,
+        internal static void InvokeHandler(IntPtr routedEventPtr, Delegate handler,
             IntPtr sender, IntPtr args)
         {
             HandlerInfo info;
-            if (!_handlerTypes.TryGetValue(Key(routedEvent), out info))
+            if (!_handlerTypes.TryGetValue(Key(routedEventPtr), out info))
             {
                 throw new InvalidOperationException("Routed event not registered");
             }
@@ -620,7 +612,8 @@ namespace Noesis
                 HandlerInfo info;
                 if (!_handlerTypes.TryGetValue(Key(c.RoutedEvent), out info))
                 {
-                    throw new InvalidOperationException("Routed event " + c.RoutedEvent.Name + " not registered");
+                    RoutedEvent routedEvent = (RoutedEvent)Extend.GetProxy(c.RoutedEvent, false);
+                    throw new InvalidOperationException("Routed event " + routedEvent.Name + " not registered");
                 }
 
                 info.Invoker(c.Handler, sender, args);
@@ -631,10 +624,10 @@ namespace Noesis
             }
         }
 
-        private static ClassHandlerInfo AddClassHandler(RoutedEvent routedEvent, Delegate handler)
+        private static ClassHandlerInfo AddClassHandler(IntPtr routedEventPtr, Delegate handler)
         {
             ClassHandlerInfo c = new ClassHandlerInfo();
-            c.RoutedEvent = routedEvent;
+            c.RoutedEvent = routedEventPtr;
             c.Handler = handler;
 
             _classHandlers.Add(c);
@@ -644,7 +637,7 @@ namespace Noesis
 
         private class ClassHandlerInfo
         {
-            public RoutedEvent RoutedEvent;
+            public IntPtr RoutedEvent;
             public Delegate Handler;
         }
 
@@ -766,6 +759,7 @@ namespace Noesis
             RegisterCLREvent("IsMouseDirectlyOverChanged", typeof(DependencyPropertyChangedEventHandler), DependencyPropertyChangedEventArgs.InvokeHandler);
             RegisterCLREvent("IsKeyboardFocusedChanged", typeof(DependencyPropertyChangedEventHandler), DependencyPropertyChangedEventArgs.InvokeHandler);
             RegisterCLREvent("IsKeyboardFocusWithinChanged", typeof(DependencyPropertyChangedEventHandler), DependencyPropertyChangedEventArgs.InvokeHandler);
+            RegisterCLREvent("LayoutUpdated", typeof(EventHandler), NoesisEventArgs.InvokeHandler);
 
             // FrameworkElement
             RegisterRoutedEvent(FrameworkElement.LoadedEvent, typeof(RoutedEventHandler), RoutedEventArgs.InvokeHandler);
@@ -918,12 +912,6 @@ namespace Noesis
                 Type = handlerType,
                 Invoker = invoker
             });
-        }
-
-        private static void AddCLREvent(string eventId, Type handlerType,
-            InvokeHandlerDelegate invoker)
-        {
-
         }
 
         private static long Key(RoutedEvent routedEvent)

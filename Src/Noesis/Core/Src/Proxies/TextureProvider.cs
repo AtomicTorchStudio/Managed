@@ -30,35 +30,47 @@ public class TextureProvider : BaseComponent {
   protected TextureProvider() {
   }
 
-  /// <summary>
-  /// Returns metadata for the given texture filename. Returns 0x0 if no texture is found.
-  /// </summary>
-  /// <param name="filename">Path to the texture.</param>
-  public virtual void GetTextureInfo(string filename, out uint width, out uint height) {
-    width = 0;
-    height = 0;
+  /// <summary> Texture metadata </summary>
+  public struct TextureInfo {
+    public Int32Rect Rect { get; }
+    public float DpiScale { get; } // 96 dpi = 1.0, 72 dpi = 0.75 (72/96), 120 dpi = 1.25 (120/96)
+
+    public TextureInfo(int width = 0, int height = 0): this(0, 0, width, height, 1.0f) {
+    }
+    public TextureInfo(int x, int y, int width, int height): this(x, y, width, height, 1.0f) {
+    }
+    public TextureInfo(int x, int y, int width, int height, float dpiScale) {
+      Rect = new Int32Rect(x, y, width, height);
+      DpiScale = dpiScale;
+    }
   }
 
   /// <summary>
-  /// Creates texture in the given device. Returns null if no texture is found.
+  /// Returns metadata for the texture at the given URI. Returns 0x0 if no texture is found.
   /// </summary>
-  /// <param name="filename">Path to the texture being loaded.</param>
-  public virtual Texture LoadTexture(string filename) {
+  public virtual TextureInfo GetTextureInfo(Uri uri) {
+    return new TextureInfo();
+  }
+
+  /// <summary>
+  /// Returns a texture compatible with the given device. Returns null if texture is not found.
+  /// </summary>
+  public virtual Texture LoadTexture(Uri uri) {
     return null;
   }
 
   /// <summary>
-  /// Notifies of changes to the specified texture file
+  /// Notifies of changes to the specified texture file.
   /// </summary>
-  public delegate void TextureChangedHandler(string uri);
+  public delegate void TextureChangedHandler(Uri uri);
   public event TextureChangedHandler TextureChanged;
 
   /// <summary>
-  /// Raises TextureChanged event notifying Noesis that it should reload the specified texture
+  /// Raises TextureChanged event notifying Noesis that it should reload the specified texture.
   /// </summary>
-  public void RaiseTextureChanged(string uri) {
+  public void RaiseTextureChanged(Uri uri) {
     TextureChanged?.Invoke(uri);
-    Noesis_RaiseTextureChanged(swigCPtr, uri);
+    Noesis_RaiseTextureChanged(swigCPtr, uri.OriginalString);
   }
 
   [DllImport(Library.Name)]

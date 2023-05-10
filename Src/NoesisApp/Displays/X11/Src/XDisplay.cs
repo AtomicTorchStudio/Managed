@@ -13,7 +13,7 @@ namespace NoesisApp
 
         public XDisplay(bool fullScreen)
         {
-            _display = XOpenDisplay("");
+            _display = XOpenDisplay(null);
 
             int screenNumber = XDefaultScreen(_display);
             int depth = XDefaultDepth(_display, screenNumber);
@@ -664,7 +664,7 @@ namespace NoesisApp
             public EventMask do_not_propagate_mask;
             public bool override_redirect;
             public IntPtr colormap;
-            public Cursor cursor;
+            public IntPtr cursor;
         }
 
         [StructLayout(LayoutKind.Sequential)]

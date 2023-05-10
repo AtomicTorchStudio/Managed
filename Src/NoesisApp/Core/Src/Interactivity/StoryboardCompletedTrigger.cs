@@ -22,7 +22,7 @@ namespace NoesisApp
             Storyboard storyboard = Storyboard;
             if (storyboard != null)
             {
-                storyboard.Completed -= _wrapper.Completed;
+                storyboard.Completed -= OnStoryboardCompleted;
             }
 
             base.OnDetaching();
@@ -35,34 +35,17 @@ namespace NoesisApp
 
             if (oldStoryboard != null)
             {
-                oldStoryboard.Completed -= _wrapper.Completed;
+                oldStoryboard.Completed -= OnStoryboardCompleted;
             }
             if (newStoryboard != null)
             {
-                newStoryboard.Completed += _wrapper.Completed;
+                newStoryboard.Completed += OnStoryboardCompleted;
             }
         }
 
-        private void OnStoryboardCompleted(object sender, System.EventArgs e)
+        private void OnStoryboardCompleted(object sender, NoesisEventArgs e)
         {
             InvokeActions(e);
         }
-
-        public StoryboardCompletedTrigger()
-        {
-            _wrapper = new EventWrapper { wr = new System.WeakReference(this) };
-        }
-
-        private struct EventWrapper
-        {
-            public System.WeakReference wr;
-
-            public void Completed(object sender, System.EventArgs e)
-            {
-                ((StoryboardCompletedTrigger)wr.Target).OnStoryboardCompleted(sender, e);
-            }
-        }
-
-        private EventWrapper _wrapper;
     }
 }

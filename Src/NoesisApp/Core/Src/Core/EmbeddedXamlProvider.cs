@@ -26,26 +26,18 @@ namespace NoesisApp
             }
         }
 
-        public override Stream LoadXaml(string filename)
+        public override Stream LoadXaml(Uri uri)
         {
             Stream stream = null;
 
-            // First try with user provider
             if (_provider != null)
             {
-                stream = _provider.LoadXaml(filename);
+                stream = _provider.LoadXaml(uri);
             }
 
-            // Next try with application assembly resources
             if (stream == null)
             {
-                stream = Application.GetAssemblyResource(_assembly, _namespace, filename);
-            }
-
-            // Last try with Theme assembly resources
-            if (stream == null)
-            {
-                stream = Application.GetAssemblyResource(Theme.Assembly, "NoesisApp", filename);
+                stream = Application.GetAssemblyResource(_assembly, _namespace, uri.GetPath());
             }
 
             return stream;

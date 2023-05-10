@@ -19,11 +19,6 @@ namespace NoesisApp
             CollectionChanged += OnCollectionChanged;
         }
 
-        ~AttachableCollection()
-        {
-            CollectionChanged -= OnCollectionChanged;
-        }
-
         protected DependencyObject AssociatedObject
         {
             get { return (DependencyObject)GetProxy(_associatedObject); }
@@ -60,7 +55,7 @@ namespace NoesisApp
 
         public void Detach()
         {
-            if (AssociatedObject != null)
+            if (_associatedObject != IntPtr.Zero)
             {
                 OnDetaching();
 

@@ -32,7 +32,7 @@ namespace NoesisApp
 
         public string Uri { get; set; }
 
-        public string StartupUri { get; set; }
+        public Uri StartupUri { get; set; }
 
         public DateTime StartTime { get; private set; }
 
@@ -40,9 +40,10 @@ namespace NoesisApp
 
         public Window MainWindow { get; set; }
 
-        public XamlProvider XamlProvider { get; private set; }
-        public FontProvider FontProvider { get; private set; }
-        public TextureProvider TextureProvider { get; private set; }
+        private ApplicationProvider _resourceProvider = null;
+        public XamlProvider XamlProvider { get { return _resourceProvider?.XamlProvider; } }
+        public FontProvider FontProvider { get { return _resourceProvider?.FontProvider; } }
+        public TextureProvider TextureProvider { get { return _resourceProvider?.TextureProvider; } }
 
         private ResourceDictionary _resources = null;
         public ResourceDictionary Resources
@@ -59,12 +60,31 @@ namespace NoesisApp
         }
 
         /// <summary>
+        /// Searches for a resource, such as a Style or Brush, with the specified key.
+        /// If the requested resource is not found, an Exception is thrown.
+        /// </summary>
+        public object FindResource(object key)
+        {
+            object resource = null;
+            ResourceDictionary resources = _resources;
+            if (resources != null)
+            {
+                resource = resources[key];
+            }
+            if (resource == null)
+            {
+                throw new Exception($"Resource {key} not found");
+            }
+            return resource;
+        }
+
+        /// <summary>
         /// Installs providers that expose resources for Noesis theme.
         /// </summary>
         public static void SetThemeProviders(XamlProvider xamlProvider = null, FontProvider fontProvider = null, TextureProvider textureProvider = null)
         {
-            GUI.SetXamlProvider(new EmbeddedXamlProvider(null, null, xamlProvider));
-            GUI.SetFontProvider(new EmbeddedFontProvider(null, null, fontProvider));
+            GUI.SetXamlProvider(new EmbeddedXamlProvider(Theme.Assembly, "", xamlProvider));
+            GUI.SetFontProvider(new EmbeddedFontProvider(Theme.Assembly, "Noesis.GUI.Extensions", "", fontProvider));
             GUI.SetTextureProvider(textureProvider);
 
             GUI.SetFontFallbacks(Theme.FontFallbacks);
@@ -83,6 +103,7 @@ namespace NoesisApp
             }
 
             Current = this;
+            Thread.BeginThreadAffinity();
             Dispatcher = Dispatcher.CurrentDispatcher;
             SynchronizationContext.SetSynchronizationContext(Dispatcher.SynchronizationContext);
 
@@ -92,7 +113,8 @@ namespace NoesisApp
             Error.SetUnhandledCallback(UnhandledCallback);
 
             LicenseInfo license = GetLicenseInfo();
-            GUI.Init(license.Name, license.Key);
+            GUI.SetLicense(license.Name, license.Key);
+            GUI.Init();
         }
 
         private struct LicenseInfo
@@ -103,8 +125,13 @@ namespace NoesisApp
 
         private LicenseInfo GetLicenseInfo()
         {
-            Type type = this.GetType();
-            Stream stream = GetAssemblyResource(type.Assembly, type.Namespace, "NoesisLicense.txt");
+            Type app = GetType();
+            Stream stream = GetAssemblyResource(app.Assembly, app.Namespace, "NoesisLicense.txt");
+            if (stream == null)
+            {
+                stream = GetAssemblyResource(app.Assembly, "", "NoesisLicense.txt");
+            }
+
             if (stream != null)
             {
                 string name, key;
@@ -127,9 +154,12 @@ namespace NoesisApp
         {
             if (assembly != null)
             {
-                string resource = ns + "." + filename.Replace("/", ".");
                 try
                 {
+                    string resource = "";
+                    if (!string.IsNullOrEmpty(ns)) resource += ns + ".";
+                    resource += filename.Replace("/", ".");
+
                     return assembly.GetManifestResourceStream(resource);
                 }
                 catch { }
@@ -191,23 +221,31 @@ namespace NoesisApp
                 Display.OpenUrl(url);
             });
 
-            GUI.SetPlayAudioCallback((string filename, float volume) =>
+            GUI.SetPlayAudioCallback((Uri uri, float volume) =>
             {
-                Display.PlayAudio(filename, volume);
+                Display.PlayAudio(uri, volume);
             });
 
             // Set resource providers
-            Type appType = typeof(Application);
-            EmbeddedXamlProvider xamlProvider = new EmbeddedXamlProvider(appType.Assembly, appType.Namespace, CreateXamlProvider());
-
-            Type type = this.GetType();
-            XamlProvider = new EmbeddedXamlProvider(type.Assembly, type.Namespace, xamlProvider);
-            FontProvider = new EmbeddedFontProvider(type.Assembly, type.Namespace, CreateFontProvider());
-            TextureProvider = new EmbeddedTextureProvider(type.Assembly, type.Namespace, CreateTextureProvider());
+            _resourceProvider = new ApplicationProvider(this, CreateXamlProvider(), CreateFontProvider(), CreateTextureProvider());
 
             GUI.SetXamlProvider(XamlProvider);
             GUI.SetFontProvider(FontProvider);
             GUI.SetTextureProvider(TextureProvider);
+
+            // Listen to load assembly callback to add new assemblies to the resource provider
+            GUI.SetLoadAssemblyCallback((name) =>
+            {
+                try
+                {
+                    Assembly assembly = Assembly.Load(name);
+                    if (assembly != null)
+                    {
+                        _resourceProvider.AddAssembly(assembly, name);
+                    }
+                }
+                catch { }
+            });
 
             // Load App.xaml
             if (string.IsNullOrEmpty(Uri))
@@ -222,12 +260,12 @@ namespace NoesisApp
             GUI.SetApplicationResources(Resources);
 
             // Load StartupUri xaml as MainWindow
-            if (string.IsNullOrEmpty(StartupUri))
+            if (string.IsNullOrEmpty(StartupUri?.OriginalString))
             {
-                throw new InvalidOperationException("Startup window not defined");
+                throw new InvalidOperationException("Application StartupUri not defined");
             }
 
-            object root = GUI.LoadXaml(StartupUri);
+            object root = GUI.LoadXaml(StartupUri?.OriginalString);
             MainWindow = root as Window;
 
             if (MainWindow == null)
@@ -238,7 +276,6 @@ namespace NoesisApp
                 MainWindow.Title = Title;
             }
 
-            uint samples = Samples;
             bool vsync = VSync;
             bool sRGB = StandardRGB;
             bool ppaa = PPAA;
@@ -248,10 +285,17 @@ namespace NoesisApp
             uint holdingDistanceThreshold = HoldingDistanceThreshold;
             uint doubleTapTimeThreshold = DoubleTapTimeThreshold;
             uint doubleTapDistanceThreshold = DoubleTapDistanceThreshold;
+            uint samples = Samples;
 
             RenderContext renderContext = CreateRenderContext();
             renderContext.Init(Display.NativeHandle, Display.NativeWindow, samples, vsync, sRGB);
             renderContext.Device.OffscreenSampleCount = samples;
+            renderContext.Device.OffscreenWidth = OffscreenWidth;
+            renderContext.Device.OffscreenHeight = OffscreenHeight;
+            renderContext.Device.OffscreenDefaultNumSurfaces = OffscreenDefaultNumSurfaces;
+            renderContext.Device.OffscreenMaxNumSurfaces = OffscreenMaxNumSurfaces;
+            renderContext.Device.GlyphCacheWidth = GlyphCacheWidth;
+            renderContext.Device.GlyphCacheHeight = GlyphCacheHeight;
 
             Display.NativeHandleChanged += (Display display, IntPtr window) =>
             {
@@ -280,12 +324,11 @@ namespace NoesisApp
                 // Make sure the View is destroyed after the Window element tree
                 View view = MainWindow.View;
 
+                MainWindow.Content = null;
                 MainWindow.Shutdown();
                 MainWindow = null;
 
-                XamlProvider = null;
-                FontProvider = null;
-                TextureProvider = null;
+                _resourceProvider = null;
 
                 GC.Collect();
                 GC.WaitForPendingFinalizers();
@@ -296,6 +339,10 @@ namespace NoesisApp
 
                 // Shut down Noesis
                 GUI.Shutdown();
+
+                Log.SetLogCallback(null);
+
+                Thread.EndThreadAffinity();
             }
         }
 
@@ -318,6 +365,24 @@ namespace NoesisApp
             MainWindow.Close();
         }
 
+        /// <summary> Logs an information message </summary>
+        public void LogInfo(string message)
+        {
+            OnLog(LogLevel.Info, "", message);
+        }
+
+        /// <summary> Logs a warning message </summary>
+        public void LogWarning(string message)
+        {
+            OnLog(LogLevel.Warning, "", message);
+        }
+
+        /// <summary> Logs an error message </summary>
+        public void LogError(string message)
+        {
+            OnLog(LogLevel.Error, "", message);
+        }
+
         private void LogCallback(LogLevel level, string channel, string message)
         {
             OnLog(level, channel, message);
@@ -331,8 +396,18 @@ namespace NoesisApp
         /// <param name="message">Message text</param>
         protected virtual void OnLog(LogLevel level, string channel, string message)
         {
-            if (string.IsNullOrEmpty(channel) || channel == "Binding")
+            // If channel is not main ("") filter out debug and info messages
+            bool filter = !string.IsNullOrEmpty(channel) && level < LogLevel.Warning;
+
+            // Use LogBinding to also enable debug and info for bindings channel
+            if (LogBinding && channel == "Binding")
             {
+                filter = false;
+            }
+
+            if (!filter)
+            {
+                level = level > LogLevel.Error ? LogLevel.Error : level;
                 string[] prefixes = new string[] { "T", "D", "I", "W", "E" };
                 string prefix = (int)level < prefixes.Length ? prefixes[(int)level] : " ";
                 System.Console.WriteLine("[NOESIS/" + prefix + "] " + message);
@@ -373,8 +448,7 @@ namespace NoesisApp
         /// </summary>
         protected virtual XamlProvider CreateXamlProvider()
         {
-            Type type = this.GetType();
-            return new EmbeddedXamlProvider(type.Assembly, type.Namespace);
+            return null;
         }
 
         /// <summary>
@@ -382,8 +456,7 @@ namespace NoesisApp
         /// </summary>
         protected virtual FileTextureProvider CreateTextureProvider()
         {
-            Type type = this.GetType();
-            return new EmbeddedTextureProvider(type.Assembly, type.Namespace);
+            return null;
         }
 
         /// <summary>
@@ -391,8 +464,7 @@ namespace NoesisApp
         /// </summary>
         protected virtual FontProvider CreateFontProvider()
         {
-            Type type = this.GetType();
-            return new EmbeddedFontProvider(type.Assembly, type.Namespace);
+            return null;
         }
 
         protected virtual string[] GetFontFallbacks()
@@ -425,9 +497,14 @@ namespace NoesisApp
             get { return ""; }
         }
 
-        protected virtual uint Samples
+        protected virtual bool LogBinding
         {
-            get { return 1; }
+            get { return false; }
+        }
+
+        protected virtual bool RunInBackground
+        {
+            get { return false; }
         }
 
         protected virtual bool VSync
@@ -450,11 +527,7 @@ namespace NoesisApp
             get { return false; }
         }
 
-        protected virtual bool RunInBackground
-        {
-            get { return false; }
-        }
-
+        #region Touch configuration
         protected virtual bool EmulateTouch
         {
             get { return false; }
@@ -479,6 +552,44 @@ namespace NoesisApp
         {
             get { return 10; }
         }
+        #endregion
+
+        #region RenderDevice configuration
+        protected virtual uint Samples
+        {
+            get { return 1; }
+        }
+
+        protected virtual uint OffscreenWidth
+        {
+            get { return 0; }
+        }
+
+        protected virtual uint OffscreenHeight
+        {
+            get { return 0; }
+        }
+
+        protected virtual uint OffscreenDefaultNumSurfaces
+        {
+            get { return 0; }
+        }
+
+        protected virtual uint OffscreenMaxNumSurfaces
+        {
+            get { return 0; }
+        }
+
+        protected virtual uint GlyphCacheWidth
+        {
+            get { return 1024; }
+        }
+
+        protected virtual uint GlyphCacheHeight
+        {
+            get { return 1024; }
+        }
+        #endregion
 
         protected virtual void OnStartup(StartupEventArgs e)
         {

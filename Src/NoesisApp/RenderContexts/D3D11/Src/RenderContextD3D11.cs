@@ -103,11 +103,14 @@ namespace NoesisApp
             _dev.ImmediateContext.ClearDepthStencilView(_depthStencil, DepthStencilClearFlags.Stencil, 0.0f, 0);
             _dev.ImmediateContext.OutputMerger.SetRenderTargets(_depthStencil, _renderTarget);
             _dev.ImmediateContext.Rasterizer.SetViewport(_viewport);
+
+            _device.DisableScissorRect();
         }
 
         public override ImageCapture CaptureRenderTarget(RenderTarget surface)
         {
-            ShaderResourceView view = new ShaderResourceView(surface.Texture.D3D11NativePointer);
+            IntPtr texNativePtr = RenderDeviceD3D11.GetTextureNativePointer(surface.Texture);
+            ShaderResourceView view = new ShaderResourceView(texNativePtr);
             using (Texture2D source = view.Resource.QueryInterface<Texture2D>())
             {
                 Texture2DDescription desc = source.Description;

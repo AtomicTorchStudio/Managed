@@ -114,13 +114,19 @@ namespace NoesisApp
                 }
                 else if (!string.IsNullOrEmpty(TargetName))
                 {
-                    newTarget = TargetNameResolver;
-
-                    if (newTarget != null)
+                    if (BindingOperations.GetBinding(this, TargetNameResolverProperty) != null)
                     {
-                        // Remove binding once we have found the TargetName object because keeping it
-                        // stored in this property could create circular references and memory leaks
-                        BindingOperations.ClearBinding(this, TargetNameResolverProperty);
+                        newTarget = TargetNameResolver;
+                        if (newTarget != null)
+                        {
+                            // Remove binding once we have found the TargetName object because keeping it
+                            // stored in this property could create circular references and memory leaks
+                            BindingOperations.ClearBinding(this, TargetNameResolverProperty);
+                        }
+                    }
+                    else
+                    {
+                        newTarget = Target;
                     }
                 }
             }
@@ -134,11 +140,11 @@ namespace NoesisApp
                         newTarget.GetType(), GetType()));
                 }
 
-                UnregisterTarget(oldTarget, _target);
+                UnregisterTarget(oldTarget);
 
                 _target = GetPtr(newTarget);
 
-                RegisterTarget(newTarget, _target);
+                RegisterTarget(newTarget);
 
                 if (AssociatedObject != null)
                 {
@@ -148,61 +154,25 @@ namespace NoesisApp
         }
 
         #region Target registration
-        private void RegisterTarget(object newTarget, IntPtr cPtr)
+        private void RegisterTarget(object target)
         {
-            if (newTarget is DependencyObject)
+            if (target is DependencyObject)
             {
-                DependencyObject dob = (DependencyObject)newTarget;
-                long ptr = cPtr.ToInt64();
-                List<TargetedTriggerAction> actions;
-                if (!targets.TryGetValue(ptr, out actions))
-                {
-                    actions = new List<TargetedTriggerAction>();
-                    targets.Add(ptr, actions);
-                }
-
-                actions.Add(this);
-
-                if (BindingOperations.GetBinding(dob, TargetDestroyedProperty) == null)
-                {
-                    BindingOperations.SetBinding(dob, TargetDestroyedProperty, new Binding("Visibility")
-                    {
-                        RelativeSource = new RelativeSource { AncestorType = typeof(UIElement) }
-                    });
-                }
+                DependencyObject dob = (DependencyObject)target;
+                dob.Destroyed += OnTargetDestroyed;
             }
             else
             {
-                _keepTarget = newTarget;
+                _keepTarget = target;
             }
         }
 
-        private void UnregisterTarget(object oldTarget, IntPtr cPtr)
+        private void UnregisterTarget(object target)
         {
-            if (oldTarget is DependencyObject)
+            if (target is DependencyObject)
             {
-                DependencyObject dob = (DependencyObject)oldTarget;
-                long ptr = cPtr.ToInt64();
-                List<TargetedTriggerAction> actions;
-                if (targets.TryGetValue(ptr, out actions))
-                {
-                    int numActions = actions.Count;
-                    for (int i = 0; i < numActions; ++i)
-                    {
-                        TargetedTriggerAction action = actions[i];
-                        if (action == this)
-                        {
-                            _target = IntPtr.Zero;
-                            actions.RemoveAt(i);
-                            break;
-                        }
-                    }
-
-                    if (actions.Count == 0)
-                    {
-                        targets.Remove(ptr);
-                    }
-                }
+                DependencyObject dob = (DependencyObject)target;
+                dob.Destroyed -= OnTargetDestroyed;
             }
             else
             {
@@ -210,31 +180,10 @@ namespace NoesisApp
             }
         }
 
-        private static readonly DependencyProperty TargetDestroyedProperty = DependencyProperty.Register(
-            ".TargetDestroyed", typeof(Visibility), typeof(TargetedTriggerAction),
-            new PropertyMetadata(TargetDestroyed, OnTargetDestroyedChanged));
-
-        private static void OnTargetDestroyedChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private void OnTargetDestroyed(IntPtr d)
         {
-            if ((Visibility)e.NewValue == TargetDestroyed)
-            {
-                IntPtr cPtr = GetPtr(d);
-                long ptr = cPtr.ToInt64();
-                List<TargetedTriggerAction> actions;
-                if (targets.TryGetValue(ptr, out actions))
-                {
-                    while (actions.Count > 0)
-                    {
-                        actions[0].UnregisterTarget(d, cPtr);
-                    }
-
-                    targets.Remove(ptr);
-                }
-            }
+            _target = IntPtr.Zero;
         }
-
-        private const Visibility TargetDestroyed = (Visibility)(-1);
-        private static Dictionary<long, List<TargetedTriggerAction>> targets = new Dictionary<long, List<TargetedTriggerAction>>();
         #endregion
 
         #region TargetName resolver

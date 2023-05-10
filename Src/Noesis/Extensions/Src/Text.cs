@@ -6,7 +6,6 @@
 using System;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
 
 namespace NoesisGUIExtensions
 {
@@ -62,17 +61,17 @@ namespace NoesisGUIExtensions
         #region Stroke attached property
 
         public static readonly DependencyProperty StrokeProperty =
-            DependencyProperty.RegisterAttached("Stroke", typeof(Brush), typeof(Text),
+            DependencyProperty.RegisterAttached("Stroke", typeof(System.Windows.Media.Brush), typeof(Text),
             new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.Inherits));
 
-        public static void SetStroke(UIElement element, Brush value)
+        public static void SetStroke(UIElement element, System.Windows.Media.Brush value)
         {
             element.SetValue(StrokeProperty, value);
         }
 
-        public static Brush GetStroke(UIElement element)
+        public static System.Windows.Media.Brush GetStroke(UIElement element)
         {
-            return (Brush)element.GetValue(StrokeProperty);
+            return (System.Windows.Media.Brush)element.GetValue(StrokeProperty);
         }
 
         #endregion
@@ -160,6 +159,38 @@ namespace NoesisGUIExtensions
         public static uint GetPasswordLength(PasswordBox element)
         {
             return (uint)element.GetValue(PasswordLengthProperty);
+        }
+
+        #endregion
+
+        /// <summary>
+        /// Specifies the duration in milliseconds that the last character typed in a PasswordBox
+        /// remains visible before it is converted into the corresponding *PasswordChar*
+        ///
+        /// Usage:
+        /// 
+        ///     <Grid 
+        ///       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        ///       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        ///       xmlns:noesis="clr-namespace:NoesisGUIExtensions;assembly=Noesis.GUI.Extensions">
+        ///         <PasswordBox noesis:Text.ShowLastCharacterDuration="2000"/>
+        ///     </Grid>
+        ///
+        /// </summary>
+        #region ShowLastCharacterDuration attached property
+
+        public static readonly DependencyProperty ShowLastCharacterDurationProperty =
+            DependencyProperty.RegisterAttached("ShowLastCharacterDuration", typeof(int), typeof(Text),
+            new PropertyMetadata(0));
+
+        public static int GetShowLastCharacterDuration(DependencyObject obj)
+        {
+            return (int)obj.GetValue(ShowLastCharacterDurationProperty);
+        }
+
+        public static void SetShowLastCharacterDuration(DependencyObject obj, int value)
+        {
+            obj.SetValue(ShowLastCharacterDurationProperty, value);
         }
 
         #endregion
