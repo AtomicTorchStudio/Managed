@@ -1421,6 +1421,14 @@ namespace Noesis
                 props = Array.Empty<PropertyInfo>();
                 registerDP = false;
             }
+            
+            if (!ReferenceEquals(null, Noesis.ExternalTypeHelper.CheckTypeCanContainDependencyProperties)
+                && !Noesis.ExternalTypeHelper.CheckTypeCanContainDependencyProperties(type))
+            {
+                // external type should not provide any properties
+                props = Array.Empty<PropertyInfo>();
+                registerDP = false;
+            }
 
             // Fill native type with C# public properties
             ExtendTypeData typeData = CreateNativeTypeData(type, nativeType);

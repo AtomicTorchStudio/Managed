@@ -39,7 +39,22 @@ public class Binding : BindingBase {
   }
 
   internal static IntPtr DoNothingPtr = NoesisGUI_PINVOKE.Binding_GetDoNothing();
-  public static object DoNothing = new NamedObject("Binding.DoNothing", DoNothingPtr);
+
+  private static NamedObject doNothing;
+
+  public static object DoNothing
+  {
+    get
+    {
+      if (doNothing is null
+          || ((NamedObject)doNothing).IsDisposed)
+      {
+        doNothing = new NamedObject("Binding.DoNothing", DoNothingPtr);
+      }
+
+      return doNothing;
+    }
+  }
 
   public Noesis.IValueConverter Converter {
     get {
