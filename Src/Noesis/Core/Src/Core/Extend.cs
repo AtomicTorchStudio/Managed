@@ -315,8 +315,12 @@ namespace Noesis
             _extends.Clear();
             _proxies.Clear();
             _pendingRelease.Clear();
-
+            
             PropertyMetadata.ClearCallbacks();
+            
+            // reset the weak extends table as the old one contains pointers which are no longer valid
+            _weakExtends = new();
+            _latestWeakStorageId++;
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -5913,10 +5917,23 @@ namespace Noesis
 
         private class ExtendNotifier
         {
+            private byte currentWeakStorageId;
+            
+            public ExtendNotifier()
+            {
+                currentWeakStorageId = _latestWeakStorageId;
+            }
+
             public IntPtr cPtr;
 
             ~ExtendNotifier()
             {
+                if (currentWeakStorageId != _latestWeakStorageId)
+                {
+                    // storage for this weak reference is destroyed, no need to release
+                    return;
+                }
+
                 // There is a weird situation in NETSTANDARD (a possible bug) that destroys the
                 // value even when the key is still alive. The workaround is to re-register the
                 // key instance in the ConditionalWeakTable until the key is really destroyed
@@ -5945,6 +5962,8 @@ namespace Noesis
 
         private static ConditionalWeakTable<object, ExtendNotifier> _weakExtends =
             new ConditionalWeakTable<object, ExtendNotifier>();
+            
+        private static byte _latestWeakStorageId;
 
         ////////////////////////////////////////////////////////////////////////////////////////////////
         private static BaseComponent GetProxyInstance(IntPtr cPtr, bool ownMemory, NativeTypeInfo info)
