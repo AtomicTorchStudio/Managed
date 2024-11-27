@@ -13,7 +13,7 @@ namespace Noesis
         {
             if (dp == null)
             {
-                throw new Exception("Can't get value, DependencyProperty is null");
+                throw new ArgumentNullException("dp");
             }
 
             Type dpType = dp.PropertyType;
@@ -41,7 +41,7 @@ namespace Noesis
         {
             if (dp == null)
             {
-                throw new Exception("Can't set value, DependencyProperty is null");
+                throw new ArgumentNullException("dp");
             }
 
             Type dpType = dp.PropertyType;
@@ -970,7 +970,17 @@ namespace Noesis
             }
         }
 
-        internal static Dictionary<long, DestroyedHandler> _Destroyed =
+        internal static void ResetEvents()
+        {
+            foreach (var kv in _Destroyed)
+            {
+                IntPtr cPtr = new IntPtr(kv.Key);
+                Noesis_Dependency_Destroyed_Unbind(_raiseDestroyed, new HandleRef(null, cPtr));
+            }
+            _Destroyed.Clear();
+        }
+
+        private static Dictionary<long, DestroyedHandler> _Destroyed =
             new Dictionary<long, DestroyedHandler>();
         #endregion
 

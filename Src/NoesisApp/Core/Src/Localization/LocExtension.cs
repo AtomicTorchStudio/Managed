@@ -1,6 +1,5 @@
 ﻿using Noesis;
 using System;
-using System.Collections.Generic;
 
 namespace NoesisGUIExtensions
 {
@@ -14,6 +13,8 @@ namespace NoesisGUIExtensions
     /// If used with a string or object property, and the provided resource key is not found, the
     /// LocExtension will return a string in the format "<Loc !%s>" where %s is replaced with the key.
     ///
+    /// A Converter can also be specified, with an optional ConverterParameter.
+    ///
     /// This example shows the full setup for a LocExtension. It utilizes the RichText attached
     /// property to support BBCode markup in the localized strings. The Loc.Source property references
     /// the "Language_en-gb.xaml" ResourceDictionary below.
@@ -25,8 +26,8 @@ namespace NoesisGUIExtensions
     ///      xmlns:noesis="clr-namespace:NoesisGUIExtensions"
     ///      noesis:Loc.Source="Language_en-gb.xaml">
     ///      <Image Source="{noesis:Loc Flag}"/>
-    ///      <TextBlock noesis:RichText.Text="{noesis:Loc TitleLabel}"/>
     ///      <TextBlock noesis:RichText.Text="{noesis:Loc SoundLabel}"/>
+    ///      <TextBlock noesis:RichText.Text="{noesis:Loc TitleLabel, Converter={StaticResource CaseConverter}, ConverterParameter=UpperCase}"/>
     ///    </StackPanel>
     /// 
     /// This is the contents of a "Language_en-gb.xaml" localized ResourceDictionary:
@@ -38,7 +39,7 @@ namespace NoesisGUIExtensions
     ///      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     ///      xmlns:sys="clr-namespace:System;assembly=mscorlib">
     ///      <ImageBrush x:Key="Flag" ImageSource="Flag_en-gb.png" Stretch="Fill"/>
-    ///      <sys:String x:Key="TitleLabel">[b]LOCALIZATION SAMPLE[/b]</sys:String>
+    ///      <sys:String x:Key="TitleLabel">[b]Localization Sample[/b]</sys:String>
     ///      <sys:String x:Key="SoundLabel">A [i]sound[/i] label</sys:String>
     ///    </ResourceDictionary>
     ///
@@ -47,6 +48,8 @@ namespace NoesisGUIExtensions
     public class LocExtension : MarkupExtension
     {
         private string _resourceKey;
+        private IValueConverter _converter;
+        private object _converterParameter;
 
         public LocExtension()
         {
@@ -77,6 +80,24 @@ namespace NoesisGUIExtensions
             set { _resourceKey = value; }
         }
 
+        /// <summary>
+        /// Gets or sets a converter to use when finding a resource in the active localization ResourceDictionary.
+        /// </summary>
+        public IValueConverter Converter
+        {
+            get => this._converter;
+            set => this._converter = value;
+        }
+
+        /// <summary>
+        /// Gets or sets an optional converter parameter to use when finding a resource in the active localization ResourceDictionary.
+        /// </summary>
+        public object ConverterParameter
+        {
+            get => this._converterParameter;
+            set => this._converterParameter = value;
+        }
+
         public override object ProvideValue(IServiceProvider serviceProvider)
         {
             IProvideValueTarget valueTarget = serviceProvider as IProvideValueTarget;
@@ -85,18 +106,16 @@ namespace NoesisGUIExtensions
                 return null;
             }
 
-            DependencyObject target = (DependencyObject)valueTarget.TargetObject;
-            DependencyProperty targetProperty = (DependencyProperty)valueTarget.TargetProperty;
-
-            LocMonitor monitor = (LocMonitor)target.GetValue(MonitorProperty);
-
-            if (monitor == null)
+            Binding binding = new Binding
             {
-                monitor = new LocMonitor(target);
-                target.SetValue(MonitorProperty, monitor);
-            }
+                Path = new PropertyPath($"({GetType().FullName}.Resources)[{ResourceKey}]"),
+                RelativeSource = valueTarget.TargetObject is FrameworkElement ? RelativeSource.Self :
+                    new RelativeSource(RelativeSourceMode.FindAncestor, typeof(FrameworkElement), 1),
+                Converter = Converter,
+                ConverterParameter = ConverterParameter
+            };
 
-            return monitor.AddDependencyProperty(targetProperty, _resourceKey);
+            return binding.ProvideValue(serviceProvider);
         }
 
         #region Source attached property
@@ -112,6 +131,12 @@ namespace NoesisGUIExtensions
         private static void SourceChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Uri source = (Uri)d.GetValue(SourceProperty);
+
+            if (source == null)
+            {
+                d.ClearValue(ResourcesProperty);
+                return;
+            }
 
             ResourceDictionary resourceDictionary = new ResourceDictionary
             {
@@ -135,105 +160,24 @@ namespace NoesisGUIExtensions
 
         #region Resources attached property
 
-        private static readonly DependencyProperty ResourcesProperty =
+        public static readonly DependencyProperty ResourcesProperty =
             DependencyProperty.RegisterAttached(
-                ".Resources",
+                "Resources",
                 typeof(ResourceDictionary),
                 typeof(LocExtension),
-                new FrameworkPropertyMetadata(null, flags: FrameworkPropertyMetadataOptions.Inherits, ResourcesChangedCallback)
+                new FrameworkPropertyMetadata(null, flags: FrameworkPropertyMetadataOptions.Inherits)
             );
-
-        private static void ResourcesChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            LocMonitor monitor = (LocMonitor)d.GetValue(MonitorProperty);
-
-            if (monitor != null)
-            {
-                monitor.InvalidateResources((ResourceDictionary)e.NewValue);
-            }
-        }
 
         public static ResourceDictionary GetResources(DependencyObject dependencyObject)
         {
             return (ResourceDictionary)dependencyObject.GetValue(ResourcesProperty);
         }
 
-        #endregion
-
-        #region Monitor attached property
-
-        private static readonly DependencyProperty MonitorProperty =
-            DependencyProperty.RegisterAttached(
-                ".Monitor",
-                typeof(LocMonitor),
-                typeof(LocExtension),
-                new PropertyMetadata(null)
-            );
+        public static void SetResources(DependencyObject dependencyObject, ResourceDictionary resources)
+        {
+            dependencyObject.SetValue(ResourcesProperty, resources);
+        }
 
         #endregion
-    }
-
-    internal class LocMonitor
-    {
-        private readonly DependencyObject _targetObject;
-
-        private readonly List<Tuple<DependencyProperty, string>> _monitoredDependencyProperties =
-            new List<Tuple<DependencyProperty, string>>();
-
-        public LocMonitor(DependencyObject targetObject)
-        {
-            _targetObject = targetObject;
-        }
-
-        public object AddDependencyProperty(DependencyProperty targetProperty, string resourceKey)
-        {
-            ResourceDictionary resourceDictionary = LocExtension.GetResources(_targetObject);
-
-            for (int i = 0; i < _monitoredDependencyProperties.Count; i++)
-            {
-                if (_monitoredDependencyProperties[i].Item1 == targetProperty)
-                {
-                    _monitoredDependencyProperties[i] =
-                        new Tuple<DependencyProperty, string>(_monitoredDependencyProperties[i].Item1, resourceKey);
-
-                    return Evaluate(targetProperty, resourceKey, resourceDictionary);
-                }
-            }
-
-            _monitoredDependencyProperties.Add(new Tuple<DependencyProperty, string>(targetProperty, resourceKey));
-
-            return Evaluate(targetProperty, resourceKey, resourceDictionary);
-        }
-
-        public void InvalidateResources(ResourceDictionary resourceDictionary)
-        {
-            foreach (Tuple<DependencyProperty, string> entry in _monitoredDependencyProperties)
-            {
-                _targetObject.SetValue(entry.Item1,
-                    Evaluate(entry.Item1, entry.Item2, resourceDictionary));
-            }
-        }
-
-        private static object Evaluate(DependencyProperty targetProperty, string resourceKey,
-            ResourceDictionary resourceDictionary)
-        {
-            if (resourceDictionary != null && resourceDictionary.Contains(resourceKey))
-            {
-                object resource = resourceDictionary[resourceKey];
-                if (resource != null)
-                {
-                    return resource;
-                }
-
-                Console.WriteLine($"[NOESIS/E] Resource key '{resourceKey}' not found in Loc Resources");
-            }
-
-            if (targetProperty.PropertyType == typeof(string))
-            {
-                return $"<Loc !{resourceKey}>";
-            }
-
-            return null;
-        }
     }
 }
