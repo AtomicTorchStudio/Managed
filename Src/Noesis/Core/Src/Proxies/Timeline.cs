@@ -33,7 +33,7 @@ public class Timeline : Animatable {
 
   #region Events
   #region Completed
-  public delegate void CompletedHandler(object sender, EventArgs e);
+  public delegate void CompletedHandler(object sender, NoesisEventArgs e);
   public event CompletedHandler Completed {
     add {
       long ptr = swigCPtr.Handle.ToInt64();
@@ -280,9 +280,9 @@ public class Timeline : Animatable {
 
   }
 
-  public float SpeedRatio {
+  public double SpeedRatio {
     set {
-      NoesisGUI_PINVOKE.Timeline_SpeedRatio_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.Timeline_SpeedRatio_set(swigCPtr, (float)value);
     } 
     get {
       float ret = NoesisGUI_PINVOKE.Timeline_SpeedRatio_get(swigCPtr);

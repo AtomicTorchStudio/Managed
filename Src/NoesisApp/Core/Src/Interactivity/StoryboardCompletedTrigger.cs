@@ -75,7 +75,7 @@ namespace NoesisApp
             }
         }
 
-        private void OnStoryboardCompleted(object sender, EventArgs e)
+        private void OnStoryboardCompleted(object sender, NoesisEventArgs e)
         {
             TimelineEventArgs args = (TimelineEventArgs)e;
             FrameworkElement argsTarget = args.Target as FrameworkElement;

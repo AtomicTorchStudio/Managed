@@ -60,9 +60,9 @@ public class DoubleKeyFrame : Freezable {
 
   }
 
-  public float Value {
+  public double Value {
     set {
-      NoesisGUI_PINVOKE.DoubleKeyFrame_Value_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.DoubleKeyFrame_Value_set(swigCPtr, (float)value);
     } 
     get {
       float ret = NoesisGUI_PINVOKE.DoubleKeyFrame_Value_get(swigCPtr);

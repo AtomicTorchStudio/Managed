@@ -180,9 +180,9 @@ public abstract class Shape : FrameworkElement {
     } 
   }
 
-  public float StrokeDashOffset {
+  public double StrokeDashOffset {
     set {
-      NoesisGUI_PINVOKE.Shape_StrokeDashOffset_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.Shape_StrokeDashOffset_set(swigCPtr, (float)value);
     } 
     get {
       float ret = NoesisGUI_PINVOKE.Shape_StrokeDashOffset_get(swigCPtr);
@@ -210,9 +210,9 @@ public abstract class Shape : FrameworkElement {
     } 
   }
 
-  public float StrokeMiterLimit {
+  public double StrokeMiterLimit {
     set {
-      NoesisGUI_PINVOKE.Shape_StrokeMiterLimit_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.Shape_StrokeMiterLimit_set(swigCPtr, (float)value);
     } 
     get {
       float ret = NoesisGUI_PINVOKE.Shape_StrokeMiterLimit_get(swigCPtr);
@@ -230,9 +230,9 @@ public abstract class Shape : FrameworkElement {
     } 
   }
 
-  public float StrokeThickness {
+  public double StrokeThickness {
     set {
-      NoesisGUI_PINVOKE.Shape_StrokeThickness_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.Shape_StrokeThickness_set(swigCPtr, (float)value);
     } 
     get {
       float ret = NoesisGUI_PINVOKE.Shape_StrokeThickness_get(swigCPtr);

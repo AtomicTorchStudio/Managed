@@ -74,7 +74,7 @@ public class Popup : FrameworkElement {
         if (!_Closed.TryGetValue(ptr, out handler)) {
           throw new InvalidOperationException("Delegate not registered for Closed event");
         }
-        handler?.Invoke(Noesis.Extend.GetProxy(sender, false), new EventArgs(e, false));
+        handler?.Invoke(Noesis.Extend.GetProxy(sender, false), new NoesisEventArgs(e, false));
       }
     }
     catch (Exception exception) {
@@ -130,7 +130,7 @@ public class Popup : FrameworkElement {
         if (!_Opened.TryGetValue(ptr, out handler)) {
           throw new InvalidOperationException("Delegate not registered for Opened event");
         }
-        handler?.Invoke(Noesis.Extend.GetProxy(sender, false), new EventArgs(e, false));
+        handler?.Invoke(Noesis.Extend.GetProxy(sender, false), new NoesisEventArgs(e, false));
       }
     }
     catch (Exception exception) {

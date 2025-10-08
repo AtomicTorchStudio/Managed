@@ -1,3 +1,5 @@
+﻿#undef NETSTANDARD
+
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
@@ -62,9 +64,9 @@ namespace Noesis
                             // Release the object only if it wasn't already manually Disposed
                             if (!(instance is BaseComponent bc && bc.IsDisposed))
                             {
-                                BaseComponent.ForceRelease(instance, new IntPtr(kv.Key));
-                            }
+                            BaseComponent.ForceRelease(instance, new IntPtr(kv.Key));
                         }
+                    }
                     }
 
                     ReleasePending();
@@ -302,6 +304,10 @@ namespace Noesis
             _pendingRelease.Clear();
 
             PropertyMetadata.ClearCallbacks();
+            
+            // reset the weak extends table as the old one contains pointers which are no longer valid
+            _weakExtends = new();
+            _latestWeakStorageId++;
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1344,8 +1350,8 @@ namespace Noesis
                     }
                     else
                     {
-                        nativeType = Noesis.ExtendConverter.Extend(TypeFullName(type));
-                    }
+                    nativeType = Noesis.ExtendConverter.Extend(TypeFullName(type));
+                }
                 }
                 else if (typeof(Noesis.IMultiValueConverter).GetTypeInfo().IsAssignableFrom(type.GetTypeInfo()))
                 {
@@ -1385,6 +1391,22 @@ namespace Noesis
                 props = GetPublicProperties(type);
                 info = CreateNativeTypeInfo(type, indexer, props);
                 AddNativeType(nativeType, info);
+            }
+
+            if (!ReferenceEquals(null, Noesis.ExternalTypeHelper.CheckTypeCanContainDependencyProperties)
+                && !Noesis.ExternalTypeHelper.CheckTypeCanContainDependencyProperties(type))
+            {
+                // external type should not provide any properties
+                props = Array.Empty<PropertyInfo>();
+                registerDP = false;
+            }
+            
+            if (!ReferenceEquals(null, Noesis.ExternalTypeHelper.CheckTypeCanContainDependencyProperties)
+                && !Noesis.ExternalTypeHelper.CheckTypeCanContainDependencyProperties(type))
+            {
+                // external type should not provide any properties
+                props = Array.Empty<PropertyInfo>();
+                registerDP = false;
             }
 
             // Fill native type with C# public properties
@@ -3679,7 +3701,7 @@ namespace Noesis
                 IScrollInfo scrollInfo = (IScrollInfo)GetExtendInstance(cPtr);
                 if (scrollInfo != null)
                 {
-                    return scrollInfo.ExtentWidth;
+                    return (float)scrollInfo.ExtentWidth;
                 }
             }
             catch (Exception e)
@@ -3702,7 +3724,7 @@ namespace Noesis
                 IScrollInfo scrollInfo = (IScrollInfo)GetExtendInstance(cPtr);
                 if (scrollInfo != null)
                 {
-                    return scrollInfo.ExtentHeight;
+                    return (float)scrollInfo.ExtentHeight;
                 }
             }
             catch (Exception e)
@@ -3725,7 +3747,7 @@ namespace Noesis
                 IScrollInfo scrollInfo = (IScrollInfo)GetExtendInstance(cPtr);
                 if (scrollInfo != null)
                 {
-                    return scrollInfo.ViewportWidth;
+                    return (float)scrollInfo.ViewportWidth;
                 }
             }
             catch (Exception e)
@@ -3748,7 +3770,7 @@ namespace Noesis
                 IScrollInfo scrollInfo = (IScrollInfo)GetExtendInstance(cPtr);
                 if (scrollInfo != null)
                 {
-                    return scrollInfo.ViewportHeight;
+                    return (float)scrollInfo.ViewportHeight;
                 }
             }
             catch (Exception e)
@@ -3771,7 +3793,7 @@ namespace Noesis
                 IScrollInfo scrollInfo = (IScrollInfo)GetExtendInstance(cPtr);
                 if (scrollInfo != null)
                 {
-                    return scrollInfo.HorizontalOffset;
+                    return (float)scrollInfo.HorizontalOffset;
                 }
             }
             catch (Exception e)
@@ -3794,7 +3816,7 @@ namespace Noesis
                 IScrollInfo scrollInfo = (IScrollInfo)GetExtendInstance(cPtr);
                 if (scrollInfo != null)
                 {
-                    return scrollInfo.VerticalOffset;
+                    return (float)scrollInfo.VerticalOffset;
                 }
             }
             catch (Exception e)
@@ -4605,7 +4627,7 @@ namespace Noesis
             if (type.Equals(typeof(double)) ||
                 type.Equals(typeof(decimal)))
             {
-                return (int)NativePropertyType.Double;
+                return (int)NativePropertyType.Float;
             }
 
             if (type.Equals(typeof(int)) ||
@@ -5993,10 +6015,23 @@ namespace Noesis
 
         private class ExtendNotifier
         {
+            private byte currentWeakStorageId;
+            
+            public ExtendNotifier()
+            {
+                currentWeakStorageId = _latestWeakStorageId;
+            }
+
             public IntPtr cPtr;
 
             ~ExtendNotifier()
             {
+                if (currentWeakStorageId != _latestWeakStorageId)
+                {
+                    // storage for this weak reference is destroyed, no need to release
+                    return;
+                }
+
                 // There is a weird situation in NETSTANDARD (a possible bug) that destroys the
                 // value even when the key is still alive. The workaround is to re-register the
                 // key instance in the ConditionalWeakTable until the key is really destroyed
@@ -6025,6 +6060,8 @@ namespace Noesis
 
         private static ConditionalWeakTable<object, ExtendNotifier> _weakExtends =
             new ConditionalWeakTable<object, ExtendNotifier>();
+
+        private static byte _latestWeakStorageId;
 
         ////////////////////////////////////////////////////////////////////////////////////////////////
         private static BaseComponent GetProxyInstance(IntPtr cPtr, bool ownMemory, NativeTypeInfo info)

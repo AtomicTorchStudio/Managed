@@ -39,6 +39,11 @@ public struct Vector {
     this._y = y;
   }
 
+  public Vector(double x, double y) {
+      this._x = (float)x;
+      this._y = (float)y;
+  }
+
   public float Length {
     get { return (float)Math.Sqrt(LengthSquared); }
   }

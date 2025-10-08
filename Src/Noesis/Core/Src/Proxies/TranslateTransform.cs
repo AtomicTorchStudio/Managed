@@ -35,7 +35,7 @@ public class TranslateTransform : Transform {
     return NoesisGUI_PINVOKE.new_TranslateTransform__SWIG_0();
   }
 
-  public TranslateTransform(float x, float y) : this(NoesisGUI_PINVOKE.new_TranslateTransform__SWIG_1(x, y), true) {
+  public TranslateTransform(double x, double y) : this(NoesisGUI_PINVOKE.new_TranslateTransform__SWIG_1((float)x, (float)y), true) {
   }
 
   public static DependencyProperty XProperty {
@@ -52,9 +52,9 @@ public class TranslateTransform : Transform {
     }
   }
 
-  public float X {
+  public double X {
     set {
-      NoesisGUI_PINVOKE.TranslateTransform_X_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.TranslateTransform_X_set(swigCPtr, (float)value);
     } 
     get {
       float ret = NoesisGUI_PINVOKE.TranslateTransform_X_get(swigCPtr);
@@ -62,9 +62,9 @@ public class TranslateTransform : Transform {
     } 
   }
 
-  public float Y {
+  public double Y {
     set {
-      NoesisGUI_PINVOKE.TranslateTransform_Y_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.TranslateTransform_Y_set(swigCPtr, (float)value);
     } 
     get {
       float ret = NoesisGUI_PINVOKE.TranslateTransform_Y_get(swigCPtr);

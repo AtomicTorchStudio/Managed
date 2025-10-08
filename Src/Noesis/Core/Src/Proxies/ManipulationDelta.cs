@@ -66,7 +66,7 @@ public class ManipulationDelta : IDisposable {
     }
   }
 
-  public float Rotation {
+  public double Rotation {
     get {
       float ret = NoesisGUI_PINVOKE.ManipulationDelta_Rotation_get(swigCPtr);
       return ret;

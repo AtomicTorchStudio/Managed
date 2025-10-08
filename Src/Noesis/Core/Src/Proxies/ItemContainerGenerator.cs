@@ -132,7 +132,7 @@ public class ItemContainerGenerator : BaseComponent, Noesis.IRecyclingItemContai
         if (!_StatusChanged.TryGetValue(ptr, out handler)) {
           throw new System.InvalidOperationException("Delegate not registered for StatusChanged event");
         }
-        handler?.Invoke(Noesis.Extend.GetProxy(sender, false), new EventArgs(e, false));
+        handler?.Invoke(Noesis.Extend.GetProxy(sender, false), new NoesisEventArgs(e, false));
       }
     }
     catch (Exception exception) {

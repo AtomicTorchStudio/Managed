@@ -117,7 +117,7 @@ namespace NoesisGUIExtensions
             }
         }
 
-        private void OnElementUpdated(object sender, EventArgs e)
+        private void OnElementUpdated(object sender, NoesisEventArgs e)
         {
             FrameworkElement element = AssociatedObject;
             if (_adorner != null && Source != null && element.IsVisible && element.Opacity > 0.0f)

@@ -52,7 +52,7 @@ namespace Noesis
     /// A tile is a region of a render target. The origin is located at the lower left corner.
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    public struct Tile
+    internal struct Tile
     {
         [MarshalAs(UnmanagedType.U4)]
         public uint X;
@@ -353,7 +353,7 @@ namespace Noesis
     /// <summary>
     /// Alpha blending mode.
     /// </summary>
-    public enum BlendMode
+    internal enum BlendMode
     {
                                 //  ----------------------------------------------------
                                 //  COLOR                       ALPHA
@@ -395,7 +395,7 @@ namespace Noesis
     public struct RenderState
     {
         public bool ColorEnable { get { return (this.v & 1 << 0) != 0; } }
-        public BlendMode BlendMode { get { return (BlendMode)((this.v >> 1) & 7); } }
+        internal BlendMode BlendMode { get { return (BlendMode)((this.v >> 1) & 7); } }
         public StencilMode StencilMode { get { return (StencilMode)((this.v >> 4) & 7); } }
         public bool Wireframe { get { return (this.v & 1 << 7) != 0; } }
 
@@ -623,7 +623,7 @@ namespace Noesis
         /// the contents of the render target defined by the extension of the given tile. This is a
         /// good place to enable scissoring and apply optimizations for tile-based GPU architectures.
         /// </summary>
-        public abstract void BeginTile(RenderTarget surface, Tile tile);
+        internal abstract void BeginTile(RenderTarget surface, Tile tile);
 
         /// <summary>
         /// Completes rendering to the tile specified by BeginTile().
@@ -633,7 +633,7 @@ namespace Noesis
         /// <summary>
         /// Resolves multisample render target.
         /// </summary>
-        public abstract void ResolveRenderTarget(RenderTarget surface, Tile[] tiles);
+        internal abstract void ResolveRenderTarget(RenderTarget surface, Tile[] tiles);
 
         /// <summary>
         /// Creates a texture with given dimensions and format. For immutable textures, the content of
@@ -1236,7 +1236,7 @@ namespace Noesis
             Noesis_RenderDevice_SetRenderTarget(swigCPtr, BaseComponent.getCPtr(surface));
         }
 
-        public override void BeginTile(RenderTarget surface, Tile tile)
+        internal override void BeginTile(RenderTarget surface, Tile tile)
         {
             if (surface == null)
             {
@@ -1256,7 +1256,7 @@ namespace Noesis
             Noesis_RenderDevice_EndTile(swigCPtr, BaseComponent.getCPtr(surface));
         }
 
-        public override void ResolveRenderTarget(RenderTarget surface, Tile[] tiles)
+        internal override void ResolveRenderTarget(RenderTarget surface, Tile[] tiles)
         {
             if (surface == null)
             {

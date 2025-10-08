@@ -51,84 +51,84 @@ public class ScrollChangedEventArgs : RoutedEventArgs {
     }
   }
 
-  public float ExtentHeight {
+  public double ExtentHeight {
     get {
       float ret = NoesisGUI_PINVOKE.ScrollChangedEventArgs_ExtentHeight_get(swigCPtr);
       return ret;
     } 
   }
 
-  public float ExtentHeightChange {
+  public double ExtentHeightChange {
     get {
       float ret = NoesisGUI_PINVOKE.ScrollChangedEventArgs_ExtentHeightChange_get(swigCPtr);
       return ret;
     } 
   }
 
-  public float ExtentWidth {
+  public double ExtentWidth {
     get {
       float ret = NoesisGUI_PINVOKE.ScrollChangedEventArgs_ExtentWidth_get(swigCPtr);
       return ret;
     } 
   }
 
-  public float ExtentWidthChange {
+  public double ExtentWidthChange {
     get {
       float ret = NoesisGUI_PINVOKE.ScrollChangedEventArgs_ExtentWidthChange_get(swigCPtr);
       return ret;
     } 
   }
 
-  public float HorizontalChange {
+  public double HorizontalChange {
     get {
       float ret = NoesisGUI_PINVOKE.ScrollChangedEventArgs_HorizontalChange_get(swigCPtr);
       return ret;
     } 
   }
 
-  public float HorizontalOffset {
+  public double HorizontalOffset {
     get {
       float ret = NoesisGUI_PINVOKE.ScrollChangedEventArgs_HorizontalOffset_get(swigCPtr);
       return ret;
     } 
   }
 
-  public float VerticalChange {
+  public double VerticalChange {
     get {
       float ret = NoesisGUI_PINVOKE.ScrollChangedEventArgs_VerticalChange_get(swigCPtr);
       return ret;
     } 
   }
 
-  public float VerticalOffset {
+  public double VerticalOffset {
     get {
       float ret = NoesisGUI_PINVOKE.ScrollChangedEventArgs_VerticalOffset_get(swigCPtr);
       return ret;
     } 
   }
 
-  public float ViewportHeight {
+  public double ViewportHeight {
     get {
       float ret = NoesisGUI_PINVOKE.ScrollChangedEventArgs_ViewportHeight_get(swigCPtr);
       return ret;
     } 
   }
 
-  public float ViewportHeightChange {
+  public double ViewportHeightChange {
     get {
       float ret = NoesisGUI_PINVOKE.ScrollChangedEventArgs_ViewportHeightChange_get(swigCPtr);
       return ret;
     } 
   }
 
-  public float ViewportWidth {
+  public double ViewportWidth {
     get {
       float ret = NoesisGUI_PINVOKE.ScrollChangedEventArgs_ViewportWidth_get(swigCPtr);
       return ret;
     } 
   }
 
-  public float ViewportWidthChange {
+  public double ViewportWidthChange {
     get {
       float ret = NoesisGUI_PINVOKE.ScrollChangedEventArgs_ViewportWidthChange_get(swigCPtr);
       return ret;

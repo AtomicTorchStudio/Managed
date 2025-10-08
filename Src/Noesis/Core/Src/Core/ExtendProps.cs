@@ -450,7 +450,7 @@ namespace Noesis
             return ret;
         }
 
-        private static ValueT ConvertValue<ValueT>(object value)
+        internal static ValueT ConvertValue<ValueT>(object value)
         {
             Type targetType = typeof(ValueT);
             return targetType.GetTypeInfo().IsValueType ? (ValueT)Convert.ChangeType(value, targetType) : (ValueT)value;

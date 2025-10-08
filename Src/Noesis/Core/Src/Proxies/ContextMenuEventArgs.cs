@@ -58,14 +58,14 @@ public class ContextMenuEventArgs : RoutedEventArgs {
     }
   }
 
-  public float CursorLeft {
+  public double CursorLeft {
     get {
       float ret = NoesisGUI_PINVOKE.ContextMenuEventArgs_CursorLeft_get(swigCPtr);
       return ret;
     } 
   }
 
-  public float CursorTop {
+  public double CursorTop {
     get {
       float ret = NoesisGUI_PINVOKE.ContextMenuEventArgs_CursorTop_get(swigCPtr);
       return ret;

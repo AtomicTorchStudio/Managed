@@ -106,7 +106,7 @@ namespace NoesisGUIExtensions
             }
         }
 
-        private void OnTargetUpdated(object sender, EventArgs e)
+        private void OnTargetUpdated(object sender, NoesisEventArgs e)
         {
             TextBlock target = AssociatedObject;
             if (_adorner != null && target != null && target.IsVisible && target.Opacity > 0.0f)

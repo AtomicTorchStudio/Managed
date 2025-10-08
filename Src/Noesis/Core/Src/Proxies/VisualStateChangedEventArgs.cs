@@ -15,7 +15,7 @@ using System.Runtime.InteropServices;
 namespace Noesis
 {
 
-public class VisualStateChangedEventArgs : EventArgs {
+public class VisualStateChangedEventArgs : NoesisEventArgs {
   private HandleRef swigCPtr;
 
   internal VisualStateChangedEventArgs(IntPtr cPtr, bool cMemoryOwn) : base(cPtr, cMemoryOwn) {

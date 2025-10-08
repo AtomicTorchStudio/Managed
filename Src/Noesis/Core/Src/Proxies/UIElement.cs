@@ -714,7 +714,7 @@ public class UIElement : Visual {
     }
   }
 
-  public event EventHandler LayoutUpdated {
+  public event NoesisEventHandler LayoutUpdated {
     add {
       AddEventHandler("LayoutUpdated", value);
     }
@@ -1700,9 +1700,9 @@ public class UIElement : Visual {
     }
   }
 
-  public float Opacity {
+  public double Opacity {
     set {
-      NoesisGUI_PINVOKE.UIElement_Opacity_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.UIElement_Opacity_set(swigCPtr, (float)value);
     } 
     get {
       float ret = NoesisGUI_PINVOKE.UIElement_Opacity_get(swigCPtr);

@@ -45,9 +45,9 @@ public class InertiaTranslationBehavior : IDisposable {
     }
   }
 
-  public float DesiredDeceleration {
+  public double DesiredDeceleration {
     set {
-      NoesisGUI_PINVOKE.InertiaTranslationBehavior_DesiredDeceleration_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.InertiaTranslationBehavior_DesiredDeceleration_set(swigCPtr, (float)value);
     } 
     get {
       float ret = NoesisGUI_PINVOKE.InertiaTranslationBehavior_DesiredDeceleration_get(swigCPtr);

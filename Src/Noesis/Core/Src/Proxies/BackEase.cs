@@ -42,9 +42,9 @@ public class BackEase : EasingFunctionBase {
     }
   }
 
-  public float Amplitude {
+  public double Amplitude {
     set {
-      NoesisGUI_PINVOKE.BackEase_Amplitude_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.BackEase_Amplitude_set(swigCPtr, (float)value);
     } 
     get {
       float ret = NoesisGUI_PINVOKE.BackEase_Amplitude_get(swigCPtr);

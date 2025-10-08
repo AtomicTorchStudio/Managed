@@ -15,7 +15,7 @@ using System.Runtime.InteropServices;
 namespace Noesis
 {
 
-public class TimelineEventArgs : EventArgs {
+public class TimelineEventArgs : NoesisEventArgs {
   private HandleRef swigCPtr;
 
   internal TimelineEventArgs(IntPtr cPtr, bool cMemoryOwn) : base(cPtr, cMemoryOwn) {

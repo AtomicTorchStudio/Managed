@@ -60,9 +60,9 @@ public class DashStyle : Animatable {
     }
   }
 
-  public float Offset {
+  public double Offset {
     set {
-      NoesisGUI_PINVOKE.DashStyle_Offset_set(swigCPtr, value);
+      NoesisGUI_PINVOKE.DashStyle_Offset_set(swigCPtr, (float)value);
     } 
     get {
       float ret = NoesisGUI_PINVOKE.DashStyle_Offset_get(swigCPtr);
