@@ -1,0 +1,5 @@
+root = false
+
+[*]
+# Disable ReSharper and Rider formatting in this project
+resharper_formatter_off = true
