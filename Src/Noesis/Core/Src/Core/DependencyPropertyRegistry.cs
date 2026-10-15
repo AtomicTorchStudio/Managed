@@ -16,28 +16,14 @@ namespace Noesis
     {
         public static void Register(DependencyProperty dp, string name, Type propertyType, Type ownerType, PropertyMetadata metadata)
         {
-            List<PropertyEntry> properties;
-            WeakType key = new WeakType(ownerType);
-            if (!_typeProperties.TryGetValue(key, out properties))
-            {
-                properties = new List<PropertyEntry>();
-                _typeProperties[key] = properties;
-            }
-
-            properties.Add(new PropertyEntry(name, dp, propertyType, metadata));
+            _typeProperties.GetOrCreateValue(ownerType)
+                           .Add(new PropertyEntry(name, dp, propertyType, metadata));
         }
 
         public static void Override(DependencyProperty dp, Type forType, PropertyMetadata metadata)
         {
-            List<MetadataEntry> metadatas;
-            WeakType key = new WeakType(forType);
-            if (!_typePropertyOverrides.TryGetValue(key, out metadatas))
-            {
-                metadatas = new List<MetadataEntry>();
-                _typePropertyOverrides[key] = metadatas;
-            }
-
-            metadatas.Add(new MetadataEntry(dp, metadata));
+            _typePropertyOverrides.GetOrCreateValue(forType)
+                                  .Add(new MetadataEntry(dp, metadata));
         }
 
         public static void Restore(Type type)
@@ -50,8 +36,7 @@ namespace Noesis
         private static void RestoreDependencyProperties(Type ownerType)
         {
             List<PropertyEntry> properties;
-            WeakType key = new WeakType(ownerType);
-            if (_typeProperties.TryGetValue(key, out properties))
+            if (_typeProperties.TryGetValue(ownerType, out properties))
             {
                 foreach (PropertyEntry prop in properties)
                 {
@@ -68,11 +53,10 @@ namespace Noesis
         private static void RestoreDependencyPropertyOverrides(Type forType)
         {
             List<MetadataEntry> metadatas;
-            WeakType key = new WeakType(forType);
-            if (_typePropertyOverrides.TryGetValue(key, out metadatas))
+            if (_typePropertyOverrides.TryGetValue(forType, out metadatas))
             {
                 // Remove the reference as new overrides will be created during the following OverrideMetadata calls
-                _typePropertyOverrides.Remove(key);
+                _typePropertyOverrides.Remove(forType);
 
                 // Perform DependencyProperty overrides
                 foreach (MetadataEntry metadata in metadatas)
@@ -102,46 +86,11 @@ namespace Noesis
             }
         }
 
-        private static readonly Dictionary<WeakType, List<PropertyEntry>> _typeProperties = new Dictionary<WeakType, List<PropertyEntry>>();
-        private static readonly Dictionary<WeakType, List<MetadataEntry>> _typePropertyOverrides = new Dictionary<WeakType, List<MetadataEntry>>();
-        #endregion
-
-        #region WeakType
-        private struct WeakType : IEquatable<WeakType>
-        {
-            public Type Type { get { return (Type)this.weakReference.Target; } }
-
-            public WeakType(Type type)
-            {
-                this.weakReference = new WeakReference(type);
-                this.hashCode = type.GetHashCode();
-            }
-
-            public bool Equals(WeakType other)
-            {
-                if (this.hashCode == other.hashCode)
-                {
-                    Type typeA = (Type)this.weakReference.Target;
-                    Type typeB = (Type)other.weakReference.Target;
-                    return typeA == typeB;
-                }
-
-                return false;
-            }
-
-            public override bool Equals(object obj)
-            {
-                return obj is WeakType && this.Equals((WeakType)obj);
-            }
-
-            public override int GetHashCode()
-            {
-                return this.hashCode;
-            }
-
-            private readonly int hashCode;
-            private readonly WeakReference weakReference;
-        }
+        // Please note: the entries are kept only while their type is alive. The entries reference the types
+        // (via the callbacks and default values) so a dictionary with the weak type keys is not enough -
+        // it keeps the collectible assemblies (such as the reloaded scripts assembly) alive forever.
+        private static readonly ConditionalWeakTable<Type, List<PropertyEntry>> _typeProperties = new ConditionalWeakTable<Type, List<PropertyEntry>>();
+        private static readonly ConditionalWeakTable<Type, List<MetadataEntry>> _typePropertyOverrides = new ConditionalWeakTable<Type, List<MetadataEntry>>();
         #endregion
 
         #region PropertyEntry

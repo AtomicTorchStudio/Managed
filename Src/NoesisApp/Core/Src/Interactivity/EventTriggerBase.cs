@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 
 namespace NoesisApp
 {
@@ -13,7 +14,7 @@ namespace NoesisApp
     {
         protected EventTriggerBase(Type sourceType) : base(typeof(DependencyObject))
         {
-            if (_events == null) _events = new Dictionary<EventKey, EventInfo>();
+            if (_events == null) _events = new ConditionalWeakTable<Type, Dictionary<string, EventInfo>>();
 
             _sourceType = sourceType;
             _source = IntPtr.Zero;
@@ -167,15 +168,15 @@ namespace NoesisApp
                 Type type = source.GetType();
 
                 EventInfo ev;
-                EventKey key = new EventKey { Type = type, Name = eventName };
+                Dictionary<string, EventInfo> typeEvents = _events.GetOrCreateValue(type);
 
-                if (!_events.TryGetValue(key, out ev))
+                if (!typeEvents.TryGetValue(eventName, out ev))
                 {
                     ev = type.GetEvent(eventName);
 
                     if (ev == null)
                     {
-                        _events.Add(key, null);
+                        typeEvents.Add(eventName, null);
 
                         if (SourceObject != null)
                         {
@@ -187,7 +188,7 @@ namespace NoesisApp
                     else if (!IsValidEvent(ev))
                     {
                         ev = null;
-                        _events.Add(key, null);
+                        typeEvents.Add(eventName, null);
 
                         if (SourceObject != null)
                         {
@@ -198,7 +199,7 @@ namespace NoesisApp
                     }
                     else
                     {
-                        _events.Add(key, ev);
+                        typeEvents.Add(eventName, ev);
                     }
                 }
 
@@ -211,17 +212,10 @@ namespace NoesisApp
             }
         }
 
+        // Please note: the types are not kept alive by this cache
+        // as they could be from a collectible assembly (such as the reloaded scripts assembly).
         [ThreadStatic]
-        private static Dictionary<EventKey, EventInfo> _events = null;
-
-        private struct EventKey : IEquatable<EventKey>
-        {
-            public Type Type;
-            public string Name;
-
-            public bool Equals(EventKey other) { return Type.Equals(other.Type) && Name == other.Name; }
-            public override int GetHashCode() { return Type.GetHashCode() ^ Name.GetHashCode(); }
-        }
+        private static ConditionalWeakTable<Type, Dictionary<string, EventInfo>> _events = null;
 
         private void UnregisterEvent(object source)
         {

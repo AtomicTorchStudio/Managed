@@ -2031,7 +2031,7 @@ namespace Noesis
             // Ensure that static constructor is executed, so dependency properties are correctly
             // registered or overridden in Noesis reflection
 
-            if (_constructedTypes.Add(type))
+            if (_constructedTypes.TryAdd(type, null))
             {
                 // New type added to the HashSet - ensure the static constructor was invoked.
                 RuntimeHelpers.RunClassConstructor(type.TypeHandle);
@@ -2045,7 +2045,9 @@ namespace Noesis
         }
 
         private static readonly Assembly BclAssembly = typeof(object).Assembly;
-        private static HashSet<Type> _constructedTypes = new HashSet<Type>();
+        // Please note: the types are not kept alive by this set
+        // as they could be from a collectible assembly (such as the reloaded scripts assembly).
+        private static ConditionalWeakTable<Type, object> _constructedTypes = new ConditionalWeakTable<Type, object>();
 
         ////////////////////////////////////////////////////////////////////////////////////////////////
         private static MethodInfo FindExtendMethod(Type type)
